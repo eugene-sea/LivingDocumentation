@@ -1,0 +1,31 @@
+﻿<table>
+  <tr>
+    <td><h4>{{scenario.Name || 'Background'}}</h4></td> 
+    <td class="no-stretch" ng-if="scenario.tests && scenario.tests.length == 1">
+      <a class="text-right" href="{{scenario.tests[0]}}" target="_blank">Run test</a>
+    </td>
+  </tr>
+</table>
+  
+<p ng-if="scenario.Tags.length > 0">Tags: <i ng-repeat="tag in scenario.Tags">{{tag}}</i></p>
+  
+<p><i ng-bind-html="scenario.Description | newline"></i></p>
+    
+<div ng-repeat="step in scenario.Steps" style="margin-bottom: 10px">
+  <b>{{step.Keyword}}</b> {{step.Name}}
+  <div ng-if="step.TableArgument">
+    <div class="h-scrollable" ng-include="'partials/table.html'" ng-init="table = step.TableArgument"></div>
+  </div>
+</div>
+
+<div ng-if="scenario.Examples">
+  <div ng-repeat="exampleTbl in scenario.Examples" style="margin-bottom: 10px">
+    <b>Examples:</b>
+    <p><i ng-bind-html="exampleTbl.Description | newline"></i></p>
+    <div 
+      class="h-scrollable" 
+      ng-include="'partials/table.html'" 
+      ng-init="table = exampleTbl.TableArgument; tests = scenario.tests">
+    </div>
+  </div>
+</div>

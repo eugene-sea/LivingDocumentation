@@ -1,0 +1,21 @@
+{
+	"FeaturesTests": [
+		{
+			"RelativeFolder": "VendorManagement\\VendorRecommendation.feature",
+			"ScenariosTests": [
+				{
+					"ScenarioName": "Recommendation based on vendor region radius",
+					"Test": "RegionRadius"
+				},
+				{
+					"ScenarioName": "Recommendation based on vendor additive region(s) with counties/cities",
+					"Test": "TestNY"
+				},
+				{
+					"ScenarioName": "Recommendation based on vendor additive region(s) with counties/cities",
+					"Test": "TestTX"
+				}
+			]
+		}
+	]
+}

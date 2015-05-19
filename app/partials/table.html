@@ -1,0 +1,15 @@
+﻿<table class="table table-condensed table-striped table-bordered">
+  <thead>
+    <tr>
+      <th ng-repeat="col in table.HeaderRow">{{col}}</th>
+      <th class="no-stretch" ng-if="tests">Test</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <tr ng-repeat="row in table.DataRows">
+      <td ng-repeat="col in row track by $index">{{col}}</td>
+      <td class="no-stretch" ng-if="tests"><a href="{{tests[$index]}}" target="_blank">Run</a></td>
+    </tr>
+  </tbody>
+</table>

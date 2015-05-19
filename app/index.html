@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en" ng-app="livingDocumentation" xmlns="http://www.w3.org/1999/html">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="pragma" content="no-cache">
+  <meta http-equiv="cache-control" content="no-cache">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Living Documentation</title>
+  
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" media="screen">
+  <link rel="stylesheet" href="bower_components/angular/angular-csp.css" media="screen">
+  <link rel="stylesheet" href="bower_components/angular-bootstrap/ui-bootstrap-csp.css" media="screen">
+  <link rel="stylesheet" href="app.css" media="screen">
+</head>
+<body>
+  <div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Living Documentation</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="container" ng-hide="root.error">
+    <div class="row">
+      <div class="col-lg-4">
+        <div ng-if="root.ready">
+          <div ng-include="'partials/left-pane.html'"></div>
+        </div>
+      </div>
+      
+      <div class="col-lg-8" ng-view></div>
+    </div>
+  </div>
+
+  <div class="alert alert-danger" role="alert" ng-cloak ng-show="root.error">
+    <p><b>Error Occurred:</b> {{root.error}}<p>
+  </div>
+
+  <div class="navbar navbar-default navbar-fixed-bottom">
+    <div class="container">
+      <p ng-cloak class="navbar-text">Living Documentation Application: v<span app-version></span></p>
+      <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <p ng-cloak class="navbar-text navbar-right" ng-if="root.ready">
+          Last Updated On: {{root.lastUpdatedOn | date: 'medium'}}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script src="bower_components/angular/angular.min.js"></script>
+  <script src="bower_components/angular-route/angular-route.min.js"></script>
+  <script src="bower_components/angular-resource/angular-resource.min.js"></script>
+  <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
+  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="bower_components/underscore/underscore-min.js"></script>
+  <script src="main.js"></script>
+
+  <script type="text/ng-template" id="processing.html">
+    <div class="modal-body">
+      <h4 class="text-center">Loading data...</h4>
+      <div class="progress progress-striped active">
+        <div class="progress-bar" role="progressbar" style="width: 100%"></div>
+      </div>
+    </div>
+  </script>
+</body>
+</html>

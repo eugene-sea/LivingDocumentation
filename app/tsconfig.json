@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "target": "ES5",
+        "noImplicitAny": true,
+        "removeComments": false,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "out": "./app/main.js"
+    },
+    "files": [
+        "app.ts",
+        "js/configuration.ts",
+        "js/controllers.ts",
+        "js/directives.ts",
+        "js/filters.ts",
+        "js/services.ts",
+        "js/utils.ts"
+    ]
+}

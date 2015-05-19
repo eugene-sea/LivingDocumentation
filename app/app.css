@@ -1,0 +1,34 @@
+.table {
+    margin-bottom: 0;
+}
+
+body {
+    padding-top: 70px;
+    padding-bottom: 70px;
+}
+
+.bottom-margin {
+    margin-bottom: 20px;
+}
+
+.no-stretch {
+    width: 1%;
+    white-space: nowrap;
+}
+
+.h-scrollable {
+    width: 100%;
+    overflow: auto;
+}
+
+.folder-indent {
+    padding-left: 15px
+}
+
+.folder-item-padding {
+    padding-bottom: 7px
+}
+
+.nav, .pagination, .carousel, .panel-title a {
+    cursor: pointer;
+}
