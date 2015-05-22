@@ -180,7 +180,8 @@ angular.module('livingDocumentation', [
     'livingDocumentation.filters',
     'livingDocumentation.services',
     'livingDocumentation.directives',
-    'livingDocumentation.controllers'
+    'livingDocumentation.controllers',
+    'livingDocumentation.controllers.root'
 ]).config(['$routeProvider', function ($routeProvider) {
         var resolve = {
             livingDocumentationServiceReady: [
@@ -200,6 +201,57 @@ angular.module('livingDocumentation', [
         });
         $routeProvider.otherwise({ redirectTo: '/home' });
     }]);
+/// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="../js/services.ts" />
+'use strict';
+var livingDocumentation;
+(function (livingDocumentation) {
+    var RootCtrl = (function () {
+        function RootCtrl(livingDocService, $modal) {
+            this.livingDocService = livingDocService;
+            this.documentationList = livingDocService.documentationList;
+            var modalInstance;
+            livingDocService.onStartProcessing = function () {
+                if (modalInstance) {
+                    return;
+                }
+                modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
+            };
+            livingDocService.onStopProcessing = function () {
+                modalInstance.close();
+                modalInstance = null;
+            };
+            livingDocService.startInitialization();
+        }
+        Object.defineProperty(RootCtrl.prototype, "loading", {
+            get: function () { return this.livingDocService.loading; },
+            set: function (value) { },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RootCtrl.prototype, "error", {
+            get: function () { return this.livingDocService.error; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RootCtrl.prototype, "ready", {
+            get: function () { return this.livingDocService.ready; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(RootCtrl.prototype, "lastUpdatedOn", {
+            get: function () {
+                return _.find(this.livingDocService.documentationList, function (doc) { return doc.lastUpdatedOn; }).lastUpdatedOn;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        RootCtrl.$inject = ['livingDocumentationService', '$modal'];
+        return RootCtrl;
+    })();
+    angular.module('livingDocumentation.controllers.root', ['livingDocumentation.services'])
+        .controller('RootCtrl', RootCtrl);
+})(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
 /// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
@@ -228,36 +280,7 @@ var livingDocumentation;
 })(livingDocumentation || (livingDocumentation = {}));
 angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
     .controller('Home', livingDocumentation.homeAnnotated)
-    .controller('Feature', livingDocumentation.featureAnnotated)
-    .run([
-    '$rootScope',
-    'livingDocumentationService',
-    '$modal',
-    function ($rootScope, livingDocService, $modal) {
-        $rootScope['root'] = {
-            get loading() { return livingDocService.loading; },
-            set loading(value) { },
-            get error() { return livingDocService.error; },
-            get ready() { return livingDocService.ready; },
-            documentationList: livingDocService.documentationList,
-            get lastUpdatedOn() {
-                return _.find(livingDocService.documentationList, function (doc) { return doc.lastUpdatedOn; }).lastUpdatedOn;
-            }
-        };
-        var modalInstance;
-        livingDocService.onStartProcessing = function () {
-            if (modalInstance) {
-                return;
-            }
-            modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
-        };
-        livingDocService.onStopProcessing = function () {
-            modalInstance.close();
-            modalInstance = null;
-        };
-        livingDocService.startInitialization();
-    }
-]);
+    .controller('Feature', livingDocumentation.featureAnnotated);
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
 'use strict';

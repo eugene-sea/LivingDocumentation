@@ -9,6 +9,7 @@
     },
     "files": [
         "app.ts",
+        "components/root-controller.ts",
         "js/configuration.ts",
         "js/controllers.ts",
         "js/directives.ts",

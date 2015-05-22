@@ -25,8 +25,7 @@ module livingDocumentation {
             livingDocumentationService: ILivingDocumentationService) {
             var doc = _.find(
                 livingDocumentationService.documentationList,
-                doc => doc.definition.code === $routeParams['documentationCode']
-                );
+                doc => doc.definition.code === $routeParams['documentationCode']);
 
             $scope['feature'] = doc.features[$routeParams['featureCode']];
         }
@@ -37,42 +36,4 @@ module livingDocumentation {
 
 angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
     .controller('Home', livingDocumentation.homeAnnotated)
-    .controller('Feature', livingDocumentation.featureAnnotated)
-    .run(
-    [
-        '$rootScope',
-        'livingDocumentationService',
-        '$modal',
-        (
-            $rootScope: ng.IScope,
-            livingDocService: livingDocumentation.ILivingDocumentationService,
-            $modal: ng.ui.bootstrap.IModalService) => {
-            $rootScope['root'] = {
-                get loading() { return livingDocService.loading; },
-                set loading(value) { },
-                get error() { return livingDocService.error; },
-                get ready() { return livingDocService.ready; },
-                documentationList: livingDocService.documentationList,
-                get lastUpdatedOn() {
-                    return _.find(livingDocService.documentationList, doc => <any>doc.lastUpdatedOn).lastUpdatedOn;
-                }
-            };
-
-            var modalInstance: ng.ui.bootstrap.IModalServiceInstance;
-
-            livingDocService.onStartProcessing = () => {
-                if (modalInstance) {
-                    return;
-                }
-
-                modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
-            };
-
-            livingDocService.onStopProcessing = () => {
-                modalInstance.close();
-                modalInstance = null;
-            };
-
-            livingDocService.startInitialization();
-        }
-    ]);
+    .controller('Feature', livingDocumentation.featureAnnotated);
