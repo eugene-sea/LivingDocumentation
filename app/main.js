@@ -163,12 +163,11 @@ var livingDocumentation;
         LivingDocumentationService.$inject = ['$resource', '$q', '$timeout'];
         return LivingDocumentationService;
     })();
-    livingDocumentation.livingDocumentationServiceAnnotated = utils.wrapInjectionConstructor(LivingDocumentationService);
+    angular
+        .module('livingDocumentation.services', ['ngResource'])
+        .value('version', '0.1')
+        .service('livingDocumentationService', LivingDocumentationService);
 })(livingDocumentation || (livingDocumentation = {}));
-angular
-    .module('livingDocumentation.services', ['ngResource'])
-    .value('version', '0.1')
-    .service('livingDocumentationService', livingDocumentation.livingDocumentationServiceAnnotated);
 /// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/angularjs/angular-route.d.ts" />
 /// <reference path="js/services.ts" />
@@ -267,7 +266,6 @@ var livingDocumentation;
         Home.$inject = ['$scope', 'livingDocumentationService'];
         return Home;
     })();
-    livingDocumentation.homeAnnotated = utils.wrapInjectionConstructor(Home);
     var Feature = (function () {
         function Feature($scope, $routeParams, livingDocumentationService) {
             var doc = _.find(livingDocumentationService.documentationList, function (doc) { return doc.definition.code === $routeParams['documentationCode']; });
@@ -276,11 +274,10 @@ var livingDocumentation;
         Feature.$inject = ['$scope', '$routeParams', 'livingDocumentationService'];
         return Feature;
     })();
-    livingDocumentation.featureAnnotated = utils.wrapInjectionConstructor(Feature);
+    angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
+        .controller('Home', Home)
+        .controller('Feature', Feature);
 })(livingDocumentation || (livingDocumentation = {}));
-angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
-    .controller('Home', livingDocumentation.homeAnnotated)
-    .controller('Feature', livingDocumentation.featureAnnotated);
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
 'use strict';
@@ -298,7 +295,6 @@ var livingDocumentation;
         AppVersion.$inject = ['version'];
         return AppVersion;
     })();
-    livingDocumentation.appVersionAnnotated = utils.wrapInjectionConstructor(AppVersion);
     var IsActive = (function () {
         function IsActive($location) {
             var _this = this;
@@ -326,9 +322,6 @@ var livingDocumentation;
             };
             handler();
             IsActive.subscribe(scope, handler);
-            if (scope.$parent) {
-                IsActive.subscribe(scope.$parent, handler);
-            }
         };
         IsActive.subscribe = function (scope, handler) {
             scope.$on('$routeChangeSuccess', handler);
@@ -337,13 +330,12 @@ var livingDocumentation;
         IsActive.$inject = ['$location'];
         return IsActive;
     })();
-    livingDocumentation.isActiveAnnotated = utils.wrapInjectionConstructor(IsActive);
+    angular
+        .module('livingDocumentation.directives', [])
+        .directive('appVersion', utils.wrapInjectionConstructor(AppVersion))
+        .directive('isActive', utils.wrapInjectionConstructor(IsActive))
+        .directive('isActiveLast', utils.wrapInjectionConstructor(IsActive));
 })(livingDocumentation || (livingDocumentation = {}));
-angular
-    .module('livingDocumentation.directives', [])
-    .directive('appVersion', livingDocumentation.appVersionAnnotated)
-    .directive('isActive', livingDocumentation.isActiveAnnotated)
-    .directive('isActiveLast', livingDocumentation.isActiveAnnotated);
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
 /// <reference path="services.ts" />
@@ -359,9 +351,8 @@ var livingDocumentation;
         NewLineFilter.$inject = [];
         return NewLineFilter;
     })();
-    livingDocumentation.newLineFilterAnnotated = utils.wrapFilterInjectionConstructor(NewLineFilter);
+    angular
+        .module('livingDocumentation.filters', [])
+        .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter));
 })(livingDocumentation || (livingDocumentation = {}));
-angular
-    .module('livingDocumentation.filters', [])
-    .filter('newline', livingDocumentation.newLineFilterAnnotated);
 //# sourceMappingURL=main.js.map

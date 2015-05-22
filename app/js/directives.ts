@@ -18,8 +18,6 @@ module livingDocumentation {
         }
     }
 
-    export var appVersionAnnotated = utils.wrapInjectionConstructor(AppVersion);
-
     class IsActive implements ng.IDirective {
         public static $inject: string[] = ['$location'];
 
@@ -49,9 +47,6 @@ module livingDocumentation {
 
             handler();
             IsActive.subscribe(scope, handler);
-            if (scope.$parent) { // TODO: Bug in Angular
-                IsActive.subscribe(scope.$parent, handler);
-            }
         }
 
         private static subscribe(scope: ng.IScope, handler: () => void): void {
@@ -60,11 +55,9 @@ module livingDocumentation {
         }
     }
 
-    export var isActiveAnnotated = utils.wrapInjectionConstructor(IsActive);
+    angular
+        .module('livingDocumentation.directives', [])
+        .directive('appVersion', utils.wrapInjectionConstructor(AppVersion))
+        .directive('isActive', utils.wrapInjectionConstructor(IsActive))
+        .directive('isActiveLast', utils.wrapInjectionConstructor(IsActive));
 }
-
-angular
-    .module('livingDocumentation.directives', [])
-    .directive('appVersion', livingDocumentation.appVersionAnnotated)
-    .directive('isActive', livingDocumentation.isActiveAnnotated)
-    .directive('isActiveLast', livingDocumentation.isActiveAnnotated);

@@ -14,8 +14,6 @@ module livingDocumentation {
         constructor($scope: ng.IScope, livingDocumentationService: ILivingDocumentationService) { }
     }
 
-    export var homeAnnotated = utils.wrapInjectionConstructor(Home);
-
     class Feature {
         public static $inject: string[] = ['$scope', '$routeParams', 'livingDocumentationService'];
 
@@ -31,9 +29,7 @@ module livingDocumentation {
         }
     }
 
-    export var featureAnnotated = utils.wrapInjectionConstructor(Feature);
+    angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
+        .controller('Home', Home)
+        .controller('Feature', Feature);
 }
-
-angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
-    .controller('Home', livingDocumentation.homeAnnotated)
-    .controller('Feature', livingDocumentation.featureAnnotated);

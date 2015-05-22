@@ -289,10 +289,8 @@ module livingDocumentation {
         }
     }
 
-    export var livingDocumentationServiceAnnotated = utils.wrapInjectionConstructor(LivingDocumentationService);
+    angular
+        .module('livingDocumentation.services', ['ngResource'])
+        .value('version', '0.1')
+        .service('livingDocumentationService', LivingDocumentationService);
 }
-
-angular
-    .module('livingDocumentation.services', ['ngResource'])
-    .value('version', '0.1')
-    .service('livingDocumentationService', livingDocumentation.livingDocumentationServiceAnnotated);

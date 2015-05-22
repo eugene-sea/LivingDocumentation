@@ -15,9 +15,7 @@ module livingDocumentation {
         }
     }
 
-    export var newLineFilterAnnotated = utils.wrapFilterInjectionConstructor(NewLineFilter);
+    angular
+        .module('livingDocumentation.filters', [])
+        .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter));
 }
-
-angular
-    .module('livingDocumentation.filters', [])
-    .filter('newline', livingDocumentation.newLineFilterAnnotated);
