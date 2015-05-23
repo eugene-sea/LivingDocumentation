@@ -2,7 +2,6 @@
 /// <reference path="../../typings/angularjs/angular-resource.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="utils.ts" />
-/// <reference path="configuration.ts" />
 
 'use strict';
 
@@ -75,11 +74,25 @@ module livingDocumentation {
         FeaturesTests: IFeatureTestsSource[];
     }
 
+    export interface ILivingDocumentationResourceDefinition {
+        code: string;
+        name: string;
+        description: string;
+        sortOrder: number;
+        featuresResource: string;
+        testsResources?: string;
+        testUri?: string;
+    }
+
     export interface ILivingDocumentation {
         definition: ILivingDocumentationResourceDefinition;
         root: IFolder;
         features: IFeatures;
         lastUpdatedOn: Date;
+    }
+
+    interface ILivingDocumentationResourceDefinitionResourceClass extends
+        angular.resource.IResourceClass<ng.resource.IResource<ILivingDocumentationResourceDefinition[]>> {
     }
 
     interface ILivingDocumentationResourceClass extends
@@ -88,13 +101,22 @@ module livingDocumentation {
 
     class LivingDocumentationServer {
         private livingDocumentationResourceClass: ILivingDocumentationResourceClass;
+        private livingDocResDefResourceClass: ILivingDocumentationResourceDefinitionResourceClass;
 
         constructor($resource: ng.resource.IResourceService, private $q: ng.IQService) {
-            this.livingDocumentationResourceClass = <ILivingDocumentationResourceClass>$resource(
+            this.livingDocumentationResourceClass = $resource<IFeaturesSource, ILivingDocumentationResourceClass>(
                 'data/:resource', null, { get: { method: 'GET' } });
+
+            this.livingDocResDefResourceClass =
+            $resource<ILivingDocumentationResourceDefinition[], ILivingDocumentationResourceDefinitionResourceClass>(
+                'data/:definition', null, { get: { method: 'GET', isArray: true } });
         }
 
-        public get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
+        getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]> {
+            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
+        }
+
+        get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
             var promiseFeatures = <ng.IPromise<IFeature[]>><any>this.livingDocumentationResourceClass.get(
                 { resource: resource.featuresResource })['$promise'];
 
@@ -156,7 +178,7 @@ module livingDocumentation {
                 var folders = f.RelativeFolder.match(/[^\\/]+/g);
                 f.code = folders.pop();
                 if (featuresTestsMap) {
-                    LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder]);
+                    LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
                 }
 
                 LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
@@ -171,7 +193,7 @@ module livingDocumentation {
             };
         }
 
-        private static addTests(feature: IFeature, featureTests: IFeatureTestsSource): void {
+        private static addTests(feature: IFeature, featureTests: IFeatureTestsSource, testUri: string): void {
             if (!featureTests) {
                 return;
             }
@@ -183,7 +205,7 @@ module livingDocumentation {
                     return;
                 }
 
-                scenario.tests = _.map(scenarioTests, s => testUri + s.Test);
+                scenario.tests = _.map(scenarioTests, s => (testUri || '') + s.Test);
             });
         }
     }
@@ -213,21 +235,21 @@ module livingDocumentation {
 
         private deferred: ng.IDeferred<ILivingDocumentationService>;
 
-        public loading: boolean;
+        loading: boolean;
 
-        public error: string;
+        error: string;
 
-        public ready: boolean;
+        ready: boolean;
 
-        public resolve: ng.IPromise<ILivingDocumentationService>;
+        resolve: ng.IPromise<ILivingDocumentationService>;
 
-        public documentationList: ILivingDocumentation[] = [];
+        documentationList: ILivingDocumentation[] = [];
 
-        public onStartProcessing: () => void;
+        onStartProcessing: () => void;
 
-        public onStopProcessing: () => void;
+        onStopProcessing: () => void;
 
-        public static $inject: string[] = ['$resource', '$q', '$timeout'];
+        static $inject: string[] = ['$resource', '$q', '$timeout'];
 
         constructor(
             $resource: ng.resource.IResourceService, private $q: ng.IQService, private $timeout: ng.ITimeoutService) {
@@ -237,44 +259,31 @@ module livingDocumentation {
             this.resolve = this.deferred.promise;
         }
 
-        public startInitialization(): void {
+        startInitialization(): void {
             if (this.onStartProcessing) {
                 this.onStartProcessing();
             }
 
             this.deferred.promise.finally(() => this.onStopProcessing());
 
-            var counter = 1;
-
-            var onSuccess = () => {
-                if (--counter <= 0) {
+            this.livingDocumentationServer.getResourceDefinitions()
+                .then(resources => this.$q.all(_.map(resources, r => this.livingDocumentationServer.get(r))))
+                .then(
+                (docs: ILivingDocumentation[]) => {
+                    this.documentationList = docs;
                     this.$timeout(
                         () => {
                             this.deferred.resolve(this);
                             this.initialize();
                         },
                         TIMEOUT);
-                }
-            };
-
-            _.each(livingDocumentationResources, res => {
-                ++counter;
-                this.livingDocumentationServer.get(res).then(
-                    doc => {
-                        this.documentationList.push(doc);
-                        onSuccess();
+                },
+                err => this.$timeout(
+                    () => {
+                        this.deferred.reject(err);
+                        this.onError(err);
                     },
-                    err => {
-                        this.$timeout(
-                            () => {
-                                this.deferred.reject(err);
-                                this.onError(err);
-                            },
-                            TIMEOUT);
-                    });
-            });
-
-            onSuccess();
+                    TIMEOUT));
         }
 
         private onError(err: any) {

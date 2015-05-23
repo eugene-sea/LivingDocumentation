@@ -1,0 +1,11 @@
+[
+    {
+        "code": "test",
+        "name": "Test Knowledge Base",
+        "description": "",
+        "sortOrder": 1,
+        "featuresResource": "test-data.json",
+        "testsResources": "test-data-tests.json",
+        "testUri": "http://example.com/Tests/?Test="
+    }
+]

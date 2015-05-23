@@ -9,8 +9,6 @@ module livingDocumentation {
 
         constructor(
             private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
-            this.documentationList = livingDocService.documentationList;
-
             var modalInstance: ng.ui.bootstrap.IModalServiceInstance;
 
             livingDocService.onStartProcessing = () => {
@@ -22,6 +20,7 @@ module livingDocumentation {
             };
 
             livingDocService.onStopProcessing = () => {
+                this.documentationList = livingDocService.documentationList;
                 modalInstance.close();
                 modalInstance = null;
             };

@@ -16,26 +16,10 @@ var utils;
     }
     utils.wrapFilterInjectionConstructor = wrapFilterInjectionConstructor;
 })(utils || (utils = {}));
-'use strict';
-var livingDocumentation;
-(function (livingDocumentation) {
-    livingDocumentation.testUri = 'http://example.com/Tests/?Test=';
-    livingDocumentation.livingDocumentationResources = [
-        {
-            code: 'test',
-            name: 'Test Knowledge Base',
-            description: '',
-            sortOrder: 1,
-            featuresResource: 'test-data.json',
-            testsResources: 'test-data-tests.json'
-        }
-    ];
-})(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-resource.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="utils.ts" />
-/// <reference path="configuration.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
@@ -43,7 +27,12 @@ var livingDocumentation;
         function LivingDocumentationServer($resource, $q) {
             this.$q = $q;
             this.livingDocumentationResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
+            this.livingDocResDefResourceClass =
+                $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
         }
+        LivingDocumentationServer.prototype.getResourceDefinitions = function () {
+            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
+        };
         LivingDocumentationServer.prototype.get = function (resource) {
             var promiseFeatures = this.livingDocumentationResourceClass.get({ resource: resource.featuresResource })['$promise'];
             var promiseTests = !resource.testsResources
@@ -84,7 +73,7 @@ var livingDocumentation;
                 var folders = f.RelativeFolder.match(/[^\\/]+/g);
                 f.code = folders.pop();
                 if (featuresTestsMap) {
-                    LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder]);
+                    LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
                 }
                 LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
                 resFeatures[f.code] = f;
@@ -96,7 +85,7 @@ var livingDocumentation;
                 lastUpdatedOn: new Date(lastUpdatedOn.valueOf())
             };
         };
-        LivingDocumentationServer.addTests = function (feature, featureTests) {
+        LivingDocumentationServer.addTests = function (feature, featureTests, testUri) {
             if (!featureTests) {
                 return;
             }
@@ -106,7 +95,7 @@ var livingDocumentation;
                 if (!scenarioTests) {
                     return;
                 }
-                scenario.tests = _.map(scenarioTests, function (s) { return livingDocumentation.testUri + s.Test; });
+                scenario.tests = _.map(scenarioTests, function (s) { return (testUri || '') + s.Test; });
             });
         };
         return LivingDocumentationServer;
@@ -128,28 +117,18 @@ var livingDocumentation;
                 this.onStartProcessing();
             }
             this.deferred.promise.finally(function () { return _this.onStopProcessing(); });
-            var counter = 1;
-            var onSuccess = function () {
-                if (--counter <= 0) {
-                    _this.$timeout(function () {
-                        _this.deferred.resolve(_this);
-                        _this.initialize();
-                    }, TIMEOUT);
-                }
-            };
-            _.each(livingDocumentation.livingDocumentationResources, function (res) {
-                ++counter;
-                _this.livingDocumentationServer.get(res).then(function (doc) {
-                    _this.documentationList.push(doc);
-                    onSuccess();
-                }, function (err) {
-                    _this.$timeout(function () {
-                        _this.deferred.reject(err);
-                        _this.onError(err);
-                    }, TIMEOUT);
-                });
-            });
-            onSuccess();
+            this.livingDocumentationServer.getResourceDefinitions()
+                .then(function (resources) { return _this.$q.all(_.map(resources, function (r) { return _this.livingDocumentationServer.get(r); })); })
+                .then(function (docs) {
+                _this.documentationList = docs;
+                _this.$timeout(function () {
+                    _this.deferred.resolve(_this);
+                    _this.initialize();
+                }, TIMEOUT);
+            }, function (err) { return _this.$timeout(function () {
+                _this.deferred.reject(err);
+                _this.onError(err);
+            }, TIMEOUT); });
         };
         LivingDocumentationService.prototype.onError = function (err) {
             console.error(err);
@@ -207,8 +186,8 @@ var livingDocumentation;
 (function (livingDocumentation) {
     var RootCtrl = (function () {
         function RootCtrl(livingDocService, $modal) {
+            var _this = this;
             this.livingDocService = livingDocService;
-            this.documentationList = livingDocService.documentationList;
             var modalInstance;
             livingDocService.onStartProcessing = function () {
                 if (modalInstance) {
@@ -217,6 +196,7 @@ var livingDocumentation;
                 modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
             };
             livingDocService.onStopProcessing = function () {
+                _this.documentationList = livingDocService.documentationList;
                 modalInstance.close();
                 modalInstance = null;
             };
