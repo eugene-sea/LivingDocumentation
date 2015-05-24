@@ -14,6 +14,7 @@ angular.module('livingDocumentation', [
     'livingDocumentation.directives',
     'livingDocumentation.controllers',
     'livingDocumentation.controllers.root',
+    'livingDocumentation.controllers.home',
     'livingDocumentation.documentationList'
 ]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
     var resolve: { [key: string]: any; } = {
@@ -24,8 +25,7 @@ angular.module('livingDocumentation', [
     };
 
     $routeProvider.when('/home', {
-        templateUrl: 'partials/home.html',
-        controller: 'Home',
+        template: '<div home></div>',
         resolve: resolve
     });
 
