@@ -10,6 +10,7 @@
     "files": [
         "app.ts",
         "components/root-controller.ts",
+        "components/documentation-list.ts",
         "js/controllers.ts",
         "js/directives.ts",
         "js/filters.ts",

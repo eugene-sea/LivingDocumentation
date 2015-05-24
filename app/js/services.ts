@@ -98,7 +98,7 @@ module livingDocumentation {
     interface IFeaturesSourceResourceClass extends
         angular.resource.IResourceClass<ng.resource.IResource<IFeaturesSource>> {
     }
-    
+
     interface IFeaturesTestsSourceResourceClass extends
         angular.resource.IResourceClass<ng.resource.IResource<IFeaturesTestsSource>> {
     }
@@ -111,7 +111,7 @@ module livingDocumentation {
         constructor($resource: ng.resource.IResourceService, private $q: ng.IQService) {
             this.featuresSourceResourceClass = $resource<IFeaturesSource, IFeaturesSourceResourceClass>(
                 'data/:resource', null, { get: { method: 'GET' } });
-            
+
             this.featuresTestsSourceResourceClass = $resource<IFeaturesTestsSource, IFeaturesTestsSourceResourceClass>(
                 'data/:resource', null, { get: { method: 'GET' } });
 
@@ -304,8 +304,7 @@ module livingDocumentation {
         }
     }
 
-    angular
-        .module('livingDocumentation.services', ['ngResource'])
+    angular.module('livingDocumentation.services', ['ngResource'])
         .value('version', '0.1')
         .service('livingDocumentationService', LivingDocumentationService);
 }

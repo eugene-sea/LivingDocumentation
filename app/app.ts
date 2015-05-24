@@ -12,7 +12,8 @@ angular.module('livingDocumentation', [
     'livingDocumentation.services',
     'livingDocumentation.directives',
     'livingDocumentation.controllers',
-    'livingDocumentation.controllers.root'
+    'livingDocumentation.controllers.root',
+    'livingDocumentation.documentationList'
 ]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
     var resolve: { [key: string]: any; } = {
         livingDocumentationServiceReady: [

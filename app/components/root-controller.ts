@@ -20,7 +20,6 @@ module livingDocumentation {
             };
 
             livingDocService.onStopProcessing = () => {
-                this.documentationList = livingDocService.documentationList;
                 modalInstance.close();
                 modalInstance = null;
             };
@@ -33,8 +32,6 @@ module livingDocumentation {
 
         get error() { return this.livingDocService.error; }
         get ready() { return this.livingDocService.ready; }
-
-        documentationList: ILivingDocumentation[];
 
         get lastUpdatedOn() {
             return _.find(this.livingDocService.documentationList, doc => <any>doc.lastUpdatedOn).lastUpdatedOn;

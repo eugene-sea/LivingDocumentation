@@ -143,8 +143,7 @@ var livingDocumentation;
         LivingDocumentationService.$inject = ['$resource', '$q', '$timeout'];
         return LivingDocumentationService;
     })();
-    angular
-        .module('livingDocumentation.services', ['ngResource'])
+    angular.module('livingDocumentation.services', ['ngResource'])
         .value('version', '0.1')
         .service('livingDocumentationService', LivingDocumentationService);
 })(livingDocumentation || (livingDocumentation = {}));
@@ -160,7 +159,8 @@ angular.module('livingDocumentation', [
     'livingDocumentation.services',
     'livingDocumentation.directives',
     'livingDocumentation.controllers',
-    'livingDocumentation.controllers.root'
+    'livingDocumentation.controllers.root',
+    'livingDocumentation.documentationList'
 ]).config(['$routeProvider', function ($routeProvider) {
         var resolve = {
             livingDocumentationServiceReady: [
@@ -187,7 +187,6 @@ var livingDocumentation;
 (function (livingDocumentation) {
     var RootCtrl = (function () {
         function RootCtrl(livingDocService, $modal) {
-            var _this = this;
             this.livingDocService = livingDocService;
             var modalInstance;
             livingDocService.onStartProcessing = function () {
@@ -197,7 +196,6 @@ var livingDocumentation;
                 modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
             };
             livingDocService.onStopProcessing = function () {
-                _this.documentationList = livingDocService.documentationList;
                 modalInstance.close();
                 modalInstance = null;
             };
@@ -231,6 +229,35 @@ var livingDocumentation;
     })();
     angular.module('livingDocumentation.controllers.root', ['livingDocumentation.services'])
         .controller('RootCtrl', RootCtrl);
+})(livingDocumentation || (livingDocumentation = {}));
+/// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="../js/utils.ts" />
+/// <reference path="../js/services.ts" />
+'use strict';
+var livingDocumentation;
+(function (livingDocumentation) {
+    var DocumentationListDirective = (function () {
+        function DocumentationListDirective() {
+            this.restrict = 'A';
+            this.controller = 'DocumentationList';
+            this.controllerAs = 'root';
+            this.bindToController = true;
+            this.templateUrl = 'components/documentation-list.tpl.html';
+        }
+        DocumentationListDirective.$inject = [];
+        return DocumentationListDirective;
+    })();
+    var DocumentationList = (function () {
+        function DocumentationList(livingDocService) {
+            this.documentationList = livingDocService.documentationList;
+        }
+        DocumentationList.$inject = ['livingDocumentationService'];
+        return DocumentationList;
+    })();
+    angular
+        .module('livingDocumentation.documentationList', ['livingDocumentation.services'])
+        .directive('documentationList', utils.wrapInjectionConstructor(DocumentationListDirective))
+        .controller('DocumentationList', DocumentationList);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
