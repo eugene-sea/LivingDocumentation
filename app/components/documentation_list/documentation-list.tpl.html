@@ -4,6 +4,6 @@
     ng-init="isOpen = $first" 
     is-open="isOpen" 
     ng-repeat="doc in root.documentationList | orderBy: 'definition.sortOrder'">
-    <div ng-include="'partials/folder.html'" ng-init="parentFolder = doc.root"></div>
+    <div folder="doc.root" documentation-code="doc.definition.code"></div>
   </accordion-group>
 </accordion>

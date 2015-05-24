@@ -10,7 +10,8 @@
     "files": [
         "app.ts",
         "components/root-controller.ts",
-        "components/documentation-list.ts",
+        "components/documentation_list/documentation-list.ts",
+        "components/recursion-helper.ts",
         "js/controllers.ts",
         "js/directives.ts",
         "js/filters.ts",

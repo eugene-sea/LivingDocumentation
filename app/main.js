@@ -157,6 +157,7 @@ angular.module('livingDocumentation', [
     'ui.bootstrap',
     'livingDocumentation.filters',
     'livingDocumentation.services',
+    'livingDocumentation.services.recursionHelper',
     'livingDocumentation.directives',
     'livingDocumentation.controllers',
     'livingDocumentation.controllers.root',
@@ -230,9 +231,53 @@ var livingDocumentation;
     angular.module('livingDocumentation.controllers.root', ['livingDocumentation.services'])
         .controller('RootCtrl', RootCtrl);
 })(livingDocumentation || (livingDocumentation = {}));
-/// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="../js/utils.ts" />
-/// <reference path="../js/services.ts" />
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+'use strict';
+var livingDocumentation;
+(function (livingDocumentation) {
+    var RecursionHelper = (function () {
+        function RecursionHelper($compile) {
+            this.$compile = $compile;
+        }
+        RecursionHelper.prototype.compile = function (element, linkArg) {
+            var link;
+            // Normalize the link parameter
+            if (angular.isFunction(linkArg)) {
+                link = { post: linkArg };
+            }
+            // Break the recursion loop by removing the contents
+            var contents = element.contents().remove();
+            var compiledContents;
+            var _this = this;
+            return {
+                pre: (link && link.pre) ? link.pre : null,
+                post: function (scope, element) {
+                    // Compile the contents
+                    if (!compiledContents) {
+                        compiledContents = _this.$compile(contents);
+                    }
+                    // Re-add the compiled contents to the element
+                    compiledContents(scope, function (clone) {
+                        element.append(clone);
+                    });
+                    // Call the post-linking function, if any
+                    if (link && link.post) {
+                        link.post.apply(null, arguments);
+                    }
+                }
+            };
+        };
+        RecursionHelper.$inject = ['$compile'];
+        return RecursionHelper;
+    })();
+    livingDocumentation.RecursionHelper = RecursionHelper;
+    angular.module('livingDocumentation.services.recursionHelper', [])
+        .service('recursionHelper', RecursionHelper);
+})(livingDocumentation || (livingDocumentation = {}));
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../js/utils.ts" />
+/// <reference path="../../js/services.ts" />
+/// <reference path="../recursion-helper.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
@@ -242,7 +287,7 @@ var livingDocumentation;
             this.controller = 'DocumentationList';
             this.controllerAs = 'root';
             this.bindToController = true;
-            this.templateUrl = 'components/documentation-list.tpl.html';
+            this.templateUrl = 'components/documentation_list/documentation-list.tpl.html';
         }
         DocumentationListDirective.$inject = [];
         return DocumentationListDirective;
@@ -254,10 +299,36 @@ var livingDocumentation;
         DocumentationList.$inject = ['livingDocumentationService'];
         return DocumentationList;
     })();
-    angular
-        .module('livingDocumentation.documentationList', ['livingDocumentation.services'])
+    var FolderDirective = (function () {
+        function FolderDirective(recursionHelper) {
+            var _this = this;
+            this.recursionHelper = recursionHelper;
+            this.restrict = 'A';
+            this.scope = {
+                folder: '=',
+                documentationCode: '='
+            };
+            this.controller = Folder;
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/documentation_list/folder.tpl.html';
+            this.compile = function (element) { return _this.recursionHelper.compile(element); };
+        }
+        FolderDirective.$inject = ['recursionHelper'];
+        return FolderDirective;
+    })();
+    var Folder = (function () {
+        function Folder() {
+        }
+        return Folder;
+    })();
+    angular.module('livingDocumentation.documentationList', [
+        'livingDocumentation.services',
+        'livingDocumentation.services.recursionHelper'
+    ])
         .directive('documentationList', utils.wrapInjectionConstructor(DocumentationListDirective))
-        .controller('DocumentationList', DocumentationList);
+        .controller('DocumentationList', DocumentationList)
+        .directive('folder', utils.wrapInjectionConstructor(FolderDirective));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
