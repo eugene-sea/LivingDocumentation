@@ -95,16 +95,24 @@ module livingDocumentation {
         angular.resource.IResourceClass<ng.resource.IResource<ILivingDocumentationResourceDefinition[]>> {
     }
 
-    interface ILivingDocumentationResourceClass extends
+    interface IFeaturesSourceResourceClass extends
         angular.resource.IResourceClass<ng.resource.IResource<IFeaturesSource>> {
+    }
+    
+    interface IFeaturesTestsSourceResourceClass extends
+        angular.resource.IResourceClass<ng.resource.IResource<IFeaturesTestsSource>> {
     }
 
     class LivingDocumentationServer {
-        private livingDocumentationResourceClass: ILivingDocumentationResourceClass;
+        private featuresSourceResourceClass: IFeaturesSourceResourceClass;
+        private featuresTestsSourceResourceClass: IFeaturesTestsSourceResourceClass;
         private livingDocResDefResourceClass: ILivingDocumentationResourceDefinitionResourceClass;
 
         constructor($resource: ng.resource.IResourceService, private $q: ng.IQService) {
-            this.livingDocumentationResourceClass = $resource<IFeaturesSource, ILivingDocumentationResourceClass>(
+            this.featuresSourceResourceClass = $resource<IFeaturesSource, IFeaturesSourceResourceClass>(
+                'data/:resource', null, { get: { method: 'GET' } });
+            
+            this.featuresTestsSourceResourceClass = $resource<IFeaturesTestsSource, IFeaturesTestsSourceResourceClass>(
                 'data/:resource', null, { get: { method: 'GET' } });
 
             this.livingDocResDefResourceClass =
@@ -117,14 +125,12 @@ module livingDocumentation {
         }
 
         get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
-            var promiseFeatures = <ng.IPromise<IFeature[]>><any>this.livingDocumentationResourceClass.get(
-                { resource: resource.featuresResource })['$promise'];
+            var promiseFeatures = this.featuresSourceResourceClass.get(
+                { resource: resource.featuresResource }).$promise;
 
-            var promiseTests: ng.IPromise<IFeatureTestsSource[]> = !resource.testsResources
+            var promiseTests = !resource.testsResources
                 ? this.$q.when(null)
-                : <ng.IPromise<IFeatureTestsSource[]>><any>this.livingDocumentationResourceClass.get(
-                    { resource: resource.testsResources }
-                    )['$promise'];
+                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
 
             return this.$q.all([promiseFeatures, promiseTests]).then(
                 (arr: any[]) => LivingDocumentationServer.parseFeatures(

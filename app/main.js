@@ -26,7 +26,8 @@ var livingDocumentation;
     var LivingDocumentationServer = (function () {
         function LivingDocumentationServer($resource, $q) {
             this.$q = $q;
-            this.livingDocumentationResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
+            this.featuresSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
+            this.featuresTestsSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
             this.livingDocResDefResourceClass =
                 $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
         }
@@ -34,10 +35,10 @@ var livingDocumentation;
             return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
         };
         LivingDocumentationServer.prototype.get = function (resource) {
-            var promiseFeatures = this.livingDocumentationResourceClass.get({ resource: resource.featuresResource })['$promise'];
+            var promiseFeatures = this.featuresSourceResourceClass.get({ resource: resource.featuresResource }).$promise;
             var promiseTests = !resource.testsResources
                 ? this.$q.when(null)
-                : this.livingDocumentationResourceClass.get({ resource: resource.testsResources })['$promise'];
+                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
             return this.$q.all([promiseFeatures, promiseTests]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests); });
         };
         LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
