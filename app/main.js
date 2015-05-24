@@ -363,12 +363,6 @@ var livingDocumentation;
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
-    var Home = (function () {
-        function Home($scope, livingDocumentationService) {
-        }
-        Home.$inject = ['$scope', 'livingDocumentationService'];
-        return Home;
-    })();
     var Feature = (function () {
         function Feature($scope, $routeParams, livingDocumentationService) {
             var doc = _.find(livingDocumentationService.documentationList, function (doc) { return doc.definition.code === $routeParams['documentationCode']; });
@@ -378,7 +372,6 @@ var livingDocumentation;
         return Feature;
     })();
     angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
-        .controller('Home', Home)
         .controller('Feature', Feature);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />

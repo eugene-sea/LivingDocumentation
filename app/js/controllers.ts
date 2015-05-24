@@ -8,12 +8,6 @@
 'use strict';
 
 module livingDocumentation {
-    class Home {
-        public static $inject: string[] = ['$scope', 'livingDocumentationService'];
-
-        constructor($scope: ng.IScope, livingDocumentationService: ILivingDocumentationService) { }
-    }
-
     class Feature {
         public static $inject: string[] = ['$scope', '$routeParams', 'livingDocumentationService'];
 
@@ -30,6 +24,5 @@ module livingDocumentation {
     }
 
     angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
-        .controller('Home', Home)
         .controller('Feature', Feature);
 }
