@@ -400,9 +400,29 @@ var livingDocumentation;
         Feature.$inject = ['livingDocumentationService'];
         return Feature;
     })();
+    var ScenarioDirective = (function () {
+        function ScenarioDirective() {
+            this.restrict = 'A';
+            this.scope = {
+                scenario: '='
+            };
+            this.controller = Scenario;
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/feature/scenario.tpl.html';
+        }
+        ScenarioDirective.$inject = [];
+        return ScenarioDirective;
+    })();
+    var Scenario = (function () {
+        function Scenario() {
+        }
+        return Scenario;
+    })();
     angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
-        .controller('Feature', Feature);
+        .controller('Feature', Feature)
+        .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />

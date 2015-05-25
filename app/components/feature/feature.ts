@@ -35,8 +35,23 @@ module livingDocumentation {
             this.feature = doc.features[this.featureCode];
         }
     }
+    
+    class ScenarioDirective implements ng.IDirective {
+        static $inject: string[] = [];
+        restrict = 'A';
+        scope = {
+            scenario: '='
+        };
+        controller = Scenario;
+        controllerAs = 'ctrl';
+        bindToController = true;
+        templateUrl = 'components/feature/scenario.tpl.html'
+    }
+    
+    class Scenario { }
 
     angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
-        .controller('Feature', Feature);
+        .controller('Feature', Feature)
+        .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective));
 }

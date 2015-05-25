@@ -1,17 +1,17 @@
 ﻿<table>
   <tr>
-    <td><h4>{{scenario.Name || 'Background'}}</h4></td> 
-    <td class="no-stretch" ng-if="scenario.tests && scenario.tests.length == 1">
-      <a class="text-right" href="{{scenario.tests[0]}}" target="_blank">Run test</a>
+    <td><h4>{{ctrl.scenario.Name || 'Background'}}</h4></td> 
+    <td class="no-stretch" ng-if="ctrl.scenario.tests && ctrl.scenario.tests.length == 1">
+      <a class="text-right" href="{{ctrl.scenario.tests[0]}}" target="_blank">Run test</a>
     </td>
   </tr>
 </table>
   
-<p ng-if="scenario.Tags.length > 0">Tags: <i ng-repeat="tag in scenario.Tags">{{tag}}</i></p>
+<p ng-if="ctrl.scenario.Tags.length > 0">Tags: <i ng-repeat="tag in ctrl.scenario.Tags">{{tag}}</i></p>
   
-<p><i ng-bind-html="scenario.Description | newline"></i></p>
+<p><i ng-bind-html="ctrl.scenario.Description | newline"></i></p>
     
-<div ng-repeat="step in scenario.Steps" style="margin-bottom: 10px">
+<div ng-repeat="step in ctrl.scenario.Steps" style="margin-bottom: 10px">
   <b>{{step.Keyword}}</b> {{step.Name}}
   <div ng-if="step.TableArgument">
     <div 
@@ -20,8 +20,8 @@
   </div>
 </div>
 
-<div ng-if="scenario.Examples">
-  <div ng-repeat="exampleTbl in scenario.Examples" style="margin-bottom: 10px">
+<div ng-if="ctrl.scenario.Examples">
+  <div ng-repeat="exampleTbl in ctrl.scenario.Examples" style="margin-bottom: 10px">
     <b>Examples:</b>
     <p><i ng-bind-html="exampleTbl.Description | newline"></i></p>
     <div 
