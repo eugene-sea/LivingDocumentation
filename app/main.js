@@ -188,7 +188,7 @@ angular.module('livingDocumentation', [
             resolve: resolve
         });
         $routeProvider.when('/feature/:documentationCode/:featureCode', {
-            templateUrl: 'partials/feature.html',
+            templateUrl: 'components/feature/feature.tpl.html',
             controller: 'Feature',
             resolve: resolve
         });

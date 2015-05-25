@@ -6,12 +6,12 @@
 
 <div ng-if="feature.Feature.Background" class="panel panel-default" ng-init="scenario = feature.Feature.Background">
   <div class="panel-body">
-    <div ng-include="'partials/scenario.html'"></div>
+    <div ng-include="'components/feature/scenario.tpl.html'"></div>
   </div>
 </div>
 
 <div class="panel panel-default" ng-repeat="scenario in feature.Feature.FeatureElements">
   <div class="panel-body">
-    <div ng-include="'partials/scenario.html'"></div>
+    <div ng-include="'components/feature/scenario.tpl.html'"></div>
   </div>
 </div>
