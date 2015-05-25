@@ -1,16 +1,19 @@
-﻿<h3>{{feature.Feature.Name}}</h3>
+﻿<h3>{{ctrl.feature.Feature.Name}}</h3>
 
-<p>Tags: <i ng-repeat="tag in feature.Feature.Tags">{{tag}} </i></p>
+<p>Tags: <i ng-repeat="tag in ctrl.feature.Feature.Tags">{{tag}} </i></p>
 
-<p><i ng-bind-html="feature.Feature.Description | newline"></i></p>
+<p><i ng-bind-html="ctrl.feature.Feature.Description | newline"></i></p>
 
-<div ng-if="feature.Feature.Background" class="panel panel-default" ng-init="scenario = feature.Feature.Background">
+<div 
+  ng-if="ctrl.feature.Feature.Background" 
+  class="panel panel-default" 
+  ng-init="scenario = ctrl.feature.Feature.Background">
   <div class="panel-body">
     <div ng-include="'components/feature/scenario.tpl.html'"></div>
   </div>
 </div>
 
-<div class="panel panel-default" ng-repeat="scenario in feature.Feature.FeatureElements">
+<div class="panel panel-default" ng-repeat="scenario in ctrl.feature.Feature.FeatureElements">
   <div class="panel-body">
     <div ng-include="'components/feature/scenario.tpl.html'"></div>
   </div>

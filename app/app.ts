@@ -11,10 +11,10 @@ angular.module('livingDocumentation', [
     'livingDocumentation.filters',
     'livingDocumentation.services',
     'livingDocumentation.directives',
-    'livingDocumentation.controllers',
     'livingDocumentation.controllers.root',
     'livingDocumentation.controllers.home',
-    'livingDocumentation.documentationList'
+    'livingDocumentation.documentationList',
+    'livingDocumentation.feature',
 ]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
     var resolve: { [key: string]: any; } = {
         livingDocumentationServiceReady: [
@@ -29,8 +29,11 @@ angular.module('livingDocumentation', [
     });
 
     $routeProvider.when('/feature/:documentationCode/:featureCode', {
-        templateUrl: 'components/feature/feature.tpl.html',
-        controller: 'Feature',
+        template: ($routeParams: angular.route.IRouteParamsService) =>
+            `<div feature
+                feature-code="${$routeParams['featureCode']}"
+                documentation-code="${$routeParams['documentationCode']}">
+             </div>`,
         resolve: resolve
     });
 

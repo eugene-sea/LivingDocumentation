@@ -1,0 +1,42 @@
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/angularjs/angular-route.d.ts" />
+/// <reference path="../../../typings/underscore/underscore.d.ts" />
+/// <reference path="../utils.ts" />
+/// <reference path="../services.ts" />
+
+'use strict';
+
+module livingDocumentation {
+    class FeatureDirective implements ng.IDirective {
+        static $inject: string[] = [];
+        restrict = 'A';
+        scope = {
+            featureCode: '@',
+            documentationCode: '@'
+        };
+        controller = 'Feature';
+        controllerAs = 'ctrl';
+        bindToController = true;
+        templateUrl = 'components/feature/feature.tpl.html'
+    }
+    
+    class Feature {
+        static $inject: string[] = ['livingDocumentationService'];
+
+        featureCode: string;
+        documentationCode: string;
+        feature: IFeature;
+        
+        constructor(livingDocumentationService: ILivingDocumentationService) {
+            var doc = _.find(
+                livingDocumentationService.documentationList,
+                doc => doc.definition.code === this.documentationCode);
+
+            this.feature = doc.features[this.featureCode];
+        }
+    }
+
+    angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
+        .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
+        .controller('Feature', Feature);
+}

@@ -172,10 +172,10 @@ angular.module('livingDocumentation', [
     'livingDocumentation.filters',
     'livingDocumentation.services',
     'livingDocumentation.directives',
-    'livingDocumentation.controllers',
     'livingDocumentation.controllers.root',
     'livingDocumentation.controllers.home',
-    'livingDocumentation.documentationList'
+    'livingDocumentation.documentationList',
+    'livingDocumentation.feature',
 ]).config(['$routeProvider', function ($routeProvider) {
         var resolve = {
             livingDocumentationServiceReady: [
@@ -188,8 +188,9 @@ angular.module('livingDocumentation', [
             resolve: resolve
         });
         $routeProvider.when('/feature/:documentationCode/:featureCode', {
-            templateUrl: 'components/feature/feature.tpl.html',
-            controller: 'Feature',
+            template: function ($routeParams) {
+                return ("<div feature\n                feature-code=\"" + $routeParams['featureCode'] + "\"\n                documentation-code=\"" + $routeParams['documentationCode'] + "\">\n             </div>");
+            },
             resolve: resolve
         });
         $routeProvider.otherwise({ redirectTo: '/home' });
@@ -367,24 +368,40 @@ var livingDocumentation;
         .controller('DocumentationList', DocumentationList)
         .directive('folder', utils.wrapInjectionConstructor(FolderDirective));
 })(livingDocumentation || (livingDocumentation = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-route.d.ts" />
-/// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
-/// <reference path="../components/utils.ts" />
-/// <reference path="services.ts" />
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../../typings/angularjs/angular-route.d.ts" />
+/// <reference path="../../../typings/underscore/underscore.d.ts" />
+/// <reference path="../utils.ts" />
+/// <reference path="../services.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
-    var Feature = (function () {
-        function Feature($scope, $routeParams, livingDocumentationService) {
-            var doc = _.find(livingDocumentationService.documentationList, function (doc) { return doc.definition.code === $routeParams['documentationCode']; });
-            $scope['feature'] = doc.features[$routeParams['featureCode']];
+    var FeatureDirective = (function () {
+        function FeatureDirective() {
+            this.restrict = 'A';
+            this.scope = {
+                featureCode: '@',
+                documentationCode: '@'
+            };
+            this.controller = 'Feature';
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/feature/feature.tpl.html';
         }
-        Feature.$inject = ['$scope', '$routeParams', 'livingDocumentationService'];
+        FeatureDirective.$inject = [];
+        return FeatureDirective;
+    })();
+    var Feature = (function () {
+        function Feature(livingDocumentationService) {
+            var _this = this;
+            var doc = _.find(livingDocumentationService.documentationList, function (doc) { return doc.definition.code === _this.documentationCode; });
+            this.feature = doc.features[this.featureCode];
+        }
+        Feature.$inject = ['livingDocumentationService'];
         return Feature;
     })();
-    angular.module('livingDocumentation.controllers', ['livingDocumentation.services'])
+    angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
+        .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
         .controller('Feature', Feature);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />

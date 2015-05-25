@@ -14,7 +14,7 @@
         "components/home-controller.ts",
         "components/documentation_list/documentation-list.ts",
         "components/recursion-helper.ts",
-        "components/controllers.ts",
+        "components/feature/feature.ts",
         "components/directives.ts",
         "components/filters.ts",
         "components/services.ts",
