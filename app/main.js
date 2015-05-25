@@ -167,10 +167,6 @@ var livingDocumentation;
 'use strict';
 angular.module('livingDocumentation', [
     'ngRoute',
-    'ngSanitize',
-    'ui.bootstrap',
-    'livingDocumentation.filters',
-    'livingDocumentation.services',
     'livingDocumentation.directives',
     'livingDocumentation.controllers.root',
     'livingDocumentation.controllers.home',
@@ -242,7 +238,7 @@ var livingDocumentation;
         RootCtrl.$inject = ['livingDocumentationService', '$modal'];
         return RootCtrl;
     })();
-    angular.module('livingDocumentation.controllers.root', ['livingDocumentation.services'])
+    angular.module('livingDocumentation.controllers.root', ['ui.bootstrap', 'livingDocumentation.services'])
         .controller('RootCtrl', RootCtrl);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
@@ -439,7 +435,9 @@ var livingDocumentation;
         }
         return Table;
     })();
-    angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
+    angular.module('livingDocumentation.feature', [
+        'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
+    ])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
         .controller('Feature', Feature)
         .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))

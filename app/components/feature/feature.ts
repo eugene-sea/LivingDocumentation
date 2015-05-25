@@ -65,7 +65,9 @@ module livingDocumentation {
 
     class Table { }
 
-    angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
+    angular.module('livingDocumentation.feature', [
+        'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
+    ])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
         .controller('Feature', Feature)
         .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))

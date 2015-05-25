@@ -38,6 +38,6 @@ module livingDocumentation {
         }
     }
 
-    angular.module('livingDocumentation.controllers.root', ['livingDocumentation.services'])
+    angular.module('livingDocumentation.controllers.root', ['ui.bootstrap', 'livingDocumentation.services'])
         .controller('RootCtrl', RootCtrl);
 }

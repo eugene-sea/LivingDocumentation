@@ -6,10 +6,6 @@
 
 angular.module('livingDocumentation', [
     'ngRoute',
-    'ngSanitize',
-    'ui.bootstrap',
-    'livingDocumentation.filters',
-    'livingDocumentation.services',
     'livingDocumentation.directives',
     'livingDocumentation.controllers.root',
     'livingDocumentation.controllers.home',
