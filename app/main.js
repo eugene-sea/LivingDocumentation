@@ -419,10 +419,31 @@ var livingDocumentation;
         }
         return Scenario;
     })();
+    var TableDirective = (function () {
+        function TableDirective() {
+            this.restrict = 'A';
+            this.scope = {
+                table: '=',
+                tests: '='
+            };
+            this.controller = Table;
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/feature/table.tpl.html';
+        }
+        TableDirective.$inject = [];
+        return TableDirective;
+    })();
+    var Table = (function () {
+        function Table() {
+        }
+        return Table;
+    })();
     angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
         .controller('Feature', Feature)
-        .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective));
+        .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))
+        .directive('table', utils.wrapInjectionConstructor(TableDirective));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />

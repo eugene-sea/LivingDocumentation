@@ -19,14 +19,14 @@ module livingDocumentation {
         bindToController = true;
         templateUrl = 'components/feature/feature.tpl.html'
     }
-    
+
     class Feature {
         static $inject: string[] = ['livingDocumentationService'];
 
         featureCode: string;
         documentationCode: string;
         feature: IFeature;
-        
+
         constructor(livingDocumentationService: ILivingDocumentationService) {
             var doc = _.find(
                 livingDocumentationService.documentationList,
@@ -35,7 +35,7 @@ module livingDocumentation {
             this.feature = doc.features[this.featureCode];
         }
     }
-    
+
     class ScenarioDirective implements ng.IDirective {
         static $inject: string[] = [];
         restrict = 'A';
@@ -47,11 +47,27 @@ module livingDocumentation {
         bindToController = true;
         templateUrl = 'components/feature/scenario.tpl.html'
     }
-    
+
     class Scenario { }
+
+    class TableDirective implements ng.IDirective {
+        static $inject: string[] = [];
+        restrict = 'A';
+        scope = {
+            table: '=',
+            tests: '='
+        };
+        controller = Table;
+        controllerAs = 'ctrl';
+        bindToController = true;
+        templateUrl = 'components/feature/table.tpl.html'
+    }
+
+    class Table { }
 
     angular.module('livingDocumentation.feature', ['livingDocumentation.services'])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
         .controller('Feature', Feature)
-        .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective));
+        .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))
+        .directive('table', utils.wrapInjectionConstructor(TableDirective));
 }

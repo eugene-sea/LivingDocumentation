@@ -6,17 +6,15 @@
     </td>
   </tr>
 </table>
-  
+
 <p ng-if="ctrl.scenario.Tags.length > 0">Tags: <i ng-repeat="tag in ctrl.scenario.Tags">{{tag}}</i></p>
-  
+
 <p><i ng-bind-html="ctrl.scenario.Description | newline"></i></p>
-    
+
 <div ng-repeat="step in ctrl.scenario.Steps" style="margin-bottom: 10px">
   <b>{{step.Keyword}}</b> {{step.Name}}
   <div ng-if="step.TableArgument">
-    <div 
-      class="h-scrollable" ng-include="'components/feature/table.tpl.html'" ng-init="table = step.TableArgument">
-    </div>
+    <div class="h-scrollable" table="step.TableArgument"></div>
   </div>
 </div>
 
@@ -24,10 +22,6 @@
   <div ng-repeat="exampleTbl in ctrl.scenario.Examples" style="margin-bottom: 10px">
     <b>Examples:</b>
     <p><i ng-bind-html="exampleTbl.Description | newline"></i></p>
-    <div 
-      class="h-scrollable" 
-      ng-include="'components/feature/table.tpl.html'" 
-      ng-init="table = exampleTbl.TableArgument; tests = scenario.tests">
-    </div>
+    <div class="h-scrollable" table="exampleTbl.TableArgument" tests="ctrl.scenario.tests"></div>
   </div>
 </div>
