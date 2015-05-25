@@ -3,156 +3,11 @@
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
 /// <reference path="utils.ts" />
+/// <reference path="living-documentation-server.ts" />
 
 'use strict';
 
 module livingDocumentation {
-    interface IFeaturesSource {
-        Features: IFeature[];
-        Configuration: {
-            GeneratedOn: Date;
-        };
-    }
-
-    interface IScenarioTestSource {
-        ScenarioName: string;
-        Test: string;
-    }
-
-    interface IFeatureTestsSource {
-        RelativeFolder: string;
-        ScenariosTests: IScenarioTestSource[];
-    }
-
-    interface IFeaturesTestsSource {
-        FeaturesTests: IFeatureTestsSource[];
-    }
-
-    interface ILivingDocumentationResourceDefinitionResourceClass extends
-        angular.resource.IResourceClass<ng.resource.IResource<ILivingDocumentationResourceDefinition[]>> {
-    }
-
-    interface IFeaturesSourceResourceClass extends
-        angular.resource.IResourceClass<ng.resource.IResource<IFeaturesSource>> {
-    }
-
-    interface IFeaturesTestsSourceResourceClass extends
-        angular.resource.IResourceClass<ng.resource.IResource<IFeaturesTestsSource>> {
-    }
-
-    class LivingDocumentationServer {
-        private featuresSourceResourceClass: IFeaturesSourceResourceClass;
-        private featuresTestsSourceResourceClass: IFeaturesTestsSourceResourceClass;
-        private livingDocResDefResourceClass: ILivingDocumentationResourceDefinitionResourceClass;
-
-        constructor($resource: ng.resource.IResourceService, private $q: ng.IQService) {
-            this.featuresSourceResourceClass = $resource<IFeaturesSource, IFeaturesSourceResourceClass>(
-                'data/:resource', null, { get: { method: 'GET' } });
-
-            this.featuresTestsSourceResourceClass = $resource<IFeaturesTestsSource, IFeaturesTestsSourceResourceClass>(
-                'data/:resource', null, { get: { method: 'GET' } });
-
-            this.livingDocResDefResourceClass =
-            $resource<ILivingDocumentationResourceDefinition[], ILivingDocumentationResourceDefinitionResourceClass>(
-                'data/:definition', null, { get: { method: 'GET', isArray: true } });
-        }
-
-        getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]> {
-            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
-        }
-
-        get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
-            var promiseFeatures = this.featuresSourceResourceClass.get(
-                { resource: resource.featuresResource }).$promise;
-
-            var promiseTests = !resource.testsResources
-                ? this.$q.when(null)
-                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
-
-            return this.$q.all([promiseFeatures, promiseTests]).then(
-                (arr: any[]) => LivingDocumentationServer.parseFeatures(
-                    resource,
-                    arr[0].Features,
-                    arr[0].Configuration.GeneratedOn,
-                    !arr[1] ? null : arr[1].FeaturesTests));
-        }
-
-        private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
-            var res = _.find(parent.children, c => c.name === childName);
-            if (!res) {
-                res = {
-                    name: childName,
-                    children: [],
-                    features: []
-                };
-
-                parent.children.push(res);
-            }
-
-            return res;
-        }
-
-        private static getSubfolder(parent: IFolder, folders: string[]): IFolder {
-            if (!folders || folders.length === 0) {
-                return parent;
-            }
-
-            var child = LivingDocumentationServer.findSubfolderOrCreate(parent, folders.shift());
-            return LivingDocumentationServer.getSubfolder(child, folders);
-        }
-
-        private static parseFeatures(
-            resource: ILivingDocumentationResourceDefinition,
-            features: IFeature[],
-            lastUpdatedOn: Date,
-            featuresTests: IFeatureTestsSource[]): ILivingDocumentation {
-            var root: IFolder = {
-                name: resource.name,
-                children: [],
-                features: [],
-                isRoot: true
-            };
-
-            var featuresTestsMap = featuresTests === null
-                ? undefined : _.indexBy(featuresTests, f => f.RelativeFolder);
-
-            var resFeatures: IFeatures = {};
-            _.each(features, f => {
-                var folders = f.RelativeFolder.match(/[^\\/]+/g);
-                f.code = folders.pop();
-                if (featuresTestsMap) {
-                    LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
-                }
-
-                LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
-                resFeatures[f.code] = f;
-            });
-
-            return {
-                definition: resource,
-                root: root,
-                features: resFeatures,
-                lastUpdatedOn: new Date(lastUpdatedOn.valueOf())
-            };
-        }
-
-        private static addTests(feature: IFeature, featureTests: IFeatureTestsSource, testUri: string): void {
-            if (!featureTests) {
-                return;
-            }
-
-            var scenarioTestsMap = _.groupBy(featureTests.ScenariosTests, s => s.ScenarioName);
-            _.each(feature.Feature.FeatureElements, scenario => {
-                var scenarioTests = scenarioTestsMap[scenario.Name];
-                if (!scenarioTests) {
-                    return;
-                }
-
-                scenario.tests = _.map(scenarioTests, s => (testUri || '') + s.Test);
-            });
-        }
-    }
-
     export interface ILivingDocumentationService {
         loading: boolean;
 
@@ -174,8 +29,6 @@ module livingDocumentation {
     const TIMEOUT = 200;
 
     class LivingDocumentationService implements ILivingDocumentationService {
-        private livingDocumentationServer: LivingDocumentationServer;
-
         private deferred: ng.IDeferred<ILivingDocumentationService>;
 
         loading: boolean;
@@ -192,11 +45,12 @@ module livingDocumentation {
 
         onStopProcessing: () => void;
 
-        static $inject: string[] = ['$resource', '$q', '$timeout'];
+        static $inject: string[] = ['livingDocumentationServer', '$q', '$timeout'];
 
         constructor(
-            $resource: ng.resource.IResourceService, private $q: ng.IQService, private $timeout: ng.ITimeoutService) {
-            this.livingDocumentationServer = new LivingDocumentationServer($resource, $q);
+            private livingDocumentationServer: ILivingDocumentationServer,
+            private $q: ng.IQService,
+            private $timeout: ng.ITimeoutService) {
             this.loading = true;
             this.deferred = $q.defer<ILivingDocumentationService>();
             this.resolve = this.deferred.promise;
@@ -241,7 +95,7 @@ module livingDocumentation {
         }
     }
 
-    angular.module('livingDocumentation.services', ['ngResource'])
+    angular.module('livingDocumentation.services', ['livingDocumentation.services.server'])
         .value('version', '0.1')
         .service('livingDocumentationService', LivingDocumentationService);
 }

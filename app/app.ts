@@ -10,7 +10,6 @@ angular.module('livingDocumentation', [
     'ui.bootstrap',
     'livingDocumentation.filters',
     'livingDocumentation.services',
-    'livingDocumentation.services.recursionHelper',
     'livingDocumentation.directives',
     'livingDocumentation.controllers',
     'livingDocumentation.controllers.root',

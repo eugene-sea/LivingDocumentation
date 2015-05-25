@@ -18,6 +18,7 @@
         "components/directives.ts",
         "components/filters.ts",
         "components/services.ts",
-        "components/utils.ts"
+        "components/utils.ts",
+        "components/living-documentation-server.ts"
     ]
 }

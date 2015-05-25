@@ -103,13 +103,25 @@ var livingDocumentation;
         };
         return LivingDocumentationServer;
     })();
+    angular.module('livingDocumentation.services.server', ['ngResource'])
+        .service('livingDocumentationServer', LivingDocumentationServer);
+})(livingDocumentation || (livingDocumentation = {}));
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/angularjs/angular-resource.d.ts" />
+/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../domain-model.ts" />
+/// <reference path="utils.ts" />
+/// <reference path="living-documentation-server.ts" />
+'use strict';
+var livingDocumentation;
+(function (livingDocumentation) {
     var TIMEOUT = 200;
     var LivingDocumentationService = (function () {
-        function LivingDocumentationService($resource, $q, $timeout) {
+        function LivingDocumentationService(livingDocumentationServer, $q, $timeout) {
+            this.livingDocumentationServer = livingDocumentationServer;
             this.$q = $q;
             this.$timeout = $timeout;
             this.documentationList = [];
-            this.livingDocumentationServer = new LivingDocumentationServer($resource, $q);
             this.loading = true;
             this.deferred = $q.defer();
             this.resolve = this.deferred.promise;
@@ -142,10 +154,10 @@ var livingDocumentation;
             this.loading = false;
             this.ready = true;
         };
-        LivingDocumentationService.$inject = ['$resource', '$q', '$timeout'];
+        LivingDocumentationService.$inject = ['livingDocumentationServer', '$q', '$timeout'];
         return LivingDocumentationService;
     })();
-    angular.module('livingDocumentation.services', ['ngResource'])
+    angular.module('livingDocumentation.services', ['livingDocumentation.services.server'])
         .value('version', '0.1')
         .service('livingDocumentationService', LivingDocumentationService);
 })(livingDocumentation || (livingDocumentation = {}));
@@ -159,7 +171,6 @@ angular.module('livingDocumentation', [
     'ui.bootstrap',
     'livingDocumentation.filters',
     'livingDocumentation.services',
-    'livingDocumentation.services.recursionHelper',
     'livingDocumentation.directives',
     'livingDocumentation.controllers',
     'livingDocumentation.controllers.root',
