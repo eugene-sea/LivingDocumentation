@@ -1,4 +1,5 @@
 'use strict';
+'use strict';
 var utils;
 (function (utils) {
     function wrapInjectionConstructor(constructor, transformer) {
@@ -19,6 +20,7 @@ var utils;
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-resource.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../domain-model.ts" />
 /// <reference path="utils.ts" />
 'use strict';
 var livingDocumentation;
@@ -149,7 +151,7 @@ var livingDocumentation;
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/angularjs/angular-route.d.ts" />
-/// <reference path="js/services.ts" />
+/// <reference path="components/services.ts" />
 'use strict';
 angular.module('livingDocumentation', [
     'ngRoute',
@@ -182,7 +184,7 @@ angular.module('livingDocumentation', [
         $routeProvider.otherwise({ redirectTo: '/home' });
     }]);
 /// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="../js/services.ts" />
+/// <reference path="services.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
@@ -232,7 +234,7 @@ var livingDocumentation;
         .controller('RootCtrl', RootCtrl);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../js/utils.ts" />
+/// <reference path="utils.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
@@ -257,8 +259,8 @@ var livingDocumentation;
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 'use strict';
-var livingDocumentation;
-(function (livingDocumentation) {
+var utils;
+(function (utils) {
     var RecursionHelper = (function () {
         function RecursionHelper($compile) {
             this.$compile = $compile;
@@ -294,13 +296,13 @@ var livingDocumentation;
         RecursionHelper.$inject = ['$compile'];
         return RecursionHelper;
     })();
-    livingDocumentation.RecursionHelper = RecursionHelper;
+    utils.RecursionHelper = RecursionHelper;
     angular.module('livingDocumentation.services.recursionHelper', [])
         .service('recursionHelper', RecursionHelper);
-})(livingDocumentation || (livingDocumentation = {}));
+})(utils || (utils = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../js/utils.ts" />
-/// <reference path="../../js/services.ts" />
+/// <reference path="../utils.ts" />
+/// <reference path="../services.ts" />
 /// <reference path="../recursion-helper.ts" />
 'use strict';
 var livingDocumentation;
@@ -358,7 +360,7 @@ var livingDocumentation;
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
 /// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
-/// <reference path="utils.ts" />
+/// <reference path="../components/utils.ts" />
 /// <reference path="services.ts" />
 'use strict';
 var livingDocumentation;

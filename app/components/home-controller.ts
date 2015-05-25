@@ -1,5 +1,5 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../js/utils.ts" />
+/// <reference path="utils.ts" />
 
 'use strict';
 

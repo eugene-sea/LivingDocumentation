@@ -1,6 +1,6 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/angularjs/angular-route.d.ts" />
-/// <reference path="js/services.ts" />
+/// <reference path="components/services.ts" />
 
 'use strict';
 

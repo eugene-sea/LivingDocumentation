@@ -1,5 +1,5 @@
 /// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="../js/services.ts" />
+/// <reference path="services.ts" />
 
 'use strict';
 

@@ -1,6 +1,6 @@
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../js/utils.ts" />
-/// <reference path="../../js/services.ts" />
+/// <reference path="../utils.ts" />
+/// <reference path="../services.ts" />
 /// <reference path="../recursion-helper.ts" />
 
 'use strict';
@@ -28,7 +28,7 @@ module livingDocumentation {
     class FolderDirective implements ng.IDirective {
         static $inject = ['recursionHelper'];
 
-        constructor(private recursionHelper: RecursionHelper) { }
+        constructor(private recursionHelper: utils.RecursionHelper) { }
 
         restrict = 'A';
         scope = {

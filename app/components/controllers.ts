@@ -2,7 +2,7 @@
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
 /// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
-/// <reference path="utils.ts" />
+/// <reference path="../components/utils.ts" />
 /// <reference path="services.ts" />
 
 'use strict';

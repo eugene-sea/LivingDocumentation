@@ -2,7 +2,7 @@
 
 'use strict';
 
-module livingDocumentation {
+module utils {
     export class RecursionHelper {
         static $inject = ['$compile'];
 
