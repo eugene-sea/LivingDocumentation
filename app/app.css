@@ -7,6 +7,11 @@ body {
     padding-bottom: 70px;
 }
 
+body, html {
+    height: 100%;
+    overflow: hidden;
+}
+
 .bottom-margin {
     margin-bottom: 20px;
 }
@@ -18,6 +23,11 @@ body {
 
 .h-scrollable {
     width: 100%;
+    overflow: auto;
+}
+
+.vertical-pane {
+    height: calc(100vh - 140px);
     overflow: auto;
 }
 
