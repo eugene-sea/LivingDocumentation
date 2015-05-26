@@ -10,5 +10,18 @@
   class="folder-item-padding" 
   ng-class="{'folder-indent': !ctrl.folder.isRoot}" 
   ng-repeat="feature in ctrl.folder.features">
-  <a href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}">{{feature.Feature.Name}}</a>
+  <a 
+    class="inactive-feature"
+    href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}"
+    is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}">
+    {{feature.Feature.Name}}
+  </a>
+  <b>
+    <a 
+      class="active-feature"
+      href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}"
+      is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}">
+      {{feature.Feature.Name}}
+    </a>
+  </b>
 </div>

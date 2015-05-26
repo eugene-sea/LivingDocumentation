@@ -22,11 +22,19 @@ body {
 }
 
 .folder-indent {
-    padding-left: 15px
+    padding-left: 15px;
 }
 
 .folder-item-padding {
     padding-bottom: 7px
+}
+
+.inactive-feature.active, .active-feature {
+    display: none;
+}
+
+.active-feature.active {
+    display: block;
 }
 
 .nav, .pagination, .carousel, .panel-title a {
