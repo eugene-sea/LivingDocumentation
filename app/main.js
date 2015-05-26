@@ -358,7 +358,8 @@ var livingDocumentation;
     })();
     angular.module('livingDocumentation.documentationList', [
         'livingDocumentation.services',
-        'livingDocumentation.services.recursionHelper'
+        'livingDocumentation.services.recursionHelper',
+        'livingDocumentation.filters'
     ])
         .directive('documentationList', utils.wrapInjectionConstructor(DocumentationListDirective))
         .controller('DocumentationList', DocumentationList)
@@ -516,8 +517,33 @@ var livingDocumentation;
         NewLineFilter.$inject = [];
         return NewLineFilter;
     })();
-    angular
-        .module('livingDocumentation.filters', [])
-        .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter));
+    var SplitWordsFilter = (function () {
+        function SplitWordsFilter() {
+        }
+        SplitWordsFilter.prototype.filter = function (str) {
+            var res = str[0];
+            for (var i = 1; i < str.length; ++i) {
+                var prev = str[i - 1], cur = str[i], next = i < str.length - 1 ? str[i] : null;
+                if (!SplitWordsFilter.isUpperCase(prev)) {
+                    if (prev !== ' ' && SplitWordsFilter.isUpperCase(cur)) {
+                        res += ' ';
+                    }
+                }
+                else if (SplitWordsFilter.isUpperCase(cur) && next && !SplitWordsFilter.isUpperCase(next)) {
+                    res += ' ';
+                }
+                res += cur;
+            }
+            return res;
+        };
+        SplitWordsFilter.isUpperCase = function (s) {
+            return s === s.toUpperCase() && s !== s.toLowerCase();
+        };
+        SplitWordsFilter.$inject = [];
+        return SplitWordsFilter;
+    })();
+    angular.module('livingDocumentation.filters', [])
+        .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
+        .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter));
 })(livingDocumentation || (livingDocumentation = {}));
 //# sourceMappingURL=main.js.map

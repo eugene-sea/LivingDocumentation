@@ -46,7 +46,8 @@ module livingDocumentation {
 
     angular.module('livingDocumentation.documentationList', [
         'livingDocumentation.services',
-        'livingDocumentation.services.recursionHelper'
+        'livingDocumentation.services.recursionHelper',
+        'livingDocumentation.filters'
     ])
         .directive('documentationList', utils.wrapInjectionConstructor(DocumentationListDirective))
         .controller('DocumentationList', DocumentationList)

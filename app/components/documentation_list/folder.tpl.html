@@ -1,4 +1,4 @@
-﻿<i ng-if="!ctrl.folder.isRoot">{{ctrl.folder.name}}</i>
+﻿<i ng-if="!ctrl.folder.isRoot">{{ctrl.folder.name | splitWords}}</i>
 
 <div ng-class="{'folder-indent': !ctrl.folder.isRoot}">
   <div ng-repeat="child in ctrl.folder.children | orderBy: 'name'">
