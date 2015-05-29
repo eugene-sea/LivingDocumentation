@@ -1,3 +1,3 @@
 'use strict';
 
-export var port = 3000;
+export var port = 3002;
