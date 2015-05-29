@@ -44,7 +44,7 @@ module livingDocumentation {
         getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]>;
         get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation>;
     }
-    
+
     class LivingDocumentationServer {
         private featuresSourceResourceClass: IFeaturesSourceResourceClass;
         private featuresTestsSourceResourceClass: IFeaturesTestsSourceResourceClass;
@@ -125,6 +125,13 @@ module livingDocumentation {
             _.each(features, f => {
                 var folders = f.RelativeFolder.match(/[^\\/]+/g);
                 f.code = folders.pop();
+
+                f.isExpanded = true;
+                _.each(f.Feature.FeatureElements, s => s.isExpanded = true);
+                if (f.Feature.Background) {
+                    f.Feature.Background.isExpanded = true;
+                }
+
                 if (featuresTestsMap) {
                     LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
                 }
@@ -157,7 +164,7 @@ module livingDocumentation {
             });
         }
     }
-    
+
     angular.module('livingDocumentation.services.server', ['ngResource'])
         .service('livingDocumentationServer', LivingDocumentationServer);
 }

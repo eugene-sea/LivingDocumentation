@@ -22,10 +22,12 @@ module livingDocumentation {
         };
 
         tests: string[];
+        isExpanded: boolean;
     }
 
     export interface IFeature {
         code: string;
+        isExpanded: boolean;
 
         RelativeFolder: string;
         Feature: {

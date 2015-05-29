@@ -17,7 +17,7 @@ module livingDocumentation {
         controller = 'Feature';
         controllerAs = 'ctrl';
         bindToController = true;
-        templateUrl = 'components/feature/feature.tpl.html'
+        templateUrl = 'components/feature/feature.tpl.html';
     }
 
     class Feature {
@@ -45,7 +45,7 @@ module livingDocumentation {
         controller = Scenario;
         controllerAs = 'ctrl';
         bindToController = true;
-        templateUrl = 'components/feature/scenario.tpl.html'
+        templateUrl = 'components/feature/scenario.tpl.html';
     }
 
     class Scenario { }
@@ -60,7 +60,7 @@ module livingDocumentation {
         controller = Table;
         controllerAs = 'ctrl';
         bindToController = true;
-        templateUrl = 'components/feature/table.tpl.html'
+        templateUrl = 'components/feature/table.tpl.html';
     }
 
     class Table { }
