@@ -399,6 +399,18 @@ var livingDocumentation;
             var doc = _.find(livingDocumentationService.documentationList, function (doc) { return doc.definition.code === _this.documentationCode; });
             this.feature = doc.features[this.featureCode];
         }
+        Object.defineProperty(Feature.prototype, "isExpanded", {
+            get: function () { return this.feature.isExpanded; },
+            set: function (value) {
+                this.feature.isExpanded = value;
+                _.each(this.feature.Feature.FeatureElements, function (s) { return s.isExpanded = value; });
+                if (this.feature.Feature.Background) {
+                    this.feature.Feature.Background.isExpanded = value;
+                }
+            },
+            enumerable: true,
+            configurable: true
+        });
         Feature.$inject = ['livingDocumentationService'];
         return Feature;
     })();

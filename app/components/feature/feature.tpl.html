@@ -1,4 +1,17 @@
-﻿<h3>{{ctrl.feature.Feature.Name}}</h3>
+﻿<table style="width: 100%">
+  <tr>
+    <td><h3>{{ctrl.feature.Feature.Name}}</h3></td>
+    <td class="no-stretch">&nbsp;</td>
+    <td class="no-stretch">
+      <a ng-click="ctrl.isExpanded = !ctrl.isExpanded">
+        <h3>
+          <span ng-if="ctrl.isExpanded" class="glyphicon glyphicon-collapse-up"></span>
+          <span ng-if="!ctrl.isExpanded" class="glyphicon glyphicon-collapse-down"></span>
+        </h3>
+      </a>
+    </td>
+  </tr>
+</table>
 
 <p>Tags: <i ng-repeat="tag in ctrl.feature.Feature.Tags">{{tag}} </i></p>
 

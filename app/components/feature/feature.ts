@@ -34,6 +34,15 @@ module livingDocumentation {
 
             this.feature = doc.features[this.featureCode];
         }
+        
+        get isExpanded(): boolean { return this.feature.isExpanded; }
+        set isExpanded(value: boolean) {
+            this.feature.isExpanded = value;
+            _.each(this.feature.Feature.FeatureElements, s => s.isExpanded = value);
+            if (this.feature.Feature.Background) {
+                this.feature.Feature.Background.isExpanded = value;
+            }
+        }
     }
 
     class ScenarioDirective implements ng.IDirective {
