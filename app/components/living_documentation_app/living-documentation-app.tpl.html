@@ -1,0 +1,50 @@
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#/home">Living Documentation</a>
+    </div>
+  </div>
+</div>
+
+<div class="container" ng-hide="root.error">
+  <div class="row">
+    <div class="col-lg-4 vertical-pane">
+      <div ng-if="root.ready">
+        <div documentation-list></div>
+      </div>
+    </div>
+    <div class="col-lg-8 vertical-pane" ng-view></div>
+  </div>
+</div>
+
+<div class="alert alert-danger" role="alert" ng-cloak ng-show="root.error">
+  <p>
+    <b>Error Occurred:</b>{{root.error}}
+  <p>
+</div>
+
+<div class="navbar navbar-default navbar-fixed-bottom">
+  <div class="container">
+    <p ng-cloak class="navbar-text">Living Documentation Application: v<span app-version></span></p>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <p ng-cloak class="navbar-text navbar-right" ng-if="root.ready">
+        Last Updated On: {{root.lastUpdatedOn | date: 'medium'}}
+      </p>
+    </div>
+  </div>
+</div>
+
+<script type="text/ng-template" id="processing.html">
+  <div class="modal-body">
+    <h4 class="text-center">Loading data...</h4>
+    <div class="progress progress-striped active">
+      <div class="progress-bar" role="progressbar" style="width: 100%"></div>
+    </div>
+  </div>
+</script>

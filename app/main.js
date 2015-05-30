@@ -172,10 +172,8 @@ var livingDocumentation;
 'use strict';
 angular.module('livingDocumentation', [
     'ngRoute',
-    'livingDocumentation.directives',
-    'livingDocumentation.controllers.root',
+    'livingDocumentation.app',
     'livingDocumentation.controllers.home',
-    'livingDocumentation.documentationList',
     'livingDocumentation.feature',
 ]).config(['$routeProvider', function ($routeProvider) {
         var resolve = {
@@ -196,13 +194,24 @@ angular.module('livingDocumentation', [
         });
         $routeProvider.otherwise({ redirectTo: '/home' });
     }]);
-/// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="services.ts" />
+/// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="../services.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
-    var RootCtrl = (function () {
-        function RootCtrl(livingDocService, $modal) {
+    var LivingDocumentationAppDirective = (function () {
+        function LivingDocumentationAppDirective() {
+            this.restrict = 'A';
+            this.controller = 'LivingDocumentationApp';
+            this.controllerAs = 'root';
+            this.bindToController = true;
+            this.templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html';
+        }
+        LivingDocumentationAppDirective.$inject = [];
+        return LivingDocumentationAppDirective;
+    })();
+    var LivingDocumentationApp = (function () {
+        function LivingDocumentationApp(livingDocService, $modal) {
             this.livingDocService = livingDocService;
             var modalInstance;
             livingDocService.onStartProcessing = function () {
@@ -217,34 +226,40 @@ var livingDocumentation;
             };
             livingDocService.startInitialization();
         }
-        Object.defineProperty(RootCtrl.prototype, "loading", {
+        Object.defineProperty(LivingDocumentationApp.prototype, "loading", {
             get: function () { return this.livingDocService.loading; },
             set: function (value) { },
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(RootCtrl.prototype, "error", {
+        Object.defineProperty(LivingDocumentationApp.prototype, "error", {
             get: function () { return this.livingDocService.error; },
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(RootCtrl.prototype, "ready", {
+        Object.defineProperty(LivingDocumentationApp.prototype, "ready", {
             get: function () { return this.livingDocService.ready; },
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(RootCtrl.prototype, "lastUpdatedOn", {
+        Object.defineProperty(LivingDocumentationApp.prototype, "lastUpdatedOn", {
             get: function () {
                 return _.find(this.livingDocService.documentationList, function (doc) { return doc.lastUpdatedOn; }).lastUpdatedOn;
             },
             enumerable: true,
             configurable: true
         });
-        RootCtrl.$inject = ['livingDocumentationService', '$modal'];
-        return RootCtrl;
+        LivingDocumentationApp.$inject = ['livingDocumentationService', '$modal'];
+        return LivingDocumentationApp;
     })();
-    angular.module('livingDocumentation.controllers.root', ['ui.bootstrap', 'livingDocumentation.services'])
-        .controller('RootCtrl', RootCtrl);
+    angular.module('livingDocumentation.app', [
+        'ui.bootstrap',
+        'livingDocumentation.services',
+        'livingDocumentation.directives',
+        'livingDocumentation.documentationList',
+    ])
+        .directive('livingDocumentationApp', utils.wrapInjectionConstructor(LivingDocumentationAppDirective))
+        .controller('LivingDocumentationApp', LivingDocumentationApp);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />

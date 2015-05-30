@@ -6,10 +6,8 @@
 
 angular.module('livingDocumentation', [
     'ngRoute',
-    'livingDocumentation.directives',
-    'livingDocumentation.controllers.root',
+    'livingDocumentation.app',
     'livingDocumentation.controllers.home',
-    'livingDocumentation.documentationList',
     'livingDocumentation.feature',
 ]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
     var resolve: { [key: string]: any; } = {

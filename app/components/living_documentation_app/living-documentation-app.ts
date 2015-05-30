@@ -1,10 +1,19 @@
-/// <reference path="../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="services.ts" />
+/// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="../services.ts" />
 
 'use strict';
 
 module livingDocumentation {
-    class RootCtrl {
+    class LivingDocumentationAppDirective implements ng.IDirective {
+        static $inject: string[] = [];
+        restrict = 'A';
+        controller = 'LivingDocumentationApp';
+        controllerAs = 'root';
+        bindToController = true;
+        templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html'
+    }
+
+    class LivingDocumentationApp {
         static $inject: string[] = ['livingDocumentationService', '$modal'];
 
         constructor(
@@ -38,6 +47,12 @@ module livingDocumentation {
         }
     }
 
-    angular.module('livingDocumentation.controllers.root', ['ui.bootstrap', 'livingDocumentation.services'])
-        .controller('RootCtrl', RootCtrl);
+    angular.module('livingDocumentation.app', [
+        'ui.bootstrap',
+        'livingDocumentation.services',
+        'livingDocumentation.directives',
+        'livingDocumentation.documentationList',
+    ])
+        .directive('livingDocumentationApp', utils.wrapInjectionConstructor(LivingDocumentationAppDirective))
+        .controller('LivingDocumentationApp', LivingDocumentationApp);
 }
