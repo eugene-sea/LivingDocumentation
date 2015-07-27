@@ -566,8 +566,17 @@ var livingDocumentation;
         };
         return SplitWordsFilter;
     })();
+    var ScenarioOutlinePlaceholderFilter = (function () {
+        function ScenarioOutlinePlaceholderFilter() {
+        }
+        ScenarioOutlinePlaceholderFilter.prototype.filter = function (str) {
+            return !str ? str : str.replace(/<(.*?)>/g, function (_, c) { return ("<span class=\"text-warning\">&lt" + c.replace(/ /g, '&nbsp;') + "&gt</span>"); });
+        };
+        return ScenarioOutlinePlaceholderFilter;
+    })();
     angular.module('livingDocumentation.filters', [])
         .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
-        .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter));
+        .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
+        .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter));
 })(livingDocumentation || (livingDocumentation = {}));
 //# sourceMappingURL=main.js.map

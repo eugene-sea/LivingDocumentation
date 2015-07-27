@@ -21,7 +21,7 @@
   <p><i ng-bind-html="ctrl.scenario.Description | newline"></i></p>
   
   <div ng-repeat="step in ctrl.scenario.Steps" style="margin-bottom: 10px">
-    <b>{{step.Keyword}}</b> {{step.Name}}
+    <b>{{step.Keyword}}</b> <span ng-bind-html="step.Name | scenarioOutlinePlaceholder"></span>
     <div ng-if="step.TableArgument">
       <div class="h-scrollable" table="step.TableArgument"></div>
     </div>
