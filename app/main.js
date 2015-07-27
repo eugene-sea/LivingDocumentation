@@ -3,7 +3,7 @@
 var utils;
 (function (utils) {
     function wrapInjectionConstructor(constructor, transformer) {
-        return constructor.$inject.concat(function () {
+        return (constructor.$inject || []).concat(function () {
             var functionConstructor = constructor.bind.apply(constructor, [null].concat(Array.prototype.slice.call(arguments, 0)));
             var res = new functionConstructor();
             return !transformer ? res : transformer(res);
@@ -207,7 +207,6 @@ var livingDocumentation;
             this.bindToController = true;
             this.templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html';
         }
-        LivingDocumentationAppDirective.$inject = [];
         return LivingDocumentationAppDirective;
     })();
     var LivingDocumentationApp = (function () {
@@ -274,7 +273,6 @@ var livingDocumentation;
             this.bindToController = true;
             this.template = '';
         }
-        HomeDirective.$inject = [];
         return HomeDirective;
     })();
     var Home = (function () {
@@ -304,7 +302,7 @@ var utils;
             var compiledContents;
             var _this = this;
             return {
-                pre: (link && link.pre) ? link.pre : null,
+                pre: link && link.pre ? link.pre : null,
                 post: function (scope, element) {
                     // Compile the contents
                     if (!compiledContents) {
@@ -343,7 +341,6 @@ var livingDocumentation;
             this.bindToController = true;
             this.templateUrl = 'components/documentation_list/documentation-list.tpl.html';
         }
-        DocumentationListDirective.$inject = [];
         return DocumentationListDirective;
     })();
     var DocumentationList = (function () {
@@ -405,7 +402,6 @@ var livingDocumentation;
             this.bindToController = true;
             this.templateUrl = 'components/feature/feature.tpl.html';
         }
-        FeatureDirective.$inject = [];
         return FeatureDirective;
     })();
     var Feature = (function () {
@@ -440,7 +436,6 @@ var livingDocumentation;
             this.bindToController = true;
             this.templateUrl = 'components/feature/scenario.tpl.html';
         }
-        ScenarioDirective.$inject = [];
         return ScenarioDirective;
     })();
     var Scenario = (function () {
@@ -460,7 +455,6 @@ var livingDocumentation;
             this.bindToController = true;
             this.templateUrl = 'components/feature/table.tpl.html';
         }
-        TableDirective.$inject = [];
         return TableDirective;
     })();
     var Table = (function () {
@@ -546,7 +540,6 @@ var livingDocumentation;
         NewLineFilter.prototype.filter = function (str) {
             return !str ? str : str.replace(/\r\n/mg, '<br />');
         };
-        NewLineFilter.$inject = [];
         return NewLineFilter;
     })();
     var SplitWordsFilter = (function () {
@@ -571,7 +564,6 @@ var livingDocumentation;
         SplitWordsFilter.isUpperCase = function (s) {
             return s === s.toUpperCase() && s !== s.toLowerCase();
         };
-        SplitWordsFilter.$inject = [];
         return SplitWordsFilter;
     })();
     angular.module('livingDocumentation.filters', [])

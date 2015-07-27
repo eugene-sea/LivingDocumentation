@@ -8,7 +8,6 @@
 
 module livingDocumentation {
     class FeatureDirective implements ng.IDirective {
-        static $inject: string[] = [];
         restrict = 'A';
         scope = {
             featureCode: '@',
@@ -46,7 +45,6 @@ module livingDocumentation {
     }
 
     class ScenarioDirective implements ng.IDirective {
-        static $inject: string[] = [];
         restrict = 'A';
         scope = {
             scenario: '='
@@ -60,7 +58,6 @@ module livingDocumentation {
     class Scenario { }
 
     class TableDirective implements ng.IDirective {
-        static $inject: string[] = [];
         restrict = 'A';
         scope = {
             table: '=',

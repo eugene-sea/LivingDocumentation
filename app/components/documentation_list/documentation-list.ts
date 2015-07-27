@@ -7,7 +7,6 @@
 
 module livingDocumentation {
     class DocumentationListDirective implements ng.IDirective {
-        static $inject: string[] = [];
         restrict = 'A';
         controller = 'DocumentationList';
         controllerAs = 'root';

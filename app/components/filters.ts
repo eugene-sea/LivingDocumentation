@@ -6,16 +6,12 @@
 
 module livingDocumentation {
     class NewLineFilter implements utils.IFilter {
-        static $inject: string[] = [];
-
         filter(str: string): string {
             return !str ? str : str.replace(/\r\n/mg, '<br />');
         }
     }
 
     class SplitWordsFilter implements utils.IFilter {
-        static $inject: string[] = [];
-
         filter(str: string): string {
             var res = str[0];
             for (var i = 1; i < str.length; ++i) {

@@ -22,7 +22,7 @@ module utils {
             var compiledContents: ng.ITemplateLinkingFunction;
             var _this = this;
             return {
-                pre: (link && link.pre) ? link.pre : null,
+                pre: link && link.pre ? link.pre : null,
                 post: function(scope, element) {
                     // Compile the contents
                     if (!compiledContents) {

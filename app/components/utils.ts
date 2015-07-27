@@ -2,8 +2,8 @@
 
 module utils {
     export function wrapInjectionConstructor<T>(
-        constructor: { $inject: string[]; }, transformer?: (inst: T) => any): any {
-        return (<any[]>constructor.$inject).concat(
+        constructor: { $inject?: string[]; }, transformer?: (inst: T) => any): any {
+        return (<any[]>constructor.$inject || []).concat(
             function() {
                 var functionConstructor = (<Function><any>constructor).bind.apply(
                     constructor, [<any>null].concat(Array.prototype.slice.call(arguments, 0)));
@@ -17,7 +17,7 @@ module utils {
         filter(item: any): string;
     }
 
-    export function wrapFilterInjectionConstructor<T>(constructor: { $inject: string[]; new (...params: any[]): T; }) {
+    export function wrapFilterInjectionConstructor<T>(constructor: { $inject?: string[]; }) {
         return utils.wrapInjectionConstructor(constructor, (f: IFilter) => {
             return f.filter.bind(f);
         });

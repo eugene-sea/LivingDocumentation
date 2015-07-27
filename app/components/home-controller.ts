@@ -5,7 +5,6 @@
 
 module livingDocumentation {
     class HomeDirective implements ng.IDirective {
-        static $inject: string[] = [];
         restrict = 'A';
         controller = Home;
         controllerAs = 'home';
