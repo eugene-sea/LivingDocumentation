@@ -28,10 +28,10 @@
   </div>
   
   <div ng-if="ctrl.scenario.Examples">
-    <div ng-repeat="exampleTbl in ctrl.scenario.Examples" style="margin-bottom: 10px">
+    <div style="margin-bottom: 10px">
       <b>Examples:</b>
-      <p><i ng-bind-html="exampleTbl.Description | newline"></i></p>
-      <div class="h-scrollable" table="exampleTbl.TableArgument" tests="ctrl.scenario.tests"></div>
+      <p><i ng-bind-html="ctrl.scenario.Examples.Description | newline"></i></p>
+      <div class="h-scrollable" table="ctrl.scenario.Examples.TableArgument" tests="ctrl.scenario.tests"></div>
     </div>
   </div>
 </div>

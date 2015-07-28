@@ -7,8 +7,30 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#/home">Living Documentation</a>
+      <a class="navbar-brand" href="#/home{{root.searchPart}}">Living Documentation</a>
     </div>
+
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <form class="navbar-form navbar-right" role="search">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search text" ng-model="root.searchText">
+          </div>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            ng-disabled="!root.isSearchEnabled" 
+            ng-click="root.search()">
+            Search
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-warning" 
+            ng-disabled="!root.isClearSearchEnabled"
+            ng-click="root.clearSearch()">
+            Clear
+          </button>
+        </form>
+      </div>
   </div>
 </div>
 

@@ -12,14 +12,14 @@
   ng-repeat="feature in ctrl.folder.features">
   <a 
     class="inactive-feature"
-    href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}"
+    href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}{{ctrl.searchPart}}"
     is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}">
     {{feature.Feature.Name}}
   </a>
   <b>
     <a 
       class="active-feature"
-      href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}"
+      href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}{{ctrl.searchPart}}"
       is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}">
       {{feature.Feature.Name}}
     </a>

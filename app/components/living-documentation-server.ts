@@ -127,9 +127,17 @@ module livingDocumentation {
                 f.code = folders.pop();
 
                 f.isExpanded = true;
-                _.each(f.Feature.FeatureElements, s => s.isExpanded = true);
+                _.each(f.Feature.FeatureElements, s => { 
+                    s.isExpanded = true;
+                    if (s.Examples) {
+                        s.Examples = (<any>s.Examples)[0];
+                    }
+                });
                 if (f.Feature.Background) {
                     f.Feature.Background.isExpanded = true;
+                    if (f.Feature.Background.Examples) {
+                        f.Feature.Background.Examples = (<any>f.Feature.Background.Examples)[0];
+                    }
                 }
 
                 if (featuresTestsMap) {

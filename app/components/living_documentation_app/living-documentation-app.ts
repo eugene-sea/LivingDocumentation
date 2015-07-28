@@ -13,10 +13,11 @@ module livingDocumentation {
     }
 
     class LivingDocumentationApp {
+        searchText: string;
+
         static $inject: string[] = ['livingDocumentationService', '$modal'];
 
-        constructor(
-            private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
+        constructor(private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
             var modalInstance: ng.ui.bootstrap.IModalServiceInstance;
 
             livingDocService.onStartProcessing = () => {
@@ -27,11 +28,17 @@ module livingDocumentation {
                 modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
             };
 
+            var this_ = this;
             livingDocService.onStopProcessing = () => {
+                if (this_.isClearSearchEnabled) {
+                    this_.search();
+                }
+
                 modalInstance.close();
                 modalInstance = null;
             };
 
+            this.searchText = livingDocService.searchText;
             livingDocService.startInitialization();
         }
 
@@ -41,8 +48,21 @@ module livingDocumentation {
         get error() { return this.livingDocService.error; }
         get ready() { return this.livingDocService.ready; }
 
+        get isSearchEnabled() { return !!this.searchText.trim(); }
+        get isClearSearchEnabled() { return !!this.livingDocService.searchText; }
+
         get lastUpdatedOn() {
-            return _.find(this.livingDocService.documentationList, doc => <any>doc.lastUpdatedOn).lastUpdatedOn;
+            return _.find(this.livingDocService.documentationList, doc => !!doc.lastUpdatedOn).lastUpdatedOn;
+        }
+
+        get searchPart() { return this.livingDocService.urlSearchPart; }
+
+        search(): void {
+            this.livingDocService.search(this.searchText);
+        }
+
+        clearSearch(): void {
+            this.livingDocService.search(null);
         }
     }
 

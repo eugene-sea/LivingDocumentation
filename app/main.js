@@ -76,9 +76,17 @@ var livingDocumentation;
                 var folders = f.RelativeFolder.match(/[^\\/]+/g);
                 f.code = folders.pop();
                 f.isExpanded = true;
-                _.each(f.Feature.FeatureElements, function (s) { return s.isExpanded = true; });
+                _.each(f.Feature.FeatureElements, function (s) {
+                    s.isExpanded = true;
+                    if (s.Examples) {
+                        s.Examples = s.Examples[0];
+                    }
+                });
                 if (f.Feature.Background) {
                     f.Feature.Background.isExpanded = true;
+                    if (f.Feature.Background.Examples) {
+                        f.Feature.Background.Examples = f.Feature.Background.Examples[0];
+                    }
                 }
                 if (featuresTestsMap) {
                     LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
@@ -112,31 +120,162 @@ var livingDocumentation;
         .service('livingDocumentationServer', LivingDocumentationServer);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-resource.d.ts" />
+/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../domain-model.ts" />
+'use strict';
+var livingDocumentation;
+(function (livingDocumentation) {
+    function splitWords(str) {
+        var res = str[0];
+        for (var i = 1; i < str.length; ++i) {
+            var prev = str[i - 1], cur = str[i], next = i < str.length - 1 ? str[i] : null;
+            if (!isUpperCase(prev)) {
+                if (prev !== ' ' && isUpperCase(cur)) {
+                    res += ' ';
+                }
+            }
+            else if (isUpperCase(cur) && next && !isUpperCase(next)) {
+                res += ' ';
+            }
+            res += cur;
+        }
+        return res;
+    }
+    livingDocumentation.splitWords = splitWords;
+    function isUpperCase(s) {
+        return s === s.toUpperCase() && s !== s.toLowerCase();
+    }
+    function isTextPresent(_a, str) {
+        var searchRegExp = _a.searchRegExp;
+        return str && str.search(searchRegExp) >= 0;
+    }
+    function getSearchContext(searchText) {
+        return { tags: [], searchRegExp: new RegExp(searchText, 'gi') };
+    }
+    function isTextPresentInDocumentation(searchContext, doc) {
+        var root = isTextPresentInFolder(searchContext, doc.root);
+        if (!root) {
+            return null;
+        }
+        return {
+            definition: doc.definition,
+            root: root,
+            features: doc.features,
+            lastUpdatedOn: doc.lastUpdatedOn
+        };
+    }
+    function isTextPresentInFolder(searchContext, folder) {
+        var isTextPresentInTitle = isTextPresent(searchContext, splitWords(folder.name));
+        var features = _.filter(folder.features, function (f) { return isTextPresentInFeature(searchContext, f); });
+        var folders = _.filter(_.map(folder.children, function (f) { return isTextPresentInFolder(searchContext, f); }), function (f) { return !!f; });
+        if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {
+            return null;
+        }
+        return {
+            name: folder.name,
+            children: folders,
+            features: features,
+            isRoot: folder.isRoot
+        };
+    }
+    function isTextPresentInFeature(searchContext, feature) {
+        if (isTextPresent(searchContext, feature.Feature.Name)) {
+            return true;
+        }
+        if (isTextPresent(searchContext, feature.Feature.Description)) {
+            return true;
+        }
+        if (feature.Feature.Background && isTextPresentInScenario(searchContext, feature.Feature.Background)) {
+            return true;
+        }
+        return _.any(feature.Feature.FeatureElements, function (s) { return isTextPresentInScenario(searchContext, s); });
+    }
+    function isTextPresentInScenario(searchContext, scenario) {
+        if (isTextPresent(searchContext, scenario.Name)) {
+            return true;
+        }
+        if (isTextPresent(searchContext, scenario.Description)) {
+            return true;
+        }
+        if (scenario.Examples) {
+            if (isTextPresent(searchContext, scenario.Examples.Decription)) {
+                return true;
+            }
+            if (isTextPresentInTable(searchContext, scenario.Examples.TableArgument)) {
+                return true;
+            }
+        }
+        return _.any(scenario.Steps, function (s) { return isTextPresentInStep(searchContext, s); });
+    }
+    function isTextPresentInTable(searchContext, table) {
+        if (_.any(table.HeaderRow, function (s) { return isTextPresent(searchContext, s); })) {
+            return true;
+        }
+        return _.any(table.DataRows, function (r) { return _.any(r, function (s) { return isTextPresent(searchContext, s); }); });
+    }
+    function isTextPresentInStep(searchContext, step) {
+        if (step.TableArgument && isTextPresentInTable(searchContext, step.TableArgument)) {
+            return true;
+        }
+        return isTextPresent(searchContext, step.Name);
+    }
+    var SearchService = (function () {
+        function SearchService() {
+        }
+        SearchService.prototype.search = function (searchText, documentationList) {
+            var searchContext = getSearchContext(searchText);
+            return {
+                documentationList: _.filter(_.map(documentationList, function (d) { return isTextPresentInDocumentation(searchContext, d); }), function (d) { return !!d; }),
+                searchContext: searchContext
+            };
+        };
+        return SearchService;
+    })();
+    angular.module('livingDocumentation.services.search', [])
+        .service('search', SearchService);
+})(livingDocumentation || (livingDocumentation = {}));
+/// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
 /// <reference path="utils.ts" />
 /// <reference path="living-documentation-server.ts" />
+/// <reference path="search-service.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
     var TIMEOUT = 200;
     var LivingDocumentationService = (function () {
-        function LivingDocumentationService(livingDocumentationServer, $q, $timeout) {
+        function LivingDocumentationService(livingDocumentationServer, $q, $timeout, search, $location) {
             this.livingDocumentationServer = livingDocumentationServer;
             this.$q = $q;
             this.$timeout = $timeout;
+            this.$location = $location;
             this.documentationList = [];
+            this.filteredDocumentationList = [];
+            this.searchContext = null;
             this.loading = true;
             this.deferred = $q.defer();
             this.resolve = this.deferred.promise;
+            this.searchService = search;
         }
+        Object.defineProperty(LivingDocumentationService.prototype, "searchText", {
+            get: function () { return this.$location.search().search; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationService.prototype, "urlSearchPart", {
+            get: function () {
+                return !this.searchText ? '' : "?search=" + this.searchText;
+            },
+            enumerable: true,
+            configurable: true
+        });
         LivingDocumentationService.prototype.startInitialization = function () {
             var _this = this;
             if (this.onStartProcessing) {
                 this.onStartProcessing();
             }
-            this.deferred.promise.finally(function () { return _this.onStopProcessing(); });
+            this.deferred.promise.finally(function () { return _this.onStopProcessing(); }).catch(function (err) { return _this.onError(err); });
             this.livingDocumentationServer.getResourceDefinitions()
                 .then(function (resources) { return _this.$q.all(_.map(resources, function (r) { return _this.livingDocumentationServer.get(r); })); })
                 .then(function (docs) {
@@ -150,6 +289,16 @@ var livingDocumentation;
                 _this.onError(err);
             }, TIMEOUT); });
         };
+        LivingDocumentationService.prototype.search = function (searchText) {
+            this.$location.search('search', searchText);
+            if (!searchText) {
+                _a = [this.documentationList, null], this.filteredDocumentationList = _a[0], this.searchContext = _a[1];
+                return;
+            }
+            var res = this.searchService.search(searchText, this.documentationList);
+            _b = [res.documentationList, res.searchContext], this.filteredDocumentationList = _b[0], this.searchContext = _b[1];
+            var _a, _b;
+        };
         LivingDocumentationService.prototype.onError = function (err) {
             console.error(err);
             this.error = err;
@@ -158,11 +307,14 @@ var livingDocumentation;
         LivingDocumentationService.prototype.initialize = function () {
             this.loading = false;
             this.ready = true;
+            this.filteredDocumentationList = this.documentationList;
         };
-        LivingDocumentationService.$inject = ['livingDocumentationServer', '$q', '$timeout'];
+        LivingDocumentationService.$inject = ['livingDocumentationServer', '$q', '$timeout', 'search', '$location'];
         return LivingDocumentationService;
     })();
-    angular.module('livingDocumentation.services', ['livingDocumentation.services.server'])
+    angular.module('livingDocumentation.services', [
+        'livingDocumentation.services.server', 'livingDocumentation.services.search'
+    ])
         .value('version', '0.1')
         .service('livingDocumentationService', LivingDocumentationService);
 })(livingDocumentation || (livingDocumentation = {}));
@@ -219,10 +371,15 @@ var livingDocumentation;
                 }
                 modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
             };
+            var this_ = this;
             livingDocService.onStopProcessing = function () {
+                if (this_.isClearSearchEnabled) {
+                    this_.search();
+                }
                 modalInstance.close();
                 modalInstance = null;
             };
+            this.searchText = livingDocService.searchText;
             livingDocService.startInitialization();
         }
         Object.defineProperty(LivingDocumentationApp.prototype, "loading", {
@@ -241,13 +398,34 @@ var livingDocumentation;
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(LivingDocumentationApp.prototype, "isSearchEnabled", {
+            get: function () { return !!this.searchText.trim(); },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "isClearSearchEnabled", {
+            get: function () { return !!this.livingDocService.searchText; },
+            enumerable: true,
+            configurable: true
+        });
         Object.defineProperty(LivingDocumentationApp.prototype, "lastUpdatedOn", {
             get: function () {
-                return _.find(this.livingDocService.documentationList, function (doc) { return doc.lastUpdatedOn; }).lastUpdatedOn;
+                return _.find(this.livingDocService.documentationList, function (doc) { return !!doc.lastUpdatedOn; }).lastUpdatedOn;
             },
             enumerable: true,
             configurable: true
         });
+        Object.defineProperty(LivingDocumentationApp.prototype, "searchPart", {
+            get: function () { return this.livingDocService.urlSearchPart; },
+            enumerable: true,
+            configurable: true
+        });
+        LivingDocumentationApp.prototype.search = function () {
+            this.livingDocService.search(this.searchText);
+        };
+        LivingDocumentationApp.prototype.clearSearch = function () {
+            this.livingDocService.search(null);
+        };
         LivingDocumentationApp.$inject = ['livingDocumentationService', '$modal'];
         return LivingDocumentationApp;
     })();
@@ -345,15 +523,21 @@ var livingDocumentation;
     })();
     var DocumentationList = (function () {
         function DocumentationList(livingDocService) {
-            this.documentationList = livingDocService.documentationList;
+            this.livingDocService = livingDocService;
         }
+        Object.defineProperty(DocumentationList.prototype, "documentationList", {
+            get: function () { return this.livingDocService.filteredDocumentationList; },
+            enumerable: true,
+            configurable: true
+        });
         DocumentationList.$inject = ['livingDocumentationService'];
         return DocumentationList;
     })();
     var FolderDirective = (function () {
-        function FolderDirective(recursionHelper) {
+        function FolderDirective(recursionHelper, $location) {
             var _this = this;
             this.recursionHelper = recursionHelper;
+            this.$location = $location;
             this.restrict = 'A';
             this.scope = {
                 folder: '=',
@@ -369,8 +553,15 @@ var livingDocumentation;
         return FolderDirective;
     })();
     var Folder = (function () {
-        function Folder() {
+        function Folder(livingDocService) {
+            this.livingDocService = livingDocService;
         }
+        Object.defineProperty(Folder.prototype, "searchPart", {
+            get: function () { return this.livingDocService.urlSearchPart; },
+            enumerable: true,
+            configurable: true
+        });
+        Folder.$inject = ['livingDocumentationService'];
         return Folder;
     })();
     angular.module('livingDocumentation.documentationList', [
@@ -530,7 +721,7 @@ var livingDocumentation;
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
-/// <reference path="services.ts" />
+/// <reference path="search-service.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
@@ -546,23 +737,7 @@ var livingDocumentation;
         function SplitWordsFilter() {
         }
         SplitWordsFilter.prototype.filter = function (str) {
-            var res = str[0];
-            for (var i = 1; i < str.length; ++i) {
-                var prev = str[i - 1], cur = str[i], next = i < str.length - 1 ? str[i] : null;
-                if (!SplitWordsFilter.isUpperCase(prev)) {
-                    if (prev !== ' ' && SplitWordsFilter.isUpperCase(cur)) {
-                        res += ' ';
-                    }
-                }
-                else if (SplitWordsFilter.isUpperCase(cur) && next && !SplitWordsFilter.isUpperCase(next)) {
-                    res += ' ';
-                }
-                res += cur;
-            }
-            return res;
-        };
-        SplitWordsFilter.isUpperCase = function (s) {
-            return s === s.toUpperCase() && s !== s.toLowerCase();
+            return livingDocumentation.splitWords(str);
         };
         return SplitWordsFilter;
     })();

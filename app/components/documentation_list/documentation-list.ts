@@ -17,17 +17,15 @@ module livingDocumentation {
     class DocumentationList {
         static $inject = ['livingDocumentationService'];
 
-        constructor(livingDocService: ILivingDocumentationService) {
-            this.documentationList = livingDocService.documentationList;
-        }
+        constructor(private livingDocService: ILivingDocumentationService) { }
 
-        documentationList: ILivingDocumentation[];
+        get documentationList() { return this.livingDocService.filteredDocumentationList; }
     }
 
     class FolderDirective implements ng.IDirective {
         static $inject = ['recursionHelper'];
 
-        constructor(private recursionHelper: utils.RecursionHelper) { }
+        constructor(private recursionHelper: utils.RecursionHelper, private $location: ng.ILocationService) { }
 
         restrict = 'A';
         scope = {
@@ -41,7 +39,13 @@ module livingDocumentation {
         compile = (element: ng.IAugmentedJQuery) => this.recursionHelper.compile(element);
     }
 
-    class Folder { }
+    class Folder {
+        static $inject = ['livingDocumentationService'];
+
+        constructor(private livingDocService: ILivingDocumentationService) { }
+
+        get searchPart() { return this.livingDocService.urlSearchPart; }
+    }
 
     angular.module('livingDocumentation.documentationList', [
         'livingDocumentation.services',
