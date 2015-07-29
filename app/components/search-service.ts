@@ -62,7 +62,7 @@ module livingDocumentation {
     }
 
     function isTextPresentInFolder(searchContext: ISearchContext, folder: IFolder): IFolder {
-        var isTextPresentInTitle = isTextPresent(searchContext, splitWords(folder.name));
+        var isTextPresentInTitle = !folder.isRoot && isTextPresent(searchContext, splitWords(folder.name));
         var features = _.filter(folder.features, f => isTextPresentInFeature(searchContext, f));
         var folders = _.filter(_.map(folder.children, f => isTextPresentInFolder(searchContext, f)), f => !!f);
         if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {

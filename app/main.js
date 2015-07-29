@@ -165,7 +165,7 @@ var livingDocumentation;
         };
     }
     function isTextPresentInFolder(searchContext, folder) {
-        var isTextPresentInTitle = isTextPresent(searchContext, splitWords(folder.name));
+        var isTextPresentInTitle = !folder.isRoot && isTextPresent(searchContext, splitWords(folder.name));
         var features = _.filter(folder.features, function (f) { return isTextPresentInFeature(searchContext, f); });
         var folders = _.filter(_.map(folder.children, function (f) { return isTextPresentInFolder(searchContext, f); }), function (f) { return !!f; });
         if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {
