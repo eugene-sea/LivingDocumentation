@@ -35,6 +35,19 @@ module livingDocumentation {
         }
     }
 
+    class HighlightTagFilter implements utils.IFilter {
+        static $inject = ['livingDocumentationService'];
+
+        constructor(private livingDocService: ILivingDocumentationService) { }
+
+        filter(str: string): string {
+            return !this.livingDocService.searchContext || !_.any(this.livingDocService.searchContext.tags)
+                ? escapeHTML(str)
+                : highlightAndEscape(
+                    new RegExp(_.map(this.livingDocService.searchContext.tags, t => t.source).join('|'), 'gi'), str);
+        }
+    }
+
     function highlightAndEscape(regEx: RegExp, str: string): string {
         if (!str || !regEx) {
             return escapeHTML(str);
@@ -71,5 +84,6 @@ module livingDocumentation {
         .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
         .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
-        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter));
+        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter))
+        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter));
 }

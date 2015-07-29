@@ -786,6 +786,18 @@ var livingDocumentation;
         HighlightFilter.$inject = ['livingDocumentationService'];
         return HighlightFilter;
     })();
+    var HighlightTagFilter = (function () {
+        function HighlightTagFilter(livingDocService) {
+            this.livingDocService = livingDocService;
+        }
+        HighlightTagFilter.prototype.filter = function (str) {
+            return !this.livingDocService.searchContext || !_.any(this.livingDocService.searchContext.tags)
+                ? escapeHTML(str)
+                : highlightAndEscape(new RegExp(_.map(this.livingDocService.searchContext.tags, function (t) { return t.source; }).join('|'), 'gi'), str);
+        };
+        HighlightTagFilter.$inject = ['livingDocumentationService'];
+        return HighlightTagFilter;
+    })();
     function highlightAndEscape(regEx, str) {
         if (!str || !regEx) {
             return escapeHTML(str);
@@ -817,6 +829,7 @@ var livingDocumentation;
         .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
         .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
-        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter));
+        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter))
+        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter));
 })(livingDocumentation || (livingDocumentation = {}));
 //# sourceMappingURL=main.js.map

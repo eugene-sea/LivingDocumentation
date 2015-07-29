@@ -13,7 +13,7 @@
   </tr>
 </table>
 
-<p>Tags: <i ng-repeat="tag in ctrl.feature.Feature.Tags">{{tag}} </i></p>
+<p>Tags: <span ng-repeat="tag in ctrl.feature.Feature.Tags"><i ng-bind-html="tag | highlightTag"></i> </span></p>
 
 <p><i ng-bind-html="ctrl.feature.Feature.Description | highlight | newline"></i></p>
 
