@@ -1,6 +1,6 @@
 ﻿<table style="width: 100%">
   <tr>
-    <td><h3>{{ctrl.feature.Feature.Name}}</h3></td>
+    <td><h3 ng-bind-html="ctrl.feature.Feature.Name | highlight"></h3></td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
       <a ng-click="ctrl.isExpanded = !ctrl.isExpanded">
@@ -15,7 +15,7 @@
 
 <p>Tags: <i ng-repeat="tag in ctrl.feature.Feature.Tags">{{tag}} </i></p>
 
-<p><i ng-bind-html="ctrl.feature.Feature.Description | newline"></i></p>
+<p><i ng-bind-html="ctrl.feature.Feature.Description | highlight | newline"></i></p>
 
 <div ng-if="ctrl.feature.Feature.Background" class="panel panel-default">
   <div class="panel-body">

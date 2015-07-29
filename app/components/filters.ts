@@ -19,13 +19,57 @@ module livingDocumentation {
 
     class ScenarioOutlinePlaceholderFilter implements utils.IFilter {
         filter(str: string): string {
-            return !str ? str : str.replace(/<(.*?)>/g,
-                (_, c) => `<span class="text-warning">&lt${ c.replace(/ /g, '&nbsp;') }&gt</span>`);
+            return !str ? str : str.replace(/\&lt;([^<>]*?)\&gt;/g,
+                (_, c) => `<span class="text-warning">&lt;${ c.replace(/ /g, '&nbsp;') }&gt;</span>`);
         }
     }
 
-    angular.module('livingDocumentation.filters', [])
+    class HighlightFilter implements utils.IFilter {
+        static $inject = ['livingDocumentationService'];
+
+        constructor(private livingDocService: ILivingDocumentationService) { }
+
+        filter(str: string): string {
+            return !this.livingDocService.searchContext
+                ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
+        }
+    }
+
+    function highlightAndEscape(regEx: RegExp, str: string): string {
+        if (!str) {
+            return str;
+        }
+
+        regEx.lastIndex = 0;
+        var regExRes: RegExpExecArray;
+        var resStr = '';
+        var prevLastIndex = 0;
+        while ((regExRes = regEx.exec(str)) !== null) {
+            resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
+            resStr += `<mark>${ escapeHTML(regExRes[0]) }</mark>`;
+            prevLastIndex = regEx.lastIndex;
+        }
+
+        resStr += escapeHTML(str.slice(prevLastIndex, str.length));
+        return resStr;
+    }
+
+    function escapeHTML(str: string) {
+        if (!str) {
+            return str;
+        }
+
+        return str.
+            replace(/&/g, '&amp;').
+            replace(/</g, '&lt;').
+            replace(/>/g, '&gt;').
+            replace(/'/g, '&#39;').
+            replace(/"/g, '&quot;');
+    }
+
+    angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
         .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
-        .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter));
+        .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
+        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter));
 }

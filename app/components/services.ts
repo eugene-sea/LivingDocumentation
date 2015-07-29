@@ -41,8 +41,6 @@ module livingDocumentation {
     class LivingDocumentationService implements ILivingDocumentationService {
         private deferred: ng.IDeferred<ILivingDocumentationService>;
 
-        private searchService: ISearchService;
-
         loading: boolean;
 
         error: string;
@@ -67,12 +65,11 @@ module livingDocumentation {
             private livingDocumentationServer: ILivingDocumentationServer,
             private $q: ng.IQService,
             private $timeout: ng.ITimeoutService,
-            search: ISearchService,
+            private searchService: ISearchService,
             private $location: ng.ILocationService) {
             this.loading = true;
             this.deferred = $q.defer<ILivingDocumentationService>();
             this.resolve = this.deferred.promise;
-            this.searchService = search;
         }
 
         get searchText(): string { return this.$location.search().search; }

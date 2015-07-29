@@ -1,4 +1,4 @@
-﻿<i ng-if="!ctrl.folder.isRoot">{{ctrl.folder.name | splitWords}}</i>
+﻿<i ng-if="!ctrl.folder.isRoot" ng-bind-html="ctrl.folder.name | splitWords | highlight"></i>
 
 <div ng-class="{'folder-indent': !ctrl.folder.isRoot}">
   <div ng-repeat="child in ctrl.folder.children | orderBy: 'name'">
@@ -13,15 +13,15 @@
   <a 
     class="inactive-feature"
     href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}{{ctrl.searchPart}}"
-    is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}">
-    {{feature.Feature.Name}}
+    is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}"
+    ng-bind-html="feature.Feature.Name | highlight">
   </a>
   <b>
     <a 
       class="active-feature"
       href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}{{ctrl.searchPart}}"
-      is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}">
-      {{feature.Feature.Name}}
+      is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}"
+      ng-bind-html="feature.Feature.Name | highlight">
     </a>
   </b>
 </div>

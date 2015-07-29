@@ -245,10 +245,11 @@ var livingDocumentation;
 (function (livingDocumentation) {
     var TIMEOUT = 200;
     var LivingDocumentationService = (function () {
-        function LivingDocumentationService(livingDocumentationServer, $q, $timeout, search, $location) {
+        function LivingDocumentationService(livingDocumentationServer, $q, $timeout, searchService, $location) {
             this.livingDocumentationServer = livingDocumentationServer;
             this.$q = $q;
             this.$timeout = $timeout;
+            this.searchService = searchService;
             this.$location = $location;
             this.documentationList = [];
             this.filteredDocumentationList = [];
@@ -256,7 +257,6 @@ var livingDocumentation;
             this.loading = true;
             this.deferred = $q.defer();
             this.resolve = this.deferred.promise;
-            this.searchService = search;
         }
         Object.defineProperty(LivingDocumentationService.prototype, "searchText", {
             get: function () { return this.$location.search().search; },
@@ -745,13 +745,52 @@ var livingDocumentation;
         function ScenarioOutlinePlaceholderFilter() {
         }
         ScenarioOutlinePlaceholderFilter.prototype.filter = function (str) {
-            return !str ? str : str.replace(/<(.*?)>/g, function (_, c) { return ("<span class=\"text-warning\">&lt" + c.replace(/ /g, '&nbsp;') + "&gt</span>"); });
+            return !str ? str : str.replace(/\&lt;([^<>]*?)\&gt;/g, function (_, c) { return ("<span class=\"text-warning\">&lt;" + c.replace(/ /g, '&nbsp;') + "&gt;</span>"); });
         };
         return ScenarioOutlinePlaceholderFilter;
     })();
-    angular.module('livingDocumentation.filters', [])
+    var HighlightFilter = (function () {
+        function HighlightFilter(livingDocService) {
+            this.livingDocService = livingDocService;
+        }
+        HighlightFilter.prototype.filter = function (str) {
+            return !this.livingDocService.searchContext
+                ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
+        };
+        HighlightFilter.$inject = ['livingDocumentationService'];
+        return HighlightFilter;
+    })();
+    function highlightAndEscape(regEx, str) {
+        if (!str) {
+            return str;
+        }
+        regEx.lastIndex = 0;
+        var regExRes;
+        var resStr = '';
+        var prevLastIndex = 0;
+        while ((regExRes = regEx.exec(str)) !== null) {
+            resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
+            resStr += "<mark>" + escapeHTML(regExRes[0]) + "</mark>";
+            prevLastIndex = regEx.lastIndex;
+        }
+        resStr += escapeHTML(str.slice(prevLastIndex, str.length));
+        return resStr;
+    }
+    function escapeHTML(str) {
+        if (!str) {
+            return str;
+        }
+        return str.
+            replace(/&/g, '&amp;').
+            replace(/</g, '&lt;').
+            replace(/>/g, '&gt;').
+            replace(/'/g, '&#39;').
+            replace(/"/g, '&quot;');
+    }
+    angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
         .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
-        .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter));
+        .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
+        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter));
 })(livingDocumentation || (livingDocumentation = {}));
 //# sourceMappingURL=main.js.map
