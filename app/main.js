@@ -379,7 +379,7 @@ var livingDocumentation;
                 modalInstance.close();
                 modalInstance = null;
             };
-            this.searchText = livingDocService.searchText;
+            this.searchText = livingDocService.searchText || '';
             livingDocService.startInitialization();
         }
         Object.defineProperty(LivingDocumentationApp.prototype, "loading", {
