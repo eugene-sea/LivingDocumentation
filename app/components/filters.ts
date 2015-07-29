@@ -36,8 +36,8 @@ module livingDocumentation {
     }
 
     function highlightAndEscape(regEx: RegExp, str: string): string {
-        if (!str) {
-            return str;
+        if (!str || !regEx) {
+            return escapeHTML(str);
         }
 
         regEx.lastIndex = 0;

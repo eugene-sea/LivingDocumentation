@@ -147,10 +147,26 @@ var livingDocumentation;
     }
     function isTextPresent(_a, str) {
         var searchRegExp = _a.searchRegExp;
-        return str && str.search(searchRegExp) >= 0;
+        return !searchRegExp || (str && str.search(searchRegExp) >= 0);
+    }
+    function isTextPresentRegEx(regEx, str) {
+        return str && str.search(regEx) >= 0;
     }
     function getSearchContext(searchText) {
-        return { tags: [], searchRegExp: new RegExp(searchText, 'gi') };
+        searchText = searchText || '';
+        var tagRegEx = /(@[^\s]+)(\s|$)/g;
+        var regExRes;
+        var resStr = '';
+        var resTags = [];
+        var prevLastIndex = 0;
+        while ((regExRes = tagRegEx.exec(searchText)) !== null) {
+            resStr += searchText.slice(prevLastIndex, regExRes.index);
+            resTags.push(new RegExp(regExRes[1], 'i'));
+            prevLastIndex = tagRegEx.lastIndex;
+        }
+        resStr += searchText.slice(prevLastIndex, searchText.length);
+        resStr = resStr.trim();
+        return { tags: resTags, searchRegExp: resStr ? new RegExp(resStr, 'gi') : null };
     }
     function isTextPresentInDocumentation(searchContext, doc) {
         var root = isTextPresentInFolder(searchContext, doc.root);
@@ -165,7 +181,8 @@ var livingDocumentation;
         };
     }
     function isTextPresentInFolder(searchContext, folder) {
-        var isTextPresentInTitle = !folder.isRoot && isTextPresent(searchContext, splitWords(folder.name));
+        var isTextPresentInTitle = !folder.isRoot && !_.any(searchContext.tags) &&
+            isTextPresent(searchContext, splitWords(folder.name));
         var features = _.filter(folder.features, function (f) { return isTextPresentInFeature(searchContext, f); });
         var folders = _.filter(_.map(folder.children, function (f) { return isTextPresentInFolder(searchContext, f); }), function (f) { return !!f; });
         if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {
@@ -179,6 +196,9 @@ var livingDocumentation;
         };
     }
     function isTextPresentInFeature(searchContext, feature) {
+        if (!_.all(searchContext.tags, function (t) { return isTagPresentInFeature(t, feature); })) {
+            return false;
+        }
         if (isTextPresent(searchContext, feature.Feature.Name)) {
             return true;
         }
@@ -218,6 +238,12 @@ var livingDocumentation;
             return true;
         }
         return isTextPresent(searchContext, step.Name);
+    }
+    function isTagPresentInFeature(tag, feature) {
+        if (_.any(feature.Feature.Tags, function (t) { return isTextPresentRegEx(tag, t); })) {
+            return true;
+        }
+        return _.any(feature.Feature.FeatureElements, function (s) { return _.any(s.Tags, function (t) { return isTextPresentRegEx(tag, t); }); });
     }
     var SearchService = (function () {
         function SearchService() {
@@ -761,8 +787,8 @@ var livingDocumentation;
         return HighlightFilter;
     })();
     function highlightAndEscape(regEx, str) {
-        if (!str) {
-            return str;
+        if (!str || !regEx) {
+            return escapeHTML(str);
         }
         regEx.lastIndex = 0;
         var regExRes;

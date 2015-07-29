@@ -15,6 +15,7 @@ module livingDocumentation {
     export interface IScenario {
         Name: string;
         Description: string;
+        Tags: string[];
         Steps: IStep[];
         Examples?: {
             Decription: string;

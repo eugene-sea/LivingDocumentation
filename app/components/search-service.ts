@@ -6,7 +6,7 @@
 
 module livingDocumentation {
     export interface ISearchContext {
-        tags: string[];
+        tags: RegExp[];
         searchRegExp: RegExp;
     }
 
@@ -39,11 +39,30 @@ module livingDocumentation {
     }
 
     function isTextPresent({ searchRegExp }: ISearchContext, str: string): boolean {
-        return str && str.search(searchRegExp) >= 0;
+        return !searchRegExp || (str && str.search(searchRegExp) >= 0);
+    }
+
+    function isTextPresentRegEx(regEx: RegExp, str: string): boolean {
+        return str && str.search(regEx) >= 0;
     }
 
     function getSearchContext(searchText: string): ISearchContext {
-        return { tags: [], searchRegExp: new RegExp(searchText, 'gi') };
+        searchText = searchText || '';
+        var tagRegEx = /(@[^\s]+)(\s|$)/g;
+        var regExRes: RegExpExecArray;
+        var resStr = '';
+        var resTags: RegExp[] = [];
+        var prevLastIndex = 0;
+        while ((regExRes = tagRegEx.exec(searchText)) !== null) {
+            resStr += searchText.slice(prevLastIndex, regExRes.index);
+            resTags.push(new RegExp(regExRes[1], 'i'));
+            prevLastIndex = tagRegEx.lastIndex;
+        }
+
+        resStr += searchText.slice(prevLastIndex, searchText.length);
+        resStr = resStr.trim();
+
+        return { tags: resTags, searchRegExp: resStr ? new RegExp(resStr, 'gi') : null };
     }
 
     function isTextPresentInDocumentation(
@@ -62,7 +81,8 @@ module livingDocumentation {
     }
 
     function isTextPresentInFolder(searchContext: ISearchContext, folder: IFolder): IFolder {
-        var isTextPresentInTitle = !folder.isRoot && isTextPresent(searchContext, splitWords(folder.name));
+        var isTextPresentInTitle = !folder.isRoot && !_.any(searchContext.tags) &&
+            isTextPresent(searchContext, splitWords(folder.name));
         var features = _.filter(folder.features, f => isTextPresentInFeature(searchContext, f));
         var folders = _.filter(_.map(folder.children, f => isTextPresentInFolder(searchContext, f)), f => !!f);
         if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {
@@ -78,6 +98,10 @@ module livingDocumentation {
     }
 
     function isTextPresentInFeature(searchContext: ISearchContext, feature: IFeature): boolean {
+        if (!_.all(searchContext.tags, t => isTagPresentInFeature(t, feature))) {
+            return false;
+        }
+
         if (isTextPresent(searchContext, feature.Feature.Name)) {
             return true;
         }
@@ -129,6 +153,14 @@ module livingDocumentation {
         }
 
         return isTextPresent(searchContext, step.Name);
+    }
+
+    function isTagPresentInFeature(tag: RegExp, feature: IFeature): boolean {
+        if (_.any(feature.Feature.Tags, t => isTextPresentRegEx(tag, t))) {
+            return true;
+        }
+
+        return _.any(feature.Feature.FeatureElements, s => _.any(s.Tags, t => isTextPresentRegEx(tag, t)));
     }
 
     class SearchService implements ISearchService {
