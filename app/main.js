@@ -771,7 +771,7 @@ var livingDocumentation;
         function ScenarioOutlinePlaceholderFilter() {
         }
         ScenarioOutlinePlaceholderFilter.prototype.filter = function (str) {
-            return !str ? str : str.replace(/\&lt;([^<>]*?)\&gt;/g, function (_, c) { return ("<span class=\"text-warning\">&lt;" + c.replace(/ /g, '&nbsp;') + "&gt;</span>"); });
+            return !str ? str : str.replace(/\&lt;([^<>]+?)\&gt;/g, function (_, c) { return ("<span class=\"text-warning\">&lt;" + c.replace(/ /g, '&nbsp;') + "&gt;</span>"); });
         };
         return ScenarioOutlinePlaceholderFilter;
     })();
@@ -808,8 +808,13 @@ var livingDocumentation;
         var prevLastIndex = 0;
         while ((regExRes = regEx.exec(str)) !== null) {
             resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
-            resStr += "<mark>" + escapeHTML(regExRes[0]) + "</mark>";
-            prevLastIndex = regEx.lastIndex;
+            if (!regExRes[0]) {
+                ++regEx.lastIndex;
+            }
+            else {
+                resStr += "<mark>" + escapeHTML(regExRes[0]) + "</mark>";
+                prevLastIndex = regEx.lastIndex;
+            }
         }
         resStr += escapeHTML(str.slice(prevLastIndex, str.length));
         return resStr;
