@@ -291,7 +291,17 @@ var livingDocumentation;
         });
         Object.defineProperty(LivingDocumentationService.prototype, "urlSearchPart", {
             get: function () {
-                return !this.searchText ? '' : "?search=" + this.searchText;
+                return !this.searchText && !this.showInProgressOnly
+                    ? ''
+                    : ("?search=" + encodeURIComponent(this.searchText || '')) +
+                        (!this.showInProgressOnly ? '' : '&showInProgressOnly');
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationService.prototype, "showInProgressOnly", {
+            get: function () {
+                return !!this.$location.search().showInProgressOnly;
             },
             enumerable: true,
             configurable: true
@@ -318,12 +328,18 @@ var livingDocumentation;
         LivingDocumentationService.prototype.search = function (searchText) {
             this.$location.search('search', searchText);
             if (!searchText) {
+                this.$location.search('showInProgressOnly', null);
                 _a = [this.documentationList, null], this.filteredDocumentationList = _a[0], this.searchContext = _a[1];
                 return;
             }
-            var res = this.searchService.search(searchText, this.documentationList);
-            _b = [res.documentationList, res.searchContext], this.filteredDocumentationList = _b[0], this.searchContext = _b[1];
-            var _a, _b;
+            this.searchCore();
+            var _a;
+        };
+        LivingDocumentationService.prototype.toggleShowInProgressOnly = function (initialize) {
+            if (!initialize) {
+                this.$location.search('showInProgressOnly', !this.showInProgressOnly ? true : null);
+            }
+            this.searchCore();
         };
         LivingDocumentationService.prototype.onError = function (err) {
             console.error(err);
@@ -334,6 +350,12 @@ var livingDocumentation;
             this.loading = false;
             this.ready = true;
             this.filteredDocumentationList = this.documentationList;
+        };
+        LivingDocumentationService.prototype.searchCore = function () {
+            var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
+            var res = this.searchService.search(searchText, this.documentationList);
+            _a = [res.documentationList, res.searchContext], this.filteredDocumentationList = _a[0], this.searchContext = _a[1];
+            var _a;
         };
         LivingDocumentationService.$inject = ['livingDocumentationServer', '$q', '$timeout', 'search', '$location'];
         return LivingDocumentationService;
@@ -400,7 +422,12 @@ var livingDocumentation;
             var this_ = this;
             livingDocService.onStopProcessing = function () {
                 if (this_.isClearSearchEnabled) {
-                    this_.search();
+                    if (!this_.searchText) {
+                        this_.toggleShowInProgressOnly(true);
+                    }
+                    else {
+                        this_.search();
+                    }
                 }
                 modalInstance.close();
                 modalInstance = null;
@@ -430,7 +457,14 @@ var livingDocumentation;
             configurable: true
         });
         Object.defineProperty(LivingDocumentationApp.prototype, "isClearSearchEnabled", {
-            get: function () { return !!this.livingDocService.searchText; },
+            get: function () {
+                return !!this.livingDocService.searchText || this.livingDocService.showInProgressOnly;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "showInProgressOnly", {
+            get: function () { return this.livingDocService.showInProgressOnly; },
             enumerable: true,
             configurable: true
         });
@@ -451,6 +485,9 @@ var livingDocumentation;
         };
         LivingDocumentationApp.prototype.clearSearch = function () {
             this.livingDocService.search(null);
+        };
+        LivingDocumentationApp.prototype.toggleShowInProgressOnly = function (initialize) {
+            this.livingDocService.toggleShowInProgressOnly(initialize);
         };
         LivingDocumentationApp.$inject = ['livingDocumentationService', '$modal'];
         return LivingDocumentationApp;

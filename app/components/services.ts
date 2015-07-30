@@ -27,6 +27,8 @@ module livingDocumentation {
 
         urlSearchPart: string;
 
+        showInProgressOnly: boolean;
+
         onStartProcessing: () => void;
 
         onStopProcessing: () => void;
@@ -34,6 +36,8 @@ module livingDocumentation {
         startInitialization(): void;
 
         search(searchText: string): void;
+
+        toggleShowInProgressOnly(initialize?: boolean): void;
     }
 
     const TIMEOUT = 200;
@@ -75,7 +79,14 @@ module livingDocumentation {
         get searchText(): string { return this.$location.search().search; }
 
         get urlSearchPart() {
-            return !this.searchText ? '' : `?search=${ this.searchText }`;
+            return !this.searchText && !this.showInProgressOnly
+                ? ''
+                : `?search=${ encodeURIComponent(this.searchText || '') }` +
+                (!this.showInProgressOnly ? '' : '&showInProgressOnly');
+        }
+
+        get showInProgressOnly() {
+            return !!this.$location.search().showInProgressOnly;
         }
 
         startInitialization(): void {
@@ -109,12 +120,20 @@ module livingDocumentation {
             this.$location.search('search', searchText);
 
             if (!searchText) {
+                this.$location.search('showInProgressOnly', null);
                 [this.filteredDocumentationList, this.searchContext] = [this.documentationList, null];
                 return;
             }
 
-            var res = this.searchService.search(searchText, this.documentationList);
-            [this.filteredDocumentationList, this.searchContext] = [res.documentationList, res.searchContext];
+            this.searchCore();
+        }
+
+        toggleShowInProgressOnly(initialize?: boolean): void {
+            if (!initialize) {
+                this.$location.search('showInProgressOnly', !this.showInProgressOnly ? true : null);
+            }
+
+            this.searchCore();
         }
 
         private onError(err: any) {
@@ -127,6 +146,12 @@ module livingDocumentation {
             this.loading = false;
             this.ready = true;
             this.filteredDocumentationList = this.documentationList;
+        }
+
+        private searchCore() {
+            var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
+            var res = this.searchService.search(searchText, this.documentationList);
+            [this.filteredDocumentationList, this.searchContext] = [res.documentationList, res.searchContext];
         }
     }
 

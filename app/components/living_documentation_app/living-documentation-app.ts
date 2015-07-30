@@ -31,7 +31,11 @@ module livingDocumentation {
             var this_ = this;
             livingDocService.onStopProcessing = () => {
                 if (this_.isClearSearchEnabled) {
-                    this_.search();
+                    if (!this_.searchText) {
+                        this_.toggleShowInProgressOnly(true);
+                    } else {
+                        this_.search();
+                    }
                 }
 
                 modalInstance.close();
@@ -49,7 +53,11 @@ module livingDocumentation {
         get ready() { return this.livingDocService.ready; }
 
         get isSearchEnabled() { return !!this.searchText.trim(); }
-        get isClearSearchEnabled() { return !!this.livingDocService.searchText; }
+        get isClearSearchEnabled() {
+            return !!this.livingDocService.searchText || this.livingDocService.showInProgressOnly;
+        }
+
+        get showInProgressOnly() { return this.livingDocService.showInProgressOnly; }
 
         get lastUpdatedOn() {
             return _.find(this.livingDocService.documentationList, doc => !!doc.lastUpdatedOn).lastUpdatedOn;
@@ -63,6 +71,10 @@ module livingDocumentation {
 
         clearSearch(): void {
             this.livingDocService.search(null);
+        }
+
+        toggleShowInProgressOnly(initialize?: boolean): void {
+            this.livingDocService.toggleShowInProgressOnly(initialize);
         }
     }
 
