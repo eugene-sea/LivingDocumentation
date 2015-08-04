@@ -385,7 +385,7 @@ var livingDocumentation;
             }
             var _b = [this.$routeParams['documentationCode'], this.$routeParams['featureCode']], documentationCode = _b[0], featureCode = _b[1];
             if (documentationCode && featureCode) {
-                var documentation = _.find(res.documentationList, function (doc) { return doc.definition.code === documentationCode; });
+                var documentation = _.find(this.filteredDocumentationList, function (doc) { return doc.definition.code === documentationCode; });
                 if (!documentation) {
                     documentationCode = null;
                 }
@@ -397,7 +397,7 @@ var livingDocumentation;
                 }
             }
             if (!documentationCode || !featureCode) {
-                var documentation = _.find(res.documentationList, function (d) { return _.any(d.features); });
+                var documentation = _.find(this.filteredDocumentationList, function (d) { return _.any(d.features); });
                 if (documentation) {
                     _c = [documentation.definition.code, _.find(documentation.features, function (_) { return true; }).code], documentationCode = _c[0], featureCode = _c[1];
                 }

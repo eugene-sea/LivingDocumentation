@@ -154,23 +154,24 @@ module livingDocumentation {
         }
 
         private searchCore() {
-            var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
+            let searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
 
             if (searchText !== this.currentSearchText) {
-                var res = this.searchService.search(searchText, this.documentationList);
+                let res = this.searchService.search(searchText, this.documentationList);
                 [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
                 [res.documentationList, res.searchContext, searchText];
             }
 
-            var [documentationCode, featureCode] =
+            let [documentationCode, featureCode] =
                 [<string>this.$routeParams['documentationCode'], <string>this.$routeParams['featureCode']];
 
             if (documentationCode && featureCode) {
-                var documentation = _.find(res.documentationList, doc => doc.definition.code === documentationCode);
+                let documentation = _.find(
+                    this.filteredDocumentationList, doc => doc.definition.code === documentationCode);
                 if (!documentation) {
                     documentationCode = null;
                 } else {
-                    var feature = documentation.features[featureCode];
+                    let feature = documentation.features[featureCode];
                     if (!feature) {
                         featureCode = null;
                     }
@@ -178,7 +179,7 @@ module livingDocumentation {
             }
 
             if (!documentationCode || !featureCode) {
-                var documentation = _.find(res.documentationList, d => _.any(d.features));
+                let documentation = _.find(this.filteredDocumentationList, d => _.any(d.features));
                 if (documentation) {
                     [documentationCode, featureCode] =
                     [documentation.definition.code, _.find(documentation.features, _ => true).code];
