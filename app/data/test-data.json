@@ -3,7 +3,7 @@
     {
       "RelativeFolder": "WitnessManagement\\WitnessStartingPageNumber.feature",
       "Feature": {
-        "Name": "Witness Continutation",
+        "Name": "Witness continutation",
         "Description": "",
         "FeatureElements": [
           {
@@ -64,7 +64,7 @@
           "WasSuccessful": false
         },
         "Tags": [
-          "@iteration"
+          "@manual"
         ]
       },
       "Result": {
@@ -75,12 +75,12 @@
     {
       "RelativeFolder": "VendorManagement\\VendorRecommendation.feature",
       "Feature": {
-        "Name": "Vendor Recommendation",
+        "Name": "Vendor recommendation",
         "Description": "In order to streamline vendor management\r\nAs a user\r\nI want to be able to get vendor recommendation based on job location, job date, required services, etc. and\r\nbe able to choose vendor manually from the prioritized list of vendors eligible for the job",
         "FeatureElements": [
           {
             "Name": "Recommendation based on vendor region radius",
-            "Description": "Note if job location is in US and has only state as specified then vendor region radius is ignored\r\nbeacuse we cannot measure distance to location precisely",
+            "Description": "Note if job location is in US and has only state as specified then vendor region radius is ignored\r\nbecause we cannot measure distance to location precisely",
             "Steps": [
               {
                 "Keyword": "Given",
@@ -2318,6 +2318,79 @@
       }
     },
     {
+      "RelativeFolder": "VendorManagement\\DoNotAllowToDeleteVendorsInUse.feature",
+      "Feature": {
+        "Name": "Don't allow the deletion of vendors that are in use",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor Usage"
+                  ],
+                  "DataRows": [
+                    [
+                      "recommended as reporter for some job"
+                    ],
+                    [
+                      "on hold"
+                    ],
+                    [
+                      "a backup vendor on some job"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Don't allow the deletion of vendors that are in use",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "there is a reporter Cary Bigelow"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "Cary Bigelow is <Vendor Usage>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I try to delete vendor Cary Bigelow"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get an error that vendor is in use"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": false,
+          "WasSuccessful": false
+        },
+        "Tags": [
+          "@JMS-2069"
+        ]
+      },
+      "Result": {
+        "WasExecuted": false,
+        "WasSuccessful": false
+      }
+    },
+    {
       "RelativeFolder": "VendorManagement\\AutomaticReplacingOfUnavailableVendor.feature",
       "Feature": {
         "Name": "Automatically replace vendor in jobs when marked as unavailable for some date",
@@ -2366,7 +2439,699 @@
         },
         "Tags": [
           "@JMS-1384",
-          "@transactional",
+          "@transactional"
+        ]
+      },
+      "Result": {
+        "WasExecuted": false,
+        "WasSuccessful": false
+      }
+    },
+    {
+      "RelativeFolder": "Security\\PasswordComplexityRules.feature",
+      "Feature": {
+        "Name": "Password complexity rules",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "New Password",
+                    "Validation Result",
+                    "Comment"
+                  ],
+                  "DataRows": [
+                    [
+                      "psswrd1",
+                      "not accepted",
+                      "Password length less than 8 charactes"
+                    ],
+                    [
+                      "Password",
+                      "accepted",
+                      "Upper and lowercase alphabetic characters present"
+                    ],
+                    [
+                      "password1",
+                      "accepted",
+                      "Numerical character present"
+                    ],
+                    [
+                      "12345678",
+                      "accepted",
+                      "Numerical character present"
+                    ],
+                    [
+                      "password&",
+                      "accepted",
+                      "Special character present"
+                    ],
+                    [
+                      "password",
+                      "not accepted",
+                      "Only lowercase letters"
+                    ],
+                    [
+                      "PASSWORD",
+                      "not accepted",
+                      "Only uppercase letters"
+                    ],
+                    [
+                      "!@#$%^&*()_+=-",
+                      "accepted",
+                      "Special character present"
+                    ],
+                    [
+                      "dollartest$",
+                      "accepted",
+                      "Special character present"
+                    ],
+                    [
+                      "password 1",
+                      "not accepted",
+                      "Whitespace characters are not accepted"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Validate password complexity",
+            "Description": "This scenario is applicable to JMS and CP users",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I want to reset my password"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I enter my new password as <New Password>"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "this password is <Validation Result> as valid"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": false,
+          "WasSuccessful": false
+        },
+        "Tags": [
+          "@JMS-2082"
+        ]
+      },
+      "Result": {
+        "WasExecuted": false,
+        "WasSuccessful": false
+      }
+    },
+    {
+      "RelativeFolder": "JobManagement\\CommissionRules.feature",
+      "Feature": {
+        "Name": "Commission rules",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Job's Commission Change"
+                  ],
+                  "DataRows": [
+                    [
+                      "add a new salesperson"
+                    ],
+                    [
+                      "remove a salesperson"
+                    ],
+                    [
+                      "change the order of the sales people"
+                    ],
+                    [
+                      "change the commission value for salesperson"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Manual custom commission rules",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I <Job's Commission Change>"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission type is set to manual custom"
+              }
+            ],
+            "Tags": [
+              "@manual"
+            ],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Job Change"
+                  ],
+                  "DataRows": [
+                    [
+                      "scheduling firm"
+                    ],
+                    [
+                      "primary contact of scheduling firm"
+                    ],
+                    [
+                      "case name"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Commission recalculation rules",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I change <Job Change> for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is recalculated"
+              }
+            ],
+            "Tags": [
+              "@manual"
+            ],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Name": "If commission is of manual custom type then use it on recalculation",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "job's commission is of manual custom type"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is unchanged"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Primary Contact Commission",
+                    "Resulting Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "some commission",
+                      "primary scheduling contact's commission"
+                    ],
+                    [
+                      "no commission",
+                      "House"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Commission recalculation when there are no other jobs with job's case",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job of some case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there are no other jobs for this case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "primary scheduling contact has <Primary Contact Commission>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to <Resulting Commission>"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Name": "Commission recalculation when there are other jobs with job's case and scheduling firm",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job of some case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there are other jobs for this case and same scheduling firm"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to commission from matching job with highest job number"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Primary Contact Commission",
+                    "Resulting Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "no commission",
+                      "commission from matching job with lowest job number"
+                    ],
+                    [
+                      "same commission as matching job with lowest job number",
+                      "commission from matching job with lowest job number"
+                    ],
+                    [
+                      "different commission than matching job with lowest job number",
+                      "new commission of system custom type"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Commission recalculation when there are other jobs with job's case but for other scheduling firms",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job of some case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there are other jobs for this case but they are all for other scheduling firms"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "primary scheduling contact has <Primary Contact Commission>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to <Resulting Commission>"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "#1 Kevin's",
+                    "#2 Kevin's",
+                    "#3 Kevin's",
+                    "#1 Mike's",
+                    "#2 Mike's",
+                    "#3 Mike's"
+                  ],
+                  "DataRows": [
+                    [
+                      "100",
+                      "50",
+                      "100",
+                      "100",
+                      "no commission",
+                      "75"
+                    ],
+                    [
+                      "100",
+                      "60",
+                      "105",
+                      "80",
+                      "70",
+                      "95"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "System custom commission calculation rule",
+            "Description": "Rule: (75% of commission on lowest number job of the case) + (50% of commission of primary scheduling contact on job of the case for which commission is calculated)",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "there is a case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "lowest number job of the case has the following commission:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Salesperson",
+                    "Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "Kevin",
+                      "<#1 Kevin's>"
+                    ],
+                    [
+                      "Mike",
+                      "<#1 Mike's>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a contact with the following commission:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Salesperson",
+                    "Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "Kevin",
+                      "<#2 Kevin's>"
+                    ],
+                    [
+                      "Mike",
+                      "<#2 Mike's>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this contact is set as primary for scheduling firm on some job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "new commission of system custom type is created for this job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to the following:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Salesperson",
+                    "Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "Kevin",
+                      "<#3 Kevin's>"
+                    ],
+                    [
+                      "Mike",
+                      "<#3 Mike's>"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": false,
+          "WasSuccessful": false
+        },
+        "Tags": [
+          "@JMS-2060",
+          "@iteration"
+        ]
+      },
+      "Result": {
+        "WasExecuted": false,
+        "WasSuccessful": false
+      }
+    },
+    {
+      "RelativeFolder": "ClientPortal\\JobManagement\\QuickAddContact.feature",
+      "Feature": {
+        "Name": "Ability for user to quickly add new contacts",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Name": "Send notification email when user creates new contacts via Quick Add",
+            "Description": "New job # in email should be a hyperlink to the JMS job. \r\nAll contacts (including current user) in email should be hyperlinks to their CRM contacts.",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user Alfredo Chamorro from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following new contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Last Name",
+                    "Email",
+                    "Phone"
+                  ],
+                  "DataRows": [
+                    [
+                      "Alexis",
+                      "Freeman",
+                      "afreeman@akingump.com",
+                      "(212) 702-9580"
+                    ],
+                    [
+                      "Alisa",
+                      "Strathearn",
+                      "astrathearn@akingump.com",
+                      "(212) 702-9581"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "the following email is sent to info@tsgreporting.com:",
+                "DocStringArgument": "Alfredo Chamorro from Akin Gump just added one or more new contacts to CRM while creating job [new job #]\r\n\r\nAlexis Freeman\r\n\tafreeman@akingump.com\r\n\t(212) 702-9580\r\n\r\nAlisa Strathearn\r\n\tastrathearn@akingump.com\r\n\t(212) 702-9581"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Name": "Contact Quick Add should report an error when adding duplicating contact",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Last Name",
+                    "Email",
+                    "Phone"
+                  ],
+                  "DataRows": [
+                    [
+                      "Alexis",
+                      "Freeman",
+                      "afreeman@akingump.com",
+                      "(212) 702-9580"
+                    ],
+                    [
+                      "Alisa",
+                      "Strathearn",
+                      "astrathearn@akingump.com",
+                      "(212) 702-9581"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "Alisa Strathearn contact for Akin Gump already exists"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get error about duplicating contact for the company"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": false,
+          "WasSuccessful": false
+        },
+        "Tags": [
+          "@JMS-2036",
           "@iteration"
         ]
       },
@@ -2377,6 +3142,6 @@
     }
   ],
   "Configuration": {
-    "GeneratedOn": "19 May 2015 15:56:32"
+    "GeneratedOn": "4 August 2015 10:34:25"
   }
 }

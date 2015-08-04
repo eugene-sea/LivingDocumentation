@@ -27,6 +27,9 @@
     <div ng-if="step.TableArgument">
       <div class="h-scrollable" table="step.TableArgument"></div>
     </div>
+    <div ng-if="step.DocStringArgument">
+      <pre ng-bind-html="step.DocStringArgument | highlight | newline"></pre>
+    </div>
   </div>
 
   <div ng-if="ctrl.scenario.Examples">

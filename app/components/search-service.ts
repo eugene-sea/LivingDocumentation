@@ -173,7 +173,7 @@ module livingDocumentation {
             return true;
         }
 
-        return isTextPresent(searchContext, step.Name);
+        return isTextPresent(searchContext, step.Name) || isTextPresent(searchContext, step.DocStringArgument);
     }
 
     function isTagPresentInFeature(tag: RegExp, feature: IFeature): IScenario[] {

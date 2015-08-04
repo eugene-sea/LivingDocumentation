@@ -254,7 +254,7 @@ var livingDocumentation;
         if (step.TableArgument && isTextPresentInTable(searchContext, step.TableArgument)) {
             return true;
         }
-        return isTextPresent(searchContext, step.Name);
+        return isTextPresent(searchContext, step.Name) || isTextPresent(searchContext, step.DocStringArgument);
     }
     function isTagPresentInFeature(tag, feature) {
         if (_.any(feature.Feature.Tags, function (t) { return isTextPresentRegEx(tag, t); })) {

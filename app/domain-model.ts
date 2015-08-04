@@ -10,6 +10,7 @@ module livingDocumentation {
         Keyword: string;
         Name: string;
         TableArgument?: ITable;
+        DocStringArgument?: string;
     }
 
     export interface IScenario {
