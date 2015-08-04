@@ -65,7 +65,7 @@ module livingDocumentation {
         onStopProcessing: () => void;
 
         static $inject: string[] = [
-            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$routeParams'
+            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$route'
         ];
 
         constructor(
@@ -74,7 +74,7 @@ module livingDocumentation {
             private $timeout: ng.ITimeoutService,
             private searchService: ISearchService,
             private $location: ng.ILocationService,
-            private $routeParams: angular.route.IRouteParamsService) {
+            private $route: angular.route.IRouteService) {
             this.loading = true;
             this.deferred = $q.defer<ILivingDocumentationService>();
             this.resolve = this.deferred.promise;
@@ -163,7 +163,12 @@ module livingDocumentation {
             }
 
             let [documentationCode, featureCode] =
-                [<string>this.$routeParams['documentationCode'], <string>this.$routeParams['featureCode']];
+                !this.$route.current
+                    ? [null, null]
+                    : [
+                        <string>this.$route.current.params['documentationCode'],
+                        <string>this.$route.current.params['featureCode']
+                    ];
 
             if (documentationCode && featureCode) {
                 let documentation = _.find(

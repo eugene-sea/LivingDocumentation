@@ -295,13 +295,13 @@ var livingDocumentation;
 (function (livingDocumentation) {
     var TIMEOUT = 200;
     var LivingDocumentationService = (function () {
-        function LivingDocumentationService(livingDocumentationServer, $q, $timeout, searchService, $location, $routeParams) {
+        function LivingDocumentationService(livingDocumentationServer, $q, $timeout, searchService, $location, $route) {
             this.livingDocumentationServer = livingDocumentationServer;
             this.$q = $q;
             this.$timeout = $timeout;
             this.searchService = searchService;
             this.$location = $location;
-            this.$routeParams = $routeParams;
+            this.$route = $route;
             this.currentSearchText = '';
             this.documentationList = [];
             this.filteredDocumentationList = [];
@@ -383,7 +383,12 @@ var livingDocumentation;
                 var res = this.searchService.search(searchText, this.documentationList);
                 _a = [res.documentationList, res.searchContext, searchText], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];
             }
-            var _b = [this.$routeParams['documentationCode'], this.$routeParams['featureCode']], documentationCode = _b[0], featureCode = _b[1];
+            var _b = !this.$route.current
+                ? [null, null]
+                : [
+                    this.$route.current.params['documentationCode'],
+                    this.$route.current.params['featureCode']
+                ], documentationCode = _b[0], featureCode = _b[1];
             if (documentationCode && featureCode) {
                 var documentation = _.find(this.filteredDocumentationList, function (doc) { return doc.definition.code === documentationCode; });
                 if (!documentation) {
@@ -411,7 +416,7 @@ var livingDocumentation;
             var _a, _c;
         };
         LivingDocumentationService.$inject = [
-            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$routeParams'
+            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$route'
         ];
         return LivingDocumentationService;
     })();
