@@ -302,6 +302,7 @@ var livingDocumentation;
             this.searchService = searchService;
             this.$location = $location;
             this.$routeParams = $routeParams;
+            this.currentSearchText = '';
             this.documentationList = [];
             this.filteredDocumentationList = [];
             this.searchContext = null;
@@ -354,7 +355,7 @@ var livingDocumentation;
             this.$location.search('search', searchText);
             if (!searchText) {
                 this.$location.search('showInProgressOnly', null);
-                _a = [this.documentationList, null], this.filteredDocumentationList = _a[0], this.searchContext = _a[1];
+                _a = [this.documentationList, null, null], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];
                 return;
             }
             this.searchCore();
@@ -378,8 +379,11 @@ var livingDocumentation;
         };
         LivingDocumentationService.prototype.searchCore = function () {
             var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
-            var res = this.searchService.search(searchText, this.documentationList);
-            var _a = [this.$routeParams['documentationCode'], this.$routeParams['featureCode']], documentationCode = _a[0], featureCode = _a[1];
+            if (searchText !== this.currentSearchText) {
+                var res = this.searchService.search(searchText, this.documentationList);
+                _a = [res.documentationList, res.searchContext, searchText], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];
+            }
+            var _b = [this.$routeParams['documentationCode'], this.$routeParams['featureCode']], documentationCode = _b[0], featureCode = _b[1];
             if (documentationCode && featureCode) {
                 var documentation = _.find(res.documentationList, function (doc) { return doc.definition.code === documentationCode; });
                 if (!documentation) {
@@ -395,17 +399,16 @@ var livingDocumentation;
             if (!documentationCode || !featureCode) {
                 var documentation = _.find(res.documentationList, function (d) { return _.any(d.features); });
                 if (documentation) {
-                    _b = [documentation.definition.code, _.find(documentation.features, function (_) { return true; }).code], documentationCode = _b[0], featureCode = _b[1];
+                    _c = [documentation.definition.code, _.find(documentation.features, function (_) { return true; }).code], documentationCode = _c[0], featureCode = _c[1];
                 }
             }
-            _c = [res.documentationList, res.searchContext], this.filteredDocumentationList = _c[0], this.searchContext = _c[1];
             if (!documentationCode || !featureCode) {
                 this.$location.path('/home');
             }
             else {
                 this.$location.path("/feature/" + documentationCode + "/" + featureCode);
             }
-            var _b, _c;
+            var _a, _c;
         };
         LivingDocumentationService.$inject = [
             'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$routeParams'

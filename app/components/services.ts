@@ -44,6 +44,7 @@ module livingDocumentation {
 
     class LivingDocumentationService implements ILivingDocumentationService {
         private deferred: ng.IDeferred<ILivingDocumentationService>;
+        private currentSearchText = '';
 
         loading: boolean;
 
@@ -124,7 +125,8 @@ module livingDocumentation {
 
             if (!searchText) {
                 this.$location.search('showInProgressOnly', null);
-                [this.filteredDocumentationList, this.searchContext] = [this.documentationList, null];
+                [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
+                [this.documentationList, null, null];
                 return;
             }
 
@@ -153,7 +155,13 @@ module livingDocumentation {
 
         private searchCore() {
             var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
-            var res = this.searchService.search(searchText, this.documentationList);
+
+            if (searchText !== this.currentSearchText) {
+                var res = this.searchService.search(searchText, this.documentationList);
+                [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
+                [res.documentationList, res.searchContext, searchText];
+            }
+
             var [documentationCode, featureCode] =
                 [<string>this.$routeParams['documentationCode'], <string>this.$routeParams['featureCode']];
 
@@ -177,7 +185,6 @@ module livingDocumentation {
                 }
             }
 
-            [this.filteredDocumentationList, this.searchContext] = [res.documentationList, res.searchContext];
             if (!documentationCode || !featureCode) {
                 this.$location.path('/home');
             } else {
