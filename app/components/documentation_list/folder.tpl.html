@@ -9,7 +9,7 @@
 <div 
   class="folder-item-padding" 
   ng-class="{'folder-indent': !ctrl.folder.isRoot}" 
-  ng-repeat="feature in ctrl.folder.features">
+  ng-repeat="feature in ctrl.folder.features | orderBy: 'Feature.Name'"">
   <a 
     class="inactive-feature"
     href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}{{ctrl.searchPart}}"

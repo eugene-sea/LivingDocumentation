@@ -63,14 +63,17 @@ module livingDocumentation {
 
         onStopProcessing: () => void;
 
-        static $inject: string[] = ['livingDocumentationServer', '$q', '$timeout', 'search', '$location'];
+        static $inject: string[] = [
+            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$routeParams'
+        ];
 
         constructor(
             private livingDocumentationServer: ILivingDocumentationServer,
             private $q: ng.IQService,
             private $timeout: ng.ITimeoutService,
             private searchService: ISearchService,
-            private $location: ng.ILocationService) {
+            private $location: ng.ILocationService,
+            private $routeParams: angular.route.IRouteParamsService) {
             this.loading = true;
             this.deferred = $q.defer<ILivingDocumentationService>();
             this.resolve = this.deferred.promise;
@@ -151,7 +154,35 @@ module livingDocumentation {
         private searchCore() {
             var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
             var res = this.searchService.search(searchText, this.documentationList);
+            var [documentationCode, featureCode] =
+                [<string>this.$routeParams['documentationCode'], <string>this.$routeParams['featureCode']];
+
+            if (documentationCode && featureCode) {
+                var documentation = _.find(res.documentationList, doc => doc.definition.code === documentationCode);
+                if (!documentation) {
+                    documentationCode = null;
+                } else {
+                    var feature = documentation.features[featureCode];
+                    if (!feature) {
+                        featureCode = null;
+                    }
+                }
+            }
+
+            if (!documentationCode || !featureCode) {
+                var documentation = _.find(res.documentationList, d => _.any(d.features));
+                if (documentation) {
+                    [documentationCode, featureCode] =
+                    [documentation.definition.code, _.find(documentation.features, _ => true).code];
+                }
+            }
+
             [this.filteredDocumentationList, this.searchContext] = [res.documentationList, res.searchContext];
+            if (!documentationCode || !featureCode) {
+                this.$location.path('/home');
+            } else {
+                this.$location.path(`/feature/${documentationCode}/${featureCode}`);
+            }
         }
     }
 

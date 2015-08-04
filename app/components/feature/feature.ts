@@ -28,12 +28,12 @@ module livingDocumentation {
 
         constructor(livingDocumentationService: ILivingDocumentationService) {
             var doc = _.find(
-                livingDocumentationService.documentationList,
+                livingDocumentationService.filteredDocumentationList,
                 doc => doc.definition.code === this.documentationCode);
 
             this.feature = doc.features[this.featureCode];
         }
-        
+
         get isExpanded(): boolean { return this.feature.isExpanded; }
         set isExpanded(value: boolean) {
             this.feature.isExpanded = value;

@@ -173,17 +173,19 @@ var livingDocumentation;
         if (!root) {
             return null;
         }
+        var features = {};
+        addFeatures(root, features);
         return {
             definition: doc.definition,
             root: root,
-            features: doc.features,
+            features: features,
             lastUpdatedOn: doc.lastUpdatedOn
         };
     }
     function isTextPresentInFolder(searchContext, folder) {
         var isTextPresentInTitle = !folder.isRoot && !_.any(searchContext.tags) &&
             isTextPresent(searchContext, splitWords(folder.name));
-        var features = _.filter(folder.features, function (f) { return isTextPresentInFeature(searchContext, f); });
+        var features = _.filter(_.map(folder.features, function (f) { return isTextPresentInFeature(searchContext, f); }), function (f) { return !!f; });
         var folders = _.filter(_.map(folder.children, function (f) { return isTextPresentInFolder(searchContext, f); }), function (f) { return !!f; });
         if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {
             return null;
@@ -196,19 +198,34 @@ var livingDocumentation;
         };
     }
     function isTextPresentInFeature(searchContext, feature) {
-        if (!_.all(searchContext.tags, function (t) { return isTagPresentInFeature(t, feature); })) {
-            return false;
+        var tagsScenariosMap = _.map(searchContext.tags, function (t) { return isTagPresentInFeature(t, feature); });
+        if (_.any(tagsScenariosMap, function (a) { return a === null; })) {
+            return null;
         }
-        if (isTextPresent(searchContext, feature.Feature.Name)) {
-            return true;
+        var tagsScenarios = _.union.apply(_, tagsScenariosMap);
+        var isTextPresentInTitle = isTextPresent(searchContext, feature.Feature.Name);
+        var isTextPresentInDescription = isTextPresent(searchContext, feature.Feature.Description);
+        var isTextPresentInBackground = feature.Feature.Background && isTextPresentInScenario(searchContext, feature.Feature.Background);
+        // Intersection is made to preserve original order between scenarios
+        var scenarios = !_.any(searchContext.tags)
+            ? feature.Feature.FeatureElements : _.intersection(feature.Feature.FeatureElements, tagsScenarios);
+        scenarios = _.filter(scenarios, function (s) { return isTextPresentInScenario(searchContext, s); });
+        if (!isTextPresentInTitle && !isTextPresentInDescription && !isTextPresentInBackground && !_.any(scenarios)) {
+            return null;
         }
-        if (isTextPresent(searchContext, feature.Feature.Description)) {
-            return true;
-        }
-        if (feature.Feature.Background && isTextPresentInScenario(searchContext, feature.Feature.Background)) {
-            return true;
-        }
-        return _.any(feature.Feature.FeatureElements, function (s) { return isTextPresentInScenario(searchContext, s); });
+        return {
+            code: feature.code,
+            get isExpanded() { return feature.isExpanded; },
+            set isExpanded(value) { feature.isExpanded = value; },
+            RelativeFolder: feature.RelativeFolder,
+            Feature: {
+                Name: feature.Feature.Name,
+                Description: feature.Feature.Description,
+                Tags: feature.Feature.Tags,
+                Background: !isTextPresentInBackground ? null : feature.Feature.Background,
+                FeatureElements: scenarios
+            }
+        };
     }
     function isTextPresentInScenario(searchContext, scenario) {
         if (isTextPresent(searchContext, scenario.Name)) {
@@ -241,17 +258,24 @@ var livingDocumentation;
     }
     function isTagPresentInFeature(tag, feature) {
         if (_.any(feature.Feature.Tags, function (t) { return isTextPresentRegEx(tag, t); })) {
-            return true;
+            return feature.Feature.FeatureElements;
         }
-        return _.any(feature.Feature.FeatureElements, function (s) { return _.any(s.Tags, function (t) { return isTextPresentRegEx(tag, t); }); });
+        var scenarios = _.filter(feature.Feature.FeatureElements, function (s) { return _.any(s.Tags, function (t) { return isTextPresentRegEx(tag, t); }); });
+        return !_.any(scenarios) ? null : scenarios;
+    }
+    function addFeatures(folder, features) {
+        _.each(_.sortBy(folder.children, function (f) { return f.name; }), function (f) { return addFeatures(f, features); });
+        _.each(_.sortBy(folder.features, function (f) { return f.Feature.Name; }), function (f) { return features[f.code] = f; });
     }
     var SearchService = (function () {
         function SearchService() {
         }
         SearchService.prototype.search = function (searchText, documentationList) {
             var searchContext = getSearchContext(searchText);
+            var documentationList = _.filter(_.map(documentationList, function (d) { return isTextPresentInDocumentation(searchContext, d); }), function (d) { return !!d; });
+            documentationList = _.sortBy(documentationList, function (d) { return d.definition.sortOrder; });
             return {
-                documentationList: _.filter(_.map(documentationList, function (d) { return isTextPresentInDocumentation(searchContext, d); }), function (d) { return !!d; }),
+                documentationList: documentationList,
                 searchContext: searchContext
             };
         };
@@ -271,12 +295,13 @@ var livingDocumentation;
 (function (livingDocumentation) {
     var TIMEOUT = 200;
     var LivingDocumentationService = (function () {
-        function LivingDocumentationService(livingDocumentationServer, $q, $timeout, searchService, $location) {
+        function LivingDocumentationService(livingDocumentationServer, $q, $timeout, searchService, $location, $routeParams) {
             this.livingDocumentationServer = livingDocumentationServer;
             this.$q = $q;
             this.$timeout = $timeout;
             this.searchService = searchService;
             this.$location = $location;
+            this.$routeParams = $routeParams;
             this.documentationList = [];
             this.filteredDocumentationList = [];
             this.searchContext = null;
@@ -354,10 +379,37 @@ var livingDocumentation;
         LivingDocumentationService.prototype.searchCore = function () {
             var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
             var res = this.searchService.search(searchText, this.documentationList);
-            _a = [res.documentationList, res.searchContext], this.filteredDocumentationList = _a[0], this.searchContext = _a[1];
-            var _a;
+            var _a = [this.$routeParams['documentationCode'], this.$routeParams['featureCode']], documentationCode = _a[0], featureCode = _a[1];
+            if (documentationCode && featureCode) {
+                var documentation = _.find(res.documentationList, function (doc) { return doc.definition.code === documentationCode; });
+                if (!documentation) {
+                    documentationCode = null;
+                }
+                else {
+                    var feature = documentation.features[featureCode];
+                    if (!feature) {
+                        featureCode = null;
+                    }
+                }
+            }
+            if (!documentationCode || !featureCode) {
+                var documentation = _.find(res.documentationList, function (d) { return _.any(d.features); });
+                if (documentation) {
+                    _b = [documentation.definition.code, _.find(documentation.features, function (_) { return true; }).code], documentationCode = _b[0], featureCode = _b[1];
+                }
+            }
+            _c = [res.documentationList, res.searchContext], this.filteredDocumentationList = _c[0], this.searchContext = _c[1];
+            if (!documentationCode || !featureCode) {
+                this.$location.path('/home');
+            }
+            else {
+                this.$location.path("/feature/" + documentationCode + "/" + featureCode);
+            }
+            var _b, _c;
         };
-        LivingDocumentationService.$inject = ['livingDocumentationServer', '$q', '$timeout', 'search', '$location'];
+        LivingDocumentationService.$inject = [
+            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$routeParams'
+        ];
         return LivingDocumentationService;
     })();
     angular.module('livingDocumentation.services', [
@@ -661,7 +713,7 @@ var livingDocumentation;
     var Feature = (function () {
         function Feature(livingDocumentationService) {
             var _this = this;
-            var doc = _.find(livingDocumentationService.documentationList, function (doc) { return doc.definition.code === _this.documentationCode; });
+            var doc = _.find(livingDocumentationService.filteredDocumentationList, function (doc) { return doc.definition.code === _this.documentationCode; });
             this.feature = doc.features[this.featureCode];
         }
         Object.defineProperty(Feature.prototype, "isExpanded", {

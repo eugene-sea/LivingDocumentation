@@ -72,10 +72,12 @@ module livingDocumentation {
             return null;
         }
 
+        var features: IFeatures = {};
+        addFeatures(root, features);
         return {
             definition: doc.definition,
             root: root,
-            features: doc.features,
+            features: features,
             lastUpdatedOn: doc.lastUpdatedOn
         };
     }
@@ -83,7 +85,7 @@ module livingDocumentation {
     function isTextPresentInFolder(searchContext: ISearchContext, folder: IFolder): IFolder {
         var isTextPresentInTitle = !folder.isRoot && !_.any(searchContext.tags) &&
             isTextPresent(searchContext, splitWords(folder.name));
-        var features = _.filter(folder.features, f => isTextPresentInFeature(searchContext, f));
+        var features = _.filter(_.map(folder.features, f => isTextPresentInFeature(searchContext, f)), f => !!f);
         var folders = _.filter(_.map(folder.children, f => isTextPresentInFolder(searchContext, f)), f => !!f);
         if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {
             return null;
@@ -97,24 +99,43 @@ module livingDocumentation {
         };
     }
 
-    function isTextPresentInFeature(searchContext: ISearchContext, feature: IFeature): boolean {
-        if (!_.all(searchContext.tags, t => isTagPresentInFeature(t, feature))) {
-            return false;
+    function isTextPresentInFeature(searchContext: ISearchContext, feature: IFeature): IFeature {
+        var tagsScenariosMap = _.map(searchContext.tags, t => isTagPresentInFeature(t, feature));
+
+        if (_.any(tagsScenariosMap, a => a === null)) {
+            return null;
         }
 
-        if (isTextPresent(searchContext, feature.Feature.Name)) {
-            return true;
+        var tagsScenarios = _.union(...tagsScenariosMap);
+
+        var isTextPresentInTitle = isTextPresent(searchContext, feature.Feature.Name);
+
+        var isTextPresentInDescription = isTextPresent(searchContext, feature.Feature.Description);
+
+        var isTextPresentInBackground = feature.Feature.Background && isTextPresentInScenario(searchContext, feature.Feature.Background);
+
+        // Intersection is made to preserve original order between scenarios
+        var scenarios = !_.any(searchContext.tags)
+            ? feature.Feature.FeatureElements : _.intersection(feature.Feature.FeatureElements, tagsScenarios);
+
+        scenarios = _.filter(scenarios, s => isTextPresentInScenario(searchContext, s));
+        if (!isTextPresentInTitle && !isTextPresentInDescription && !isTextPresentInBackground && !_.any(scenarios)) {
+            return null;
         }
 
-        if (isTextPresent(searchContext, feature.Feature.Description)) {
-            return true;
-        }
-
-        if (feature.Feature.Background && isTextPresentInScenario(searchContext, feature.Feature.Background)) {
-            return true;
-        }
-
-        return _.any(feature.Feature.FeatureElements, s => isTextPresentInScenario(searchContext, s));
+        return {
+            code: feature.code,
+            get isExpanded() { return feature.isExpanded; },
+            set isExpanded(value: boolean) { feature.isExpanded = value; },
+            RelativeFolder: feature.RelativeFolder,
+            Feature: {
+                Name: feature.Feature.Name,
+                Description: feature.Feature.Description,
+                Tags: feature.Feature.Tags,
+                Background: !isTextPresentInBackground ? null : feature.Feature.Background,
+                FeatureElements: scenarios
+            }
+        };
     }
 
     function isTextPresentInScenario(searchContext: ISearchContext, scenario: IScenario): boolean {
@@ -155,21 +176,29 @@ module livingDocumentation {
         return isTextPresent(searchContext, step.Name);
     }
 
-    function isTagPresentInFeature(tag: RegExp, feature: IFeature): boolean {
+    function isTagPresentInFeature(tag: RegExp, feature: IFeature): IScenario[] {
         if (_.any(feature.Feature.Tags, t => isTextPresentRegEx(tag, t))) {
-            return true;
+            return feature.Feature.FeatureElements;
         }
 
-        return _.any(feature.Feature.FeatureElements, s => _.any(s.Tags, t => isTextPresentRegEx(tag, t)));
+        var scenarios = _.filter(feature.Feature.FeatureElements, s => _.any(s.Tags, t => isTextPresentRegEx(tag, t)));
+        return !_.any(scenarios) ? null : scenarios;
+    }
+
+    function addFeatures(folder: IFolder, features: IFeatures) {
+        _.each(_.sortBy(folder.children, f => f.name), f => addFeatures(f, features));
+        _.each(_.sortBy(folder.features, f => f.Feature.Name), f => features[f.code] = f);
     }
 
     class SearchService implements ISearchService {
         search(searchText: string, documentationList: ILivingDocumentation[]):
             { documentationList: ILivingDocumentation[]; searchContext: ISearchContext; } {
             var searchContext = getSearchContext(searchText);
+            var documentationList = _.filter(
+                _.map(documentationList, d => isTextPresentInDocumentation(searchContext, d)), d => !!d);
+            documentationList = _.sortBy(documentationList, d => d.definition.sortOrder);
             return {
-                documentationList: _.filter(
-                    _.map(documentationList, d => isTextPresentInDocumentation(searchContext, d)), d => !!d),
+                documentationList: documentationList,
                 searchContext: searchContext
             };
         }
