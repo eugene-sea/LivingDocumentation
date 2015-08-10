@@ -735,6 +735,9 @@ var livingDocumentation;
             var _this = this;
             this.documentation = _.find(livingDocumentationService.filteredDocumentationList, function (doc) { return doc.definition.code === _this.documentationCode; });
             this.feature = this.documentation.features[this.featureCode];
+            if (this.documentation.definition.featureEditUri) {
+                this.featureEditUri = utils.format(this.documentation.definition.featureEditUri, this.feature.RelativeFolder.replace(/\\/g, '/'));
+            }
         }
         Object.defineProperty(Feature.prototype, "isExpanded", {
             get: function () { return this.feature.isExpanded; },

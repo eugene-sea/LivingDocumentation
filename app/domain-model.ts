@@ -60,6 +60,7 @@ module livingDocumentation {
         featuresResource: string;
         issueTrackingRegExp: string;
         issueTrackingUri: string;
+        featureEditUri?: string;
         testsResources?: string;
         testUri?: string;
     }

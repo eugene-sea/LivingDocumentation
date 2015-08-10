@@ -26,6 +26,7 @@ module livingDocumentation {
         documentationCode: string;
         documentation: ILivingDocumentation;
         feature: IFeature;
+        featureEditUri: string;
 
         constructor(livingDocumentationService: ILivingDocumentationService) {
             this.documentation = _.find(
@@ -33,6 +34,10 @@ module livingDocumentation {
                 doc => doc.definition.code === this.documentationCode);
 
             this.feature = this.documentation.features[this.featureCode];
+            if (this.documentation.definition.featureEditUri) {
+                this.featureEditUri = utils.format(
+                    this.documentation.definition.featureEditUri, this.feature.RelativeFolder.replace(/\\/g, '/'));
+            }
         }
 
         get isExpanded(): boolean { return this.feature.isExpanded; }
