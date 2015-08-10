@@ -776,13 +776,32 @@ var livingDocumentation;
         }
         return Table;
     })();
+    var TagsDirective = (function () {
+        function TagsDirective() {
+            this.restrict = 'A';
+            this.scope = {
+                tags: '='
+            };
+            this.controller = Tags;
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/feature/Tags.tpl.html';
+        }
+        return TagsDirective;
+    })();
+    var Tags = (function () {
+        function Tags() {
+        }
+        return Tags;
+    })();
     angular.module('livingDocumentation.feature', [
         'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
     ])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
         .controller('Feature', Feature)
         .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))
-        .directive('table', utils.wrapInjectionConstructor(TableDirective));
+        .directive('table', utils.wrapInjectionConstructor(TableDirective))
+        .directive('tags', utils.wrapInjectionConstructor(TagsDirective));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />

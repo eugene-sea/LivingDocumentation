@@ -71,11 +71,25 @@ module livingDocumentation {
 
     class Table { }
 
+    class TagsDirective implements ng.IDirective {
+        restrict = 'A';
+        scope = {
+            tags: '='
+        };
+        controller = Tags;
+        controllerAs = 'ctrl';
+        bindToController = true;
+        templateUrl = 'components/feature/Tags.tpl.html';
+    }
+
+    class Tags { }
+
     angular.module('livingDocumentation.feature', [
         'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
     ])
         .directive('feature', utils.wrapInjectionConstructor(FeatureDirective))
         .controller('Feature', Feature)
         .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))
-        .directive('table', utils.wrapInjectionConstructor(TableDirective));
+        .directive('table', utils.wrapInjectionConstructor(TableDirective))
+        .directive('tags', utils.wrapInjectionConstructor(TagsDirective));
 }
