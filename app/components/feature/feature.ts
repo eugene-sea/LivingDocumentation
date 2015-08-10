@@ -24,14 +24,15 @@ module livingDocumentation {
 
         featureCode: string;
         documentationCode: string;
+        documentation: ILivingDocumentation;
         feature: IFeature;
 
         constructor(livingDocumentationService: ILivingDocumentationService) {
-            var doc = _.find(
+            this.documentation = _.find(
                 livingDocumentationService.filteredDocumentationList,
                 doc => doc.definition.code === this.documentationCode);
 
-            this.feature = doc.features[this.featureCode];
+            this.feature = this.documentation.features[this.featureCode];
         }
 
         get isExpanded(): boolean { return this.feature.isExpanded; }
@@ -47,6 +48,7 @@ module livingDocumentation {
     class ScenarioDirective implements ng.IDirective {
         restrict = 'A';
         scope = {
+            documentation: '=',
             scenario: '='
         };
         controller = Scenario;
@@ -74,6 +76,7 @@ module livingDocumentation {
     class TagsDirective implements ng.IDirective {
         restrict = 'A';
         scope = {
+            documentation: '=',
             tags: '='
         };
         controller = Tags;
@@ -82,7 +85,14 @@ module livingDocumentation {
         templateUrl = 'components/feature/Tags.tpl.html';
     }
 
-    class Tags { }
+    class Tags {
+        documentation: ILivingDocumentation;
+
+        getIssueTrackingUri(tag: string): string {
+            var match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
+            return match === null ? null : utils.format(this.documentation.definition.issueTrackingUri, ...match);
+        }
+    }
 
     angular.module('livingDocumentation.feature', [
         'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'

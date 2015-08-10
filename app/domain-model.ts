@@ -58,6 +58,8 @@ module livingDocumentation {
         description: string;
         sortOrder: number;
         featuresResource: string;
+        issueTrackingRegExp: string;
+        issueTrackingUri: string;
         testsResources?: string;
         testUri?: string;
     }

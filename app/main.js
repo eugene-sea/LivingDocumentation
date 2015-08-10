@@ -16,6 +16,18 @@ var utils;
         });
     }
     utils.wrapFilterInjectionConstructor = wrapFilterInjectionConstructor;
+    function format(format) {
+        var args = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            args[_i - 1] = arguments[_i];
+        }
+        return format.replace(/{(\d+)}/g, function (match, index) {
+            return typeof args[index] !== 'undefined'
+                ? args[index]
+                : match;
+        });
+    }
+    utils.format = format;
 })(utils || (utils = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-resource.d.ts" />
@@ -721,8 +733,8 @@ var livingDocumentation;
     var Feature = (function () {
         function Feature(livingDocumentationService) {
             var _this = this;
-            var doc = _.find(livingDocumentationService.filteredDocumentationList, function (doc) { return doc.definition.code === _this.documentationCode; });
-            this.feature = doc.features[this.featureCode];
+            this.documentation = _.find(livingDocumentationService.filteredDocumentationList, function (doc) { return doc.definition.code === _this.documentationCode; });
+            this.feature = this.documentation.features[this.featureCode];
         }
         Object.defineProperty(Feature.prototype, "isExpanded", {
             get: function () { return this.feature.isExpanded; },
@@ -743,6 +755,7 @@ var livingDocumentation;
         function ScenarioDirective() {
             this.restrict = 'A';
             this.scope = {
+                documentation: '=',
                 scenario: '='
             };
             this.controller = Scenario;
@@ -780,6 +793,7 @@ var livingDocumentation;
         function TagsDirective() {
             this.restrict = 'A';
             this.scope = {
+                documentation: '=',
                 tags: '='
             };
             this.controller = Tags;
@@ -792,6 +806,10 @@ var livingDocumentation;
     var Tags = (function () {
         function Tags() {
         }
+        Tags.prototype.getIssueTrackingUri = function (tag) {
+            var match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
+            return match === null ? null : utils.format.apply(utils, [this.documentation.definition.issueTrackingUri].concat(match));
+        };
         return Tags;
     })();
     angular.module('livingDocumentation.feature', [

@@ -17,7 +17,7 @@
 
 <div ng-if="ctrl.scenario.isExpanded">
   <p ng-if="ctrl.scenario.Tags.length > 0">
-    <span tags="ctrl.scenario.Tags"></span>
+    <span tags="ctrl.scenario.Tags" documentation="ctrl.documentation"></span>
   </p>
 
   <p><i ng-bind-html="ctrl.scenario.Description | highlight | newline"></i></p>

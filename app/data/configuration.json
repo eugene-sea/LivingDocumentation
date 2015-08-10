@@ -5,6 +5,8 @@
         "description": "",
         "sortOrder": 1,
         "featuresResource": "test-data.json",
+        "issueTrackingRegExp": "@(JMS-\\d+)",
+        "issueTrackingUri": "http://example.com/Issues/?Issue={1}",
         "testsResources": "test-data-tests.json",
         "testUri": "http://example.com/Tests/?Test="
     }
