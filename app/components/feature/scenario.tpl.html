@@ -2,8 +2,15 @@
   <tr>
     <td><h4 ng-bind-html="ctrl.scenario.Name || 'Background' | highlight"></h4></td> 
     <td class="no-stretch" ng-if="ctrl.scenario.tests && ctrl.scenario.tests.length == 1">
-      <a class="text-right" href="{{ctrl.scenario.tests[0]}}" target="_blank">Run test</a>&nbsp;
+      <a class="text-right" href="{{ctrl.scenario.tests[0]}}" target="_blank">Run test</a>
     </td>
+    <td class="no-stretch">&nbsp;</td>
+    <td class="no-stretch">
+      <h4>
+        <div status="ctrl.scenario.Result"></div>
+      </h4>
+    </td>
+    <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
       <a ng-click="ctrl.scenario.isExpanded = !ctrl.scenario.isExpanded">
         <h4>

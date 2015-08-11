@@ -133,7 +133,8 @@ module livingDocumentation {
                 Description: feature.Feature.Description,
                 Tags: feature.Feature.Tags,
                 Background: !isTextPresentInBackground ? null : feature.Feature.Background,
-                FeatureElements: scenarios
+                FeatureElements: scenarios,
+                Result: feature.Feature.Result
             }
         };
     }

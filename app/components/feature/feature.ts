@@ -99,6 +99,19 @@ module livingDocumentation {
         }
     }
 
+    class StatusDirective implements ng.IDirective {
+        restrict = 'A';
+        scope = {
+            status: '='
+        };
+        controller = Status;
+        controllerAs = 'ctrl';
+        bindToController = true;
+        templateUrl = 'components/feature/status.tpl.html';
+    }
+
+    class Status { }
+
     angular.module('livingDocumentation.feature', [
         'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
     ])
@@ -106,5 +119,6 @@ module livingDocumentation {
         .controller('Feature', Feature)
         .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))
         .directive('table', utils.wrapInjectionConstructor(TableDirective))
-        .directive('tags', utils.wrapInjectionConstructor(TagsDirective));
+        .directive('tags', utils.wrapInjectionConstructor(TagsDirective))
+        .directive('status', utils.wrapInjectionConstructor(StatusDirective));
 }

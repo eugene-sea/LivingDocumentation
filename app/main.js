@@ -235,7 +235,8 @@ var livingDocumentation;
                 Description: feature.Feature.Description,
                 Tags: feature.Feature.Tags,
                 Background: !isTextPresentInBackground ? null : feature.Feature.Background,
-                FeatureElements: scenarios
+                FeatureElements: scenarios,
+                Result: feature.Feature.Result
             }
         };
     }
@@ -815,6 +816,24 @@ var livingDocumentation;
         };
         return Tags;
     })();
+    var StatusDirective = (function () {
+        function StatusDirective() {
+            this.restrict = 'A';
+            this.scope = {
+                status: '='
+            };
+            this.controller = Status;
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/feature/status.tpl.html';
+        }
+        return StatusDirective;
+    })();
+    var Status = (function () {
+        function Status() {
+        }
+        return Status;
+    })();
     angular.module('livingDocumentation.feature', [
         'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
     ])
@@ -822,7 +841,8 @@ var livingDocumentation;
         .controller('Feature', Feature)
         .directive('scenario', utils.wrapInjectionConstructor(ScenarioDirective))
         .directive('table', utils.wrapInjectionConstructor(TableDirective))
-        .directive('tags', utils.wrapInjectionConstructor(TagsDirective));
+        .directive('tags', utils.wrapInjectionConstructor(TagsDirective))
+        .directive('status', utils.wrapInjectionConstructor(StatusDirective));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />

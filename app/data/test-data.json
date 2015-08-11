@@ -28,7 +28,7 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
+              "WasExecuted": true,
               "WasSuccessful": false
             }
           },
@@ -60,12 +60,10 @@
           }
         ],
         "Result": {
-          "WasExecuted": false,
+          "WasExecuted": true,
           "WasSuccessful": false
         },
-        "Tags": [
-          "@manual"
-        ]
+        "Tags": []
       },
       "Result": {
         "WasExecuted": false,
@@ -146,8 +144,8 @@
               "@JMS-1908"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -246,8 +244,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -346,8 +344,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -417,8 +415,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -516,8 +514,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -621,8 +619,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -725,8 +723,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -832,8 +830,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1009,8 +1007,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1105,8 +1103,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1171,8 +1169,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1256,8 +1254,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1322,8 +1320,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1409,8 +1407,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1507,8 +1505,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1548,8 +1546,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1640,8 +1638,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1706,8 +1704,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1762,8 +1760,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1849,8 +1847,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -1939,8 +1937,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2093,8 +2091,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2169,8 +2167,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2248,8 +2246,8 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2299,22 +2297,22 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           }
         ],
         "Result": {
-          "WasExecuted": false,
-          "WasSuccessful": false
+          "WasExecuted": true,
+          "WasSuccessful": true
         },
         "Tags": [
           "@JMS-1762"
         ]
       },
       "Result": {
-        "WasExecuted": false,
-        "WasSuccessful": false
+        "WasExecuted": true,
+        "WasSuccessful": true
       }
     },
     {
@@ -2372,22 +2370,22 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           }
         ],
         "Result": {
-          "WasExecuted": false,
-          "WasSuccessful": false
+          "WasExecuted": true,
+          "WasSuccessful": true
         },
         "Tags": [
           "@JMS-2069"
         ]
       },
       "Result": {
-        "WasExecuted": false,
-        "WasSuccessful": false
+        "WasExecuted": true,
+        "WasSuccessful": true
       }
     },
     {
@@ -2428,14 +2426,14 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           }
         ],
         "Result": {
-          "WasExecuted": false,
-          "WasSuccessful": false
+          "WasExecuted": true,
+          "WasSuccessful": true
         },
         "Tags": [
           "@JMS-1384",
@@ -2443,8 +2441,8 @@
         ]
       },
       "Result": {
-        "WasExecuted": false,
-        "WasSuccessful": false
+        "WasExecuted": true,
+        "WasSuccessful": true
       }
     },
     {
@@ -2613,8 +2611,8 @@
               "@manual"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2663,8 +2661,8 @@
               "@manual"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2696,8 +2694,8 @@
               "@transactional"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2756,8 +2754,8 @@
               "@transactional"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2789,8 +2787,8 @@
               "@transactional"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2853,8 +2851,8 @@
               "@transactional"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
@@ -2978,14 +2976,14 @@
               "@transactional"
             ],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           }
         ],
         "Result": {
-          "WasExecuted": false,
-          "WasSuccessful": false
+          "WasExecuted": true,
+          "WasSuccessful": true
         },
         "Tags": [
           "@JMS-2060",
@@ -2993,12 +2991,12 @@
         ]
       },
       "Result": {
-        "WasExecuted": false,
-        "WasSuccessful": false
+        "WasExecuted": true,
+        "WasSuccessful": true
       }
     },
     {
-      "RelativeFolder": "ClientPortal\\JobManagement\\QuickAddContact.feature",
+      "RelativeFolder": "ClientPortal\\QuickAddContact.feature",
       "Feature": {
         "Name": "Ability for user to quickly add new contacts",
         "Description": "",
@@ -3026,7 +3024,7 @@
                     "First Name",
                     "Last Name",
                     "Email",
-                    "Phone"
+                    "Direct Phone"
                   ],
                   "DataRows": [
                     [
@@ -3058,12 +3056,34 @@
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           },
           {
-            "Name": "Contact Quick Add should report an error when adding duplicating contact",
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Existing Contact Email",
+                    "Error"
+                  ],
+                  "DataRows": [
+                    [
+                      "astrathearn@akingump.com",
+                      "contact with email astrathearn@akingump.com already exists"
+                    ],
+                    [
+                      "",
+                      "contact with name Alisa Strathearn for Akin Gump already exists"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Contact Quick Add should report an error when adding duplicate contact",
             "Description": "",
             "Steps": [
               {
@@ -3084,21 +3104,18 @@
                   "HeaderRow": [
                     "First Name",
                     "Last Name",
-                    "Email",
-                    "Phone"
+                    "Email"
                   ],
                   "DataRows": [
                     [
                       "Alexis",
                       "Freeman",
-                      "afreeman@akingump.com",
-                      "(212) 702-9580"
+                      "afreeman@akingump.com"
                     ],
                     [
                       "Alisa",
                       "Strathearn",
-                      "astrathearn@akingump.com",
-                      "(212) 702-9581"
+                      "<Existing Contact Email>"
                     ]
                   ]
                 }
@@ -3116,19 +3133,178 @@
               {
                 "Keyword": "Then",
                 "NativeKeyword": "Then ",
-                "Name": "I get error about duplicating contact for the company"
+                "Name": "I get an error that <Error>"
               }
             ],
             "Tags": [],
             "Result": {
-              "WasExecuted": false,
-              "WasSuccessful": false
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "#1 First Name",
+                    "#1 Email",
+                    "#2 First Name",
+                    "#2 Email",
+                    "Error"
+                  ],
+                  "DataRows": [
+                    [
+                      "Mike",
+                      "freeman@akingump.com",
+                      "Alexis",
+                      "freeman@akingump.com",
+                      "contact with email freeman@akingump.com cannot be added multiple times"
+                    ],
+                    [
+                      "Alexis",
+                      "",
+                      "Alexis",
+                      "",
+                      "contact with name Alexis Freeman cannot be added multiple times"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Contact Quick Add should report an error when adding similar contact multiple times",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Last Name",
+                    "Email"
+                  ],
+                  "DataRows": [
+                    [
+                      "<#1 First Name>",
+                      "Freeman",
+                      "<#1 Email>"
+                    ],
+                    [
+                      "<#2 First Name>",
+                      "Freeman",
+                      "<#2 Email>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get an error that <Error>"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Email",
+                    "Error"
+                  ],
+                  "DataRows": [
+                    [
+                      "",
+                      "",
+                      "first name is a required field"
+                    ],
+                    [
+                      "Mike",
+                      "freeman@akingump",
+                      "email \"freeman@akingump\" is invalid"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Contact Quick Add other validation scenarios",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Email"
+                  ],
+                  "DataRows": [
+                    [
+                      "<First Name>",
+                      "<Email>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get an error that <Error>"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
             }
           }
         ],
         "Result": {
-          "WasExecuted": false,
-          "WasSuccessful": false
+          "WasExecuted": true,
+          "WasSuccessful": true
         },
         "Tags": [
           "@JMS-2036",
@@ -3136,12 +3312,12 @@
         ]
       },
       "Result": {
-        "WasExecuted": false,
-        "WasSuccessful": false
+        "WasExecuted": true,
+        "WasSuccessful": true
       }
     }
   ],
   "Configuration": {
-    "GeneratedOn": "4 August 2015 10:34:25"
+    "GeneratedOn": "11 August 2015 11:53:18"
   }
 }

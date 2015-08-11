@@ -1,0 +1,9 @@
+<span 
+  ng-if="ctrl.status.WasExecuted && ctrl.status.WasSuccessful" 
+  class="glyphicon glyphicon-ok-sign text-success">
+</span>
+<span ng-if="!ctrl.status.WasExecuted" class="glyphicon glyphicon-question-sign text-warning"></span>
+<span 
+  ng-if="ctrl.status.WasExecuted && !ctrl.status.WasSuccessful" 
+  class="glyphicon glyphicon-exclamation-sign text-danger">
+</span>

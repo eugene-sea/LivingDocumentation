@@ -13,6 +13,11 @@ module livingDocumentation {
         DocStringArgument?: string;
     }
 
+    export interface IResult {
+        WasExecuted: boolean;
+        WasSuccessful: boolean;
+    }
+
     export interface IScenario {
         Name: string;
         Description: string;
@@ -22,6 +27,7 @@ module livingDocumentation {
             Decription: string;
             TableArgument: ITable;
         };
+        Result: IResult;
 
         tests: string[];
         isExpanded: boolean;
@@ -38,6 +44,7 @@ module livingDocumentation {
             Tags: string[];
             Background?: IScenario;
             FeatureElements: IScenario[];
+            Result: IResult;
         };
     }
 
