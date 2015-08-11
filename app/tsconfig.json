@@ -11,7 +11,7 @@
         "app.ts",
         "domain-model.ts",
         "components/living_documentation_app/living-documentation-app.ts",
-        "components/home-controller.ts",
+        "components/dashboard/dashboard.ts",
         "components/documentation_list/documentation-list.ts",
         "components/recursion-helper.ts",
         "components/feature/feature.ts",

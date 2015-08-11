@@ -7,7 +7,7 @@
 angular.module('livingDocumentation', [
     'ngRoute',
     'livingDocumentation.app',
-    'livingDocumentation.controllers.home',
+    'livingDocumentation.controllers.dashboard',
     'livingDocumentation.feature',
 ]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
     var resolve: { [key: string]: any; } = {
@@ -17,8 +17,8 @@ angular.module('livingDocumentation', [
         ]
     };
 
-    $routeProvider.when('/home', {
-        template: '<div home></div>',
+    $routeProvider.when('/dashboard', {
+        template: '<div dashboard></div>',
         resolve: resolve
     });
 
@@ -31,5 +31,5 @@ angular.module('livingDocumentation', [
         resolve: resolve
     });
 
-    $routeProvider.otherwise({ redirectTo: '/home' });
+    $routeProvider.otherwise({ redirectTo: '/dashboard' });
 }]);

@@ -192,7 +192,7 @@ module livingDocumentation {
             }
 
             if (!documentationCode || !featureCode) {
-                this.$location.path('/home');
+                this.$location.path('/dashboard');
             } else {
                 this.$location.path(`/feature/${documentationCode}/${featureCode}`);
             }

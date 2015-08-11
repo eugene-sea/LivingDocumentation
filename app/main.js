@@ -421,7 +421,7 @@ var livingDocumentation;
                 }
             }
             if (!documentationCode || !featureCode) {
-                this.$location.path('/home');
+                this.$location.path('/dashboard');
             }
             else {
                 this.$location.path("/feature/" + documentationCode + "/" + featureCode);
@@ -446,7 +446,7 @@ var livingDocumentation;
 angular.module('livingDocumentation', [
     'ngRoute',
     'livingDocumentation.app',
-    'livingDocumentation.controllers.home',
+    'livingDocumentation.controllers.dashboard',
     'livingDocumentation.feature',
 ]).config(['$routeProvider', function ($routeProvider) {
         var resolve = {
@@ -455,8 +455,8 @@ angular.module('livingDocumentation', [
                 function (service) { return service.resolve; }
             ]
         };
-        $routeProvider.when('/home', {
-            template: '<div home></div>',
+        $routeProvider.when('/dashboard', {
+            template: '<div dashboard></div>',
             resolve: resolve
         });
         $routeProvider.when('/feature/:documentationCode/:featureCode', {
@@ -465,7 +465,7 @@ angular.module('livingDocumentation', [
             },
             resolve: resolve
         });
-        $routeProvider.otherwise({ redirectTo: '/home' });
+        $routeProvider.otherwise({ redirectTo: '/dashboard' });
     }]);
 /// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
 /// <reference path="../services.ts" />
@@ -574,28 +574,70 @@ var livingDocumentation;
         .directive('livingDocumentationApp', utils.wrapInjectionConstructor(LivingDocumentationAppDirective))
         .controller('LivingDocumentationApp', LivingDocumentationApp);
 })(livingDocumentation || (livingDocumentation = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="utils.ts" />
+/// <reference path="../../../typings/angularjs/angular.d.ts" />
+/// <reference path="../utils.ts" />
+/// <reference path="../services.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
-    var HomeDirective = (function () {
-        function HomeDirective() {
+    var DashboardDirective = (function () {
+        function DashboardDirective() {
             this.restrict = 'A';
-            this.controller = Home;
-            this.controllerAs = 'home';
+            this.controller = 'Dashboard';
+            this.controllerAs = 'ctrl';
             this.bindToController = true;
-            this.template = '';
+            this.templateUrl = 'components/dashboard/dashboard.html';
         }
-        return HomeDirective;
+        return DashboardDirective;
     })();
-    var Home = (function () {
-        function Home() {
+    var Dashboard = (function () {
+        function Dashboard(livingDocumentationService) {
+            this.documentationList = livingDocumentationService.documentationList;
         }
-        return Home;
+        Dashboard.$inject = ['livingDocumentationService'];
+        return Dashboard;
     })();
-    angular.module('livingDocumentation.controllers.home', [])
-        .directive('home', utils.wrapInjectionConstructor(HomeDirective));
+    var DocumentationDashboardDirective = (function () {
+        function DocumentationDashboardDirective() {
+            this.restrict = 'A';
+            this.scope = {
+                documentation: '='
+            };
+            this.controller = DocumentationDashboard;
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/dashboard/documentation-dashboard.html';
+        }
+        return DocumentationDashboardDirective;
+    })();
+    var DocumentationDashboard = (function () {
+        function DocumentationDashboard() {
+            var _this = this;
+            this.features = { passed: 0, pending: 0, failed: 0, total: 0 };
+            this.scenarios = { passed: 0, pending: 0, failed: 0, total: 0 };
+            _.each(this.documentation.features, function (f) {
+                DocumentationDashboard.updateStatistics(f.Feature.Result, _this.features);
+                _.each(f.Feature.FeatureElements, function (s) { return DocumentationDashboard.updateStatistics(s.Result, _this.scenarios); });
+            });
+        }
+        DocumentationDashboard.updateStatistics = function (result, statistics) {
+            ++statistics.total;
+            if (!result.WasExecuted) {
+                ++statistics.pending;
+                return;
+            }
+            if (!result.WasSuccessful) {
+                ++statistics.failed;
+                return;
+            }
+            ++statistics.passed;
+        };
+        return DocumentationDashboard;
+    })();
+    angular.module('livingDocumentation.controllers.dashboard', [])
+        .controller('Dashboard', Dashboard)
+        .directive('dashboard', utils.wrapInjectionConstructor(DashboardDirective))
+        .directive('documentationDashboard', utils.wrapInjectionConstructor(DocumentationDashboardDirective));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 'use strict';
