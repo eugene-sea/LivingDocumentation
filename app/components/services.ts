@@ -202,6 +202,6 @@ module livingDocumentation {
     angular.module('livingDocumentation.services', [
         'livingDocumentation.services.server', 'livingDocumentation.services.search'
     ])
-        .value('version', '0.1')
+        .value('version', '0.9')
         .service('livingDocumentationService', LivingDocumentationService);
 }
