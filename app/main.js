@@ -613,15 +613,23 @@ var livingDocumentation;
     var DocumentationDashboard = (function () {
         function DocumentationDashboard() {
             var _this = this;
-            this.features = { passed: 0, pending: 0, failed: 0, total: 0 };
-            this.scenarios = { passed: 0, pending: 0, failed: 0, total: 0 };
+            this.features = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
+            this.scenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
             _.each(this.documentation.features, function (f) {
-                DocumentationDashboard.updateStatistics(f.Feature.Result, _this.features);
-                _.each(f.Feature.FeatureElements, function (s) { return DocumentationDashboard.updateStatistics(s.Result, _this.scenarios); });
+                var isFeatureManual = DocumentationDashboard.isManual(f.Feature);
+                DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, _this.features);
+                _.each(f.Feature.FeatureElements, function (s) { return DocumentationDashboard.updateStatistics(s.Result, isFeatureManual || DocumentationDashboard.isManual(s), _this.scenarios); });
             });
         }
-        DocumentationDashboard.updateStatistics = function (result, statistics) {
+        DocumentationDashboard.isManual = function (item) {
+            return _.indexOf(item.Tags, '@manual') !== -1;
+        };
+        DocumentationDashboard.updateStatistics = function (result, isManual, statistics) {
             ++statistics.total;
+            if (isManual) {
+                ++statistics.manual;
+                return;
+            }
             if (!result.WasExecuted) {
                 ++statistics.pending;
                 return;

@@ -38,24 +38,37 @@ module livingDocumentation {
         passed: number;
         pending: number;
         failed: number;
+        manual: number;
         total: number;
     }
 
     class DocumentationDashboard {
         documentation: ILivingDocumentation;
-        features = { passed: 0, pending: 0, failed: 0, total: 0 };
-        scenarios = { passed: 0, pending: 0, failed: 0, total: 0 };
+        features = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
+        scenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
 
         constructor() {
             _.each(this.documentation.features, f => {
-                DocumentationDashboard.updateStatistics(f.Feature.Result, this.features);
+                let isFeatureManual = DocumentationDashboard.isManual(f.Feature);
+                DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, this.features);
                 _.each(
-                    f.Feature.FeatureElements, s => DocumentationDashboard.updateStatistics(s.Result, this.scenarios));
+                    f.Feature.FeatureElements,
+                    s => DocumentationDashboard.updateStatistics(
+                        s.Result, isFeatureManual || DocumentationDashboard.isManual(s), this.scenarios));
             })
         }
 
-        private static updateStatistics(result: IResult, statistics: IStatistics): void {
+        private static isManual(item: { Tags: string[]; }): boolean {
+            return _.indexOf(item.Tags, '@manual') !== -1;
+        }
+
+        private static updateStatistics(result: IResult, isManual: boolean, statistics: IStatistics): void {
             ++statistics.total;
+            if (isManual) {
+                ++statistics.manual;
+                return;
+            }
+
             if (!result.WasExecuted) {
                 ++statistics.pending;
                 return;
