@@ -2,52 +2,20 @@
 
 <div class="row">
   <div class="col-lg-6">
-    <h5>Features</h5>
-    <table class="table table-condensed table-bordered">
-      <thead>
-        <tr>
-          <th>Passed</th>
-          <th>Pending</th>
-          <th>Failed</th>
-          <th>Manual</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-    
-      <tbody>
-        <tr>
-          <td>{{ctrl.features.passed}}</td>
-          <td>{{ctrl.features.pending}}</td>
-          <td>{{ctrl.features.failed}}</td>
-          <td>{{ctrl.features.manual}}</td>
-          <td>{{ctrl.features.total}}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div statistics="ctrl.iterationFeatures" name="Iteration Features"></div>
   </div>
 
   <div class="col-lg-6">
-    <h5>Scenarios</h5>
-    <table class="table table-condensed table-bordered">
-      <thead>
-        <tr>
-          <th>Passed</th>
-          <th>Pending</th>
-          <th>Failed</th>
-          <th>Manual</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-    
-      <tbody>
-        <tr>
-          <td>{{ctrl.scenarios.passed}}</td>
-          <td>{{ctrl.scenarios.pending}}</td>
-          <td>{{ctrl.scenarios.failed}}</td>
-          <td>{{ctrl.scenarios.manual}}</td>
-          <td>{{ctrl.scenarios.total}}</td>
-        </tr>
-      </tbody>
-    </table>
+    <div statistics="ctrl.iterationScenarios" name="Iteration Scenarios"></div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-lg-6">
+    <div statistics="ctrl.features" name="Features"></div>
+  </div>
+
+  <div class="col-lg-6">
+    <div statistics="ctrl.scenarios" name="Scenarios"></div>
   </div>
 </div>

@@ -44,22 +44,48 @@ module livingDocumentation {
 
     class DocumentationDashboard {
         documentation: ILivingDocumentation;
+        iterationFeatures = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
+        iterationScenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
         features = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
         scenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
 
         constructor() {
-            _.each(this.documentation.features, f => {
-                let isFeatureManual = DocumentationDashboard.isManual(f.Feature);
-                DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, this.features);
-                _.each(
-                    f.Feature.FeatureElements,
-                    s => DocumentationDashboard.updateStatistics(
-                        s.Result, isFeatureManual || DocumentationDashboard.isManual(s), this.scenarios));
-            })
+            DocumentationDashboard.processFeatures(
+                this.documentation.features,
+                DocumentationDashboard.isIteration,
+                this.iterationFeatures,
+                this.iterationScenarios);
+            DocumentationDashboard.processFeatures(
+                this.documentation.features, _ => true, this.features, this.scenarios);
         }
 
         private static isManual(item: { Tags: string[]; }): boolean {
             return _.indexOf(item.Tags, '@manual') !== -1;
+        }
+
+        private static isIteration(item: { Tags: string[]; }): boolean {
+            return _.indexOf(item.Tags, '@iteration') !== -1;
+        }
+
+        private static processFeatures(
+            features: IFeatures,
+            includeItem: (item: { Tags: string[]; }) => boolean,
+            featuresStatistics: IStatistics,
+            scenariosStatistics: IStatistics): void {
+            _.each(features, f => {
+                let isFeatureManual = DocumentationDashboard.isManual(f.Feature);
+                let isFeatureIncluded = includeItem(f.Feature);
+                let includedScenarios = _.filter(f.Feature.FeatureElements, s => isFeatureIncluded || includeItem(s));
+                isFeatureIncluded = isFeatureIncluded || _.any(includedScenarios);
+                if (isFeatureIncluded) {
+                    DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, featuresStatistics);
+                }
+
+                _.each(
+                    includedScenarios,
+                    s => DocumentationDashboard.updateStatistics(
+                        s.Result, isFeatureManual || DocumentationDashboard.isManual(s), scenariosStatistics));
+            });
         }
 
         private static updateStatistics(result: IResult, isManual: boolean, statistics: IStatistics): void {
@@ -83,8 +109,23 @@ module livingDocumentation {
         }
     }
 
+    class StatisticsDirective implements ng.IDirective {
+        restrict = 'A';
+        scope = {
+            name: '@',
+            statistics: '='
+        };
+        controller = Statistics;
+        controllerAs = 'ctrl';
+        bindToController = true;
+        templateUrl = 'components/dashboard/statistics.html';
+    }
+
+    class Statistics { }
+
     angular.module('livingDocumentation.controllers.dashboard', [])
         .controller('Dashboard', Dashboard)
         .directive('dashboard', utils.wrapInjectionConstructor(DashboardDirective))
-        .directive('documentationDashboard', utils.wrapInjectionConstructor(DocumentationDashboardDirective));
+        .directive('documentationDashboard', utils.wrapInjectionConstructor(DocumentationDashboardDirective))
+        .directive('statistics', utils.wrapInjectionConstructor(StatisticsDirective));
 }

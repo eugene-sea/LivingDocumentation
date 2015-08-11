@@ -612,17 +612,30 @@ var livingDocumentation;
     })();
     var DocumentationDashboard = (function () {
         function DocumentationDashboard() {
-            var _this = this;
+            this.iterationFeatures = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
+            this.iterationScenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
             this.features = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
             this.scenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
-            _.each(this.documentation.features, function (f) {
-                var isFeatureManual = DocumentationDashboard.isManual(f.Feature);
-                DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, _this.features);
-                _.each(f.Feature.FeatureElements, function (s) { return DocumentationDashboard.updateStatistics(s.Result, isFeatureManual || DocumentationDashboard.isManual(s), _this.scenarios); });
-            });
+            DocumentationDashboard.processFeatures(this.documentation.features, DocumentationDashboard.isIteration, this.iterationFeatures, this.iterationScenarios);
+            DocumentationDashboard.processFeatures(this.documentation.features, function (_) { return true; }, this.features, this.scenarios);
         }
         DocumentationDashboard.isManual = function (item) {
             return _.indexOf(item.Tags, '@manual') !== -1;
+        };
+        DocumentationDashboard.isIteration = function (item) {
+            return _.indexOf(item.Tags, '@iteration') !== -1;
+        };
+        DocumentationDashboard.processFeatures = function (features, includeItem, featuresStatistics, scenariosStatistics) {
+            _.each(features, function (f) {
+                var isFeatureManual = DocumentationDashboard.isManual(f.Feature);
+                var isFeatureIncluded = includeItem(f.Feature);
+                var includedScenarios = _.filter(f.Feature.FeatureElements, function (s) { return isFeatureIncluded || includeItem(s); });
+                isFeatureIncluded = isFeatureIncluded || _.any(includedScenarios);
+                if (isFeatureIncluded) {
+                    DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, featuresStatistics);
+                }
+                _.each(includedScenarios, function (s) { return DocumentationDashboard.updateStatistics(s.Result, isFeatureManual || DocumentationDashboard.isManual(s), scenariosStatistics); });
+            });
         };
         DocumentationDashboard.updateStatistics = function (result, isManual, statistics) {
             ++statistics.total;
@@ -642,10 +655,30 @@ var livingDocumentation;
         };
         return DocumentationDashboard;
     })();
+    var StatisticsDirective = (function () {
+        function StatisticsDirective() {
+            this.restrict = 'A';
+            this.scope = {
+                name: '@',
+                statistics: '='
+            };
+            this.controller = Statistics;
+            this.controllerAs = 'ctrl';
+            this.bindToController = true;
+            this.templateUrl = 'components/dashboard/statistics.html';
+        }
+        return StatisticsDirective;
+    })();
+    var Statistics = (function () {
+        function Statistics() {
+        }
+        return Statistics;
+    })();
     angular.module('livingDocumentation.controllers.dashboard', [])
         .controller('Dashboard', Dashboard)
         .directive('dashboard', utils.wrapInjectionConstructor(DashboardDirective))
-        .directive('documentationDashboard', utils.wrapInjectionConstructor(DocumentationDashboardDirective));
+        .directive('documentationDashboard', utils.wrapInjectionConstructor(DocumentationDashboardDirective))
+        .directive('statistics', utils.wrapInjectionConstructor(StatisticsDirective));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 'use strict';
