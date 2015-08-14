@@ -127,8 +127,10 @@ module livingDocumentation {
                 f.code = folders.pop();
 
                 f.isExpanded = true;
-                _.each(f.Feature.FeatureElements, s => { 
+                f.isManual = LivingDocumentationServer.isManual(f.Feature);
+                _.each(f.Feature.FeatureElements, s => {
                     s.isExpanded = true;
+                    s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
                     if (s.Examples) {
                         s.Examples = (<any>s.Examples)[0];
                     }
@@ -170,6 +172,10 @@ module livingDocumentation {
 
                 scenario.tests = _.map(scenarioTests, s => (testUri || '') + s.Test);
             });
+        }
+
+        private static isManual(item: { Tags: string[]; }): boolean {
+            return _.indexOf(item.Tags, '@manual') !== -1;
         }
     }
 

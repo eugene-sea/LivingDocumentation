@@ -59,10 +59,6 @@ module livingDocumentation {
                 this.documentation.features, _ => true, this.features, this.scenarios);
         }
 
-        private static isManual(item: { Tags: string[]; }): boolean {
-            return _.indexOf(item.Tags, '@manual') !== -1;
-        }
-
         private static isIteration(item: { Tags: string[]; }): boolean {
             return _.indexOf(item.Tags, '@iteration') !== -1;
         }
@@ -73,18 +69,16 @@ module livingDocumentation {
             featuresStatistics: IStatistics,
             scenariosStatistics: IStatistics): void {
             _.each(features, f => {
-                let isFeatureManual = DocumentationDashboard.isManual(f.Feature);
                 let isFeatureIncluded = includeItem(f.Feature);
                 let includedScenarios = _.filter(f.Feature.FeatureElements, s => isFeatureIncluded || includeItem(s));
                 isFeatureIncluded = isFeatureIncluded || _.any(includedScenarios);
                 if (isFeatureIncluded) {
-                    DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, featuresStatistics);
+                    DocumentationDashboard.updateStatistics(f.Feature.Result, f.isManual, featuresStatistics);
                 }
 
                 _.each(
                     includedScenarios,
-                    s => DocumentationDashboard.updateStatistics(
-                        s.Result, isFeatureManual || DocumentationDashboard.isManual(s), scenariosStatistics));
+                    s => DocumentationDashboard.updateStatistics(s.Result, s.isManual, scenariosStatistics));
             });
         }
 

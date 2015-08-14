@@ -127,6 +127,7 @@ module livingDocumentation {
             code: feature.code,
             get isExpanded() { return feature.isExpanded; },
             set isExpanded(value: boolean) { feature.isExpanded = value; },
+            isManual: feature.isManual,
             RelativeFolder: feature.RelativeFolder,
             Feature: {
                 Name: feature.Feature.Name,

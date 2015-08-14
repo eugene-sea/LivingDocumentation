@@ -88,8 +88,10 @@ var livingDocumentation;
                 var folders = f.RelativeFolder.match(/[^\\/]+/g);
                 f.code = folders.pop();
                 f.isExpanded = true;
+                f.isManual = LivingDocumentationServer.isManual(f.Feature);
                 _.each(f.Feature.FeatureElements, function (s) {
                     s.isExpanded = true;
+                    s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
                     if (s.Examples) {
                         s.Examples = s.Examples[0];
                     }
@@ -125,6 +127,9 @@ var livingDocumentation;
                 }
                 scenario.tests = _.map(scenarioTests, function (s) { return (testUri || '') + s.Test; });
             });
+        };
+        LivingDocumentationServer.isManual = function (item) {
+            return _.indexOf(item.Tags, '@manual') !== -1;
         };
         return LivingDocumentationServer;
     })();
@@ -229,6 +234,7 @@ var livingDocumentation;
             code: feature.code,
             get isExpanded() { return feature.isExpanded; },
             set isExpanded(value) { feature.isExpanded = value; },
+            isManual: feature.isManual,
             RelativeFolder: feature.RelativeFolder,
             Feature: {
                 Name: feature.Feature.Name,
@@ -619,22 +625,18 @@ var livingDocumentation;
             DocumentationDashboard.processFeatures(this.documentation.features, DocumentationDashboard.isIteration, this.iterationFeatures, this.iterationScenarios);
             DocumentationDashboard.processFeatures(this.documentation.features, function (_) { return true; }, this.features, this.scenarios);
         }
-        DocumentationDashboard.isManual = function (item) {
-            return _.indexOf(item.Tags, '@manual') !== -1;
-        };
         DocumentationDashboard.isIteration = function (item) {
             return _.indexOf(item.Tags, '@iteration') !== -1;
         };
         DocumentationDashboard.processFeatures = function (features, includeItem, featuresStatistics, scenariosStatistics) {
             _.each(features, function (f) {
-                var isFeatureManual = DocumentationDashboard.isManual(f.Feature);
                 var isFeatureIncluded = includeItem(f.Feature);
                 var includedScenarios = _.filter(f.Feature.FeatureElements, function (s) { return isFeatureIncluded || includeItem(s); });
                 isFeatureIncluded = isFeatureIncluded || _.any(includedScenarios);
                 if (isFeatureIncluded) {
-                    DocumentationDashboard.updateStatistics(f.Feature.Result, isFeatureManual, featuresStatistics);
+                    DocumentationDashboard.updateStatistics(f.Feature.Result, f.isManual, featuresStatistics);
                 }
-                _.each(includedScenarios, function (s) { return DocumentationDashboard.updateStatistics(s.Result, isFeatureManual || DocumentationDashboard.isManual(s), scenariosStatistics); });
+                _.each(includedScenarios, function (s) { return DocumentationDashboard.updateStatistics(s.Result, s.isManual, scenariosStatistics); });
             });
         };
         DocumentationDashboard.updateStatistics = function (result, isManual, statistics) {

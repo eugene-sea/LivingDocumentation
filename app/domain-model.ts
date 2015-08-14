@@ -31,11 +31,13 @@ module livingDocumentation {
 
         tests: string[];
         isExpanded: boolean;
+        isManual: boolean;
     }
 
     export interface IFeature {
         code: string;
         isExpanded: boolean;
+        isManual: boolean;
 
         RelativeFolder: string;
         Feature: {
