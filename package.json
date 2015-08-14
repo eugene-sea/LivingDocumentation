@@ -8,7 +8,7 @@
     "start": "node server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "update-components": "bower update && tsd update && npm update && echo",
-    "updates": "bower ls && npm outdated; echo"
+    "updates": "bower ls && npm outdated"
   },
   "repository": {
     "type": "git",

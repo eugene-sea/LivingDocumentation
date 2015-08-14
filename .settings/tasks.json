@@ -22,7 +22,8 @@
 			"taskName": "build",
 			"isBuildCommand": true,
 			"args": ["build"],
-			"problemMatcher": "$tsc"
+			"problemMatcher": "$tsc",
+			"suppressTaskName": true
 		},
 //		{
 //			"taskName": "test",
@@ -33,12 +34,14 @@
 		{
 			"taskName": "update-components",
 			"args": ["update-components"],
-			"showOutput": "always"
+			"showOutput": "always",
+			"suppressTaskName": true
 		},
 		{
 			"taskName": "updates",
 			"args": ["updates"],
-			"showOutput": "always"
+			"showOutput": "always",
+			"suppressTaskName": true
 		}
 	]
 }
