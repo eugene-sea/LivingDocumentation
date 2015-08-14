@@ -905,7 +905,8 @@ var livingDocumentation;
         function StatusDirective() {
             this.restrict = 'A';
             this.scope = {
-                status: '='
+                status: '=',
+                isManual: '='
             };
             this.controller = Status;
             this.controllerAs = 'ctrl';

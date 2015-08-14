@@ -102,7 +102,8 @@ module livingDocumentation {
     class StatusDirective implements ng.IDirective {
         restrict = 'A';
         scope = {
-            status: '='
+            status: '=',
+            isManual: '='
         };
         controller = Status;
         controllerAs = 'ctrl';
