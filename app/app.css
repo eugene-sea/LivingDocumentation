@@ -52,3 +52,25 @@ body, html {
 .nav, .pagination, .carousel, .panel-title a {
     cursor: pointer;
 }
+
+.no-borders {
+    border-width: 0 !important;
+}
+
+.no-left-border {
+    border-left-width: 0 !important;
+}
+
+.no-right-border {
+    border-right-width: 0 !important;
+}
+
+.no-bottom-border {
+    border-bottom-width: 0 !important;
+}
+
+.borders {
+    border-width: 1px;
+    border-style: solid; 
+    border-color: #ddd;
+}
