@@ -6,7 +6,7 @@
   "scripts": {
     "build": "./scripts/build.sh",
     "start": "node server.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/karma start ./test/karma.conf.js",
     "update-components": "bower update && tsd update && npm update",
     "updates": "bower ls && npm outdated"
   },
@@ -25,6 +25,11 @@
   },
   "homepage": "https://github.com/eugene-sea/LivingDocumentation#readme",
   "devDependencies": {
+    "karma": "^0.13.9",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-mocha": "^0.2.0",
+    "mocha": "^2.2.5",
+    "should": "^7.0.4",
     "source-map-support": "^0.3.0"
   },
   "dependencies": {

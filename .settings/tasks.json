@@ -25,12 +25,13 @@
 			"problemMatcher": "$tsc",
 			"suppressTaskName": true
 		},
-//		{
-//			"taskName": "test",
-//			"isTestCommand": true,
-//			"args": ["test"],
-//			"showOutput": "always"
-//		},
+		{
+			"taskName": "test",
+			"isTestCommand": true,
+			"args": ["test"],
+			"showOutput": "always",
+			"suppressTaskName": true
+		},
 		{
 			"taskName": "update-components",
 			"args": ["update-components"],

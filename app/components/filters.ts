@@ -1,6 +1,7 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
 /// <reference path="search-service.ts" />
+/// <reference path="services.ts" />
 
 'use strict';
 
@@ -48,6 +49,12 @@ module livingDocumentation {
         }
     }
 
+    class WidenFilter implements utils.IFilter {
+        filter(str: string): string {
+            return widen(str);
+        }
+    }
+
     function highlightAndEscape(regEx: RegExp, str: string): string {
         if (!str || !regEx) {
             return escapeHTML(str);
@@ -84,10 +91,16 @@ module livingDocumentation {
             replace(/"/g, '&quot;');
     }
 
+    export function widen(str: string): string {
+        let i = 1;
+        return str.replace(/ /g, () => i++ % 3 === 0 ? ' ' : '&nbsp;');
+    }
+
     angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
         .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
         .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
         .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter))
-        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter));
+        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter))
+        .filter('widen', utils.wrapFilterInjectionConstructor(WidenFilter));
 }

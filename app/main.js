@@ -304,6 +304,7 @@ var livingDocumentation;
         .service('search', SearchService);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/angularjs/angular-route.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
 /// <reference path="utils.ts" />
@@ -991,6 +992,7 @@ var livingDocumentation;
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
 /// <reference path="search-service.ts" />
+/// <reference path="services.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
@@ -1041,6 +1043,14 @@ var livingDocumentation;
         HighlightTagFilter.$inject = ['livingDocumentationService'];
         return HighlightTagFilter;
     })();
+    var WidenFilter = (function () {
+        function WidenFilter() {
+        }
+        WidenFilter.prototype.filter = function (str) {
+            return widen(str);
+        };
+        return WidenFilter;
+    })();
     function highlightAndEscape(regEx, str) {
         if (!str || !regEx) {
             return escapeHTML(str);
@@ -1073,11 +1083,17 @@ var livingDocumentation;
             replace(/'/g, '&#39;').
             replace(/"/g, '&quot;');
     }
+    function widen(str) {
+        var i = 1;
+        return str.replace(/ /g, function () { return i++ % 3 === 0 ? ' ' : '&nbsp;'; });
+    }
+    livingDocumentation.widen = widen;
     angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
         .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
         .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
         .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter))
-        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter));
+        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter))
+        .filter('widen', utils.wrapFilterInjectionConstructor(WidenFilter));
 })(livingDocumentation || (livingDocumentation = {}));
 //# sourceMappingURL=main.js.map

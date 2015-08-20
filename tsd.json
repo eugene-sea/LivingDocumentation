@@ -31,6 +31,12 @@
     },
     "express/express.d.ts": {
       "commit": "3d80989bbba37cbe6ef0682c94fa7d8cb95f196d"
+    },
+    "should/should.d.ts": {
+      "commit": "38fb591c6eba840e0b53d1110302b8e4fb04651c"
+    },
+    "mocha/mocha.d.ts": {
+      "commit": "38fb591c6eba840e0b53d1110302b8e4fb04651c"
     }
   }
 }

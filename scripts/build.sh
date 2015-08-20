@@ -2,3 +2,4 @@
 
 tsc -p .
 tsc -p ./app
+tsc -p ./test

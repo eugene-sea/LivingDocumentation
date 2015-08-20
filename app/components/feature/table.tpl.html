@@ -8,7 +8,9 @@
 
   <tbody>
     <tr ng-repeat="row in ctrl.table.DataRows">
-      <td ng-repeat="col in row track by $index" ng-bind-html="col | highlight | scenarioOutlinePlaceholder"></td>
+      <td 
+        ng-repeat="col in row track by $index" ng-bind-html="col | highlight | widen | scenarioOutlinePlaceholder">
+      </td>
       <td class="no-stretch" ng-if="ctrl.tests"><a href="{{ctrl.tests[$index]}}" target="_blank">Run</a></td>
     </tr>
   </tbody>
