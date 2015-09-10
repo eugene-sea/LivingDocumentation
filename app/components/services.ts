@@ -12,7 +12,7 @@ module livingDocumentation {
     export enum DocumentationFilter {
         InProgress,
         Pending,
-        Failed,
+        Failing,
         Manual
     }
 
@@ -168,7 +168,7 @@ module livingDocumentation {
                 case DocumentationFilter.Pending:
                     searchText = '@pending ';
                     break;
-                case DocumentationFilter.Failed:
+                case DocumentationFilter.Failing:
                     searchText = '@failing ';
                     break;
                 case DocumentationFilter.Manual:

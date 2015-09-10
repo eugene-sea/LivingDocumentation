@@ -11,7 +11,7 @@ var livingDocumentation;
     (function (DocumentationFilter) {
         DocumentationFilter[DocumentationFilter["InProgress"] = 0] = "InProgress";
         DocumentationFilter[DocumentationFilter["Pending"] = 1] = "Pending";
-        DocumentationFilter[DocumentationFilter["Failed"] = 2] = "Failed";
+        DocumentationFilter[DocumentationFilter["Failing"] = 2] = "Failing";
         DocumentationFilter[DocumentationFilter["Manual"] = 3] = "Manual";
     })(livingDocumentation.DocumentationFilter || (livingDocumentation.DocumentationFilter = {}));
     var DocumentationFilter = livingDocumentation.DocumentationFilter;
@@ -108,7 +108,7 @@ var livingDocumentation;
                 case DocumentationFilter.Pending:
                     searchText = '@pending ';
                     break;
-                case DocumentationFilter.Failed:
+                case DocumentationFilter.Failing:
                     searchText = '@failing ';
                     break;
                 case DocumentationFilter.Manual:
