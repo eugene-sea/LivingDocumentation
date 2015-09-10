@@ -91,9 +91,7 @@ module livingDocumentation {
         get searchText(): string { return this.$location.search().search; }
 
         get urlSearchPart() {
-            return !this.searchText && this.filter == null
-                ? ''
-                : `?search=${ encodeURIComponent(this.searchText || '') }${ this.filter == null ? '' : `&showOnly=${this.filterRaw}` }`;
+            return `${ !this.searchText ? '' : `?search=${ encodeURIComponent(this.searchText || '') }` }${ this.filter == null ? '' : `&showOnly=${this.filterRaw}` }`;
         }
 
         get filter() { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }
@@ -142,25 +140,7 @@ module livingDocumentation {
 
         showOnly(filter: DocumentationFilter, initialize?: boolean): void {
             if (!initialize) {
-                let filterName: string;
-                switch (filter) {
-                    case DocumentationFilter.InProgress:
-                        filterName = 'InProgress';
-                        break;
-                    case DocumentationFilter.Pending:
-                        filterName = 'Pending';
-                        break;
-                    case DocumentationFilter.Manual:
-                        filterName = 'Manual';
-                        break;
-                    case DocumentationFilter.Failed:
-                        filterName = 'Failed';
-                        break;
-                    default:
-                        filterName = null;
-                }
-
-                this.$location.search('showOnly', filterName);
+                this.$location.search('showOnly', DocumentationFilter[filter]);
             }
 
             this.searchCore();

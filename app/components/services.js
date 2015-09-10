@@ -39,9 +39,7 @@ var livingDocumentation;
         });
         Object.defineProperty(LivingDocumentationService.prototype, "urlSearchPart", {
             get: function () {
-                return !this.searchText && this.filter == null
-                    ? ''
-                    : "?search=" + encodeURIComponent(this.searchText || '') + (this.filter == null ? '' : "&showOnly=" + this.filterRaw);
+                return "" + (!this.searchText ? '' : "?search=" + encodeURIComponent(this.searchText || '')) + (this.filter == null ? '' : "&showOnly=" + this.filterRaw);
             },
             enumerable: true,
             configurable: true
@@ -87,24 +85,7 @@ var livingDocumentation;
         };
         LivingDocumentationService.prototype.showOnly = function (filter, initialize) {
             if (!initialize) {
-                var filterName;
-                switch (filter) {
-                    case DocumentationFilter.InProgress:
-                        filterName = 'InProgress';
-                        break;
-                    case DocumentationFilter.Pending:
-                        filterName = 'Pending';
-                        break;
-                    case DocumentationFilter.Manual:
-                        filterName = 'Manual';
-                        break;
-                    case DocumentationFilter.Failed:
-                        filterName = 'Failed';
-                        break;
-                    default:
-                        filterName = null;
-                }
-                this.$location.search('showOnly', filterName);
+                this.$location.search('showOnly', DocumentationFilter[filter]);
             }
             this.searchCore();
         };
