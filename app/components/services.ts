@@ -159,8 +159,18 @@ module livingDocumentation {
         }
 
         private searchCore() {
-            let searchText = this.filter !== DocumentationFilter.InProgress
-                ? this.searchText : '@iteration ' + (this.searchText || '');
+            let searchText: string;
+
+            switch (this.filter) {
+                case DocumentationFilter.InProgress:
+                    searchText = '@iteration ' + (this.searchText || '');
+                    break;
+                case DocumentationFilter.Manual:
+                    searchText = '@manual ' + (this.searchText || '');
+                    break;
+                default:
+                    searchText = this.searchText;
+            }
 
             if (searchText !== this.currentSearchText) {
                 let res = this.searchService.search(searchText, this.documentationList);

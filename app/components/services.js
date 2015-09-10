@@ -100,8 +100,17 @@ var livingDocumentation;
             this.filteredDocumentationList = this.documentationList;
         };
         LivingDocumentationService.prototype.searchCore = function () {
-            var searchText = this.filter !== DocumentationFilter.InProgress
-                ? this.searchText : '@iteration ' + (this.searchText || '');
+            var searchText;
+            switch (this.filter) {
+                case DocumentationFilter.InProgress:
+                    searchText = '@iteration ' + (this.searchText || '');
+                    break;
+                case DocumentationFilter.Manual:
+                    searchText = '@manual ' + (this.searchText || '');
+                    break;
+                default:
+                    searchText = this.searchText;
+            }
             if (searchText !== this.currentSearchText) {
                 var res = this.searchService.search(searchText, this.documentationList);
                 _a = [res.documentationList, res.searchContext, searchText], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];
