@@ -141,7 +141,7 @@ var livingDocumentation;
         if (_.any(feature.Feature.Tags, function (t) { return isTextPresentRegEx(tag, t); })) {
             return feature.Feature.FeatureElements;
         }
-        var scenarios = _.filter(feature.Feature.FeatureElements, function (s) { return _.any(s.Tags, function (t) { return isTextPresentRegEx(tag, t); }); });
+        var scenarios = _.filter(feature.Feature.FeatureElements, function (s) { return _.any(s.tagsInternal, function (t) { return isTextPresentRegEx(tag, t); }); });
         return !_.any(scenarios) ? null : scenarios;
     }
     function addFeatures(folder, features) {

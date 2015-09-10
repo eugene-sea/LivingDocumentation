@@ -92,6 +92,7 @@ var livingDocumentation;
                 _.each(f.Feature.FeatureElements, function (s) {
                     s.isExpanded = true;
                     s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
+                    s.tagsInternal = s.Tags.concat(LivingDocumentationServer.computeStatusTags(s));
                     if (s.Examples) {
                         s.Examples = s.Examples[0];
                     }
@@ -130,6 +131,18 @@ var livingDocumentation;
         };
         LivingDocumentationServer.isManual = function (item) {
             return _.indexOf(item.Tags, '@manual') !== -1;
+        };
+        LivingDocumentationServer.computeStatusTags = function (scenario) {
+            if (scenario.isManual) {
+                return [];
+            }
+            if (!scenario.Result.WasExecuted) {
+                return ['@pending'];
+            }
+            if (!scenario.Result.WasSuccessful) {
+                return ['@failing'];
+            }
+            return [];
         };
         return LivingDocumentationServer;
     })();
@@ -279,7 +292,7 @@ var livingDocumentation;
         if (_.any(feature.Feature.Tags, function (t) { return isTextPresentRegEx(tag, t); })) {
             return feature.Feature.FeatureElements;
         }
-        var scenarios = _.filter(feature.Feature.FeatureElements, function (s) { return _.any(s.Tags, function (t) { return isTextPresentRegEx(tag, t); }); });
+        var scenarios = _.filter(feature.Feature.FeatureElements, function (s) { return _.any(s.tagsInternal, function (t) { return isTextPresentRegEx(tag, t); }); });
         return !_.any(scenarios) ? null : scenarios;
     }
     function addFeatures(folder, features) {
@@ -408,14 +421,21 @@ var livingDocumentation;
             var searchText;
             switch (this.filter) {
                 case DocumentationFilter.InProgress:
-                    searchText = '@iteration ' + (this.searchText || '');
+                    searchText = '@iteration ';
+                    break;
+                case DocumentationFilter.Pending:
+                    searchText = '@pending ';
+                    break;
+                case DocumentationFilter.Failed:
+                    searchText = '@failing ';
                     break;
                 case DocumentationFilter.Manual:
-                    searchText = '@manual ' + (this.searchText || '');
+                    searchText = '@manual ';
                     break;
                 default:
-                    searchText = this.searchText;
+                    searchText = '';
             }
+            searchText += this.searchText || '';
             if (searchText !== this.currentSearchText) {
                 var res = this.searchService.search(searchText, this.documentationList);
                 _a = [res.documentationList, res.searchContext, searchText], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];

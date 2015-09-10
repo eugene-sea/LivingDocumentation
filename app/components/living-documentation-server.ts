@@ -131,6 +131,7 @@ module livingDocumentation {
                 _.each(f.Feature.FeatureElements, s => {
                     s.isExpanded = true;
                     s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
+                    s.tagsInternal = s.Tags.concat(LivingDocumentationServer.computeStatusTags(s));
                     if (s.Examples) {
                         s.Examples = (<any>s.Examples)[0];
                     }
@@ -176,6 +177,22 @@ module livingDocumentation {
 
         private static isManual(item: { Tags: string[]; }): boolean {
             return _.indexOf(item.Tags, '@manual') !== -1;
+        }
+
+        private static computeStatusTags(scenario: IScenario): string[] {
+            if (scenario.isManual) {
+                return [];
+            }
+
+            if (!scenario.Result.WasExecuted) {
+                return ['@pending'];
+            }
+
+            if (!scenario.Result.WasSuccessful) {
+                return ['@failing'];
+            }
+
+            return [];
         }
     }
 

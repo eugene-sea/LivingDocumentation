@@ -163,14 +163,22 @@ module livingDocumentation {
 
             switch (this.filter) {
                 case DocumentationFilter.InProgress:
-                    searchText = '@iteration ' + (this.searchText || '');
+                    searchText = '@iteration ';
+                    break;
+                case DocumentationFilter.Pending:
+                    searchText = '@pending ';
+                    break;
+                case DocumentationFilter.Failed:
+                    searchText = '@failing ';
                     break;
                 case DocumentationFilter.Manual:
-                    searchText = '@manual ' + (this.searchText || '');
+                    searchText = '@manual ';
                     break;
                 default:
-                    searchText = this.searchText;
+                    searchText = '';
             }
+
+            searchText += this.searchText || '';
 
             if (searchText !== this.currentSearchText) {
                 let res = this.searchService.search(searchText, this.documentationList);

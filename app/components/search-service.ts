@@ -183,7 +183,8 @@ module livingDocumentation {
             return feature.Feature.FeatureElements;
         }
 
-        var scenarios = _.filter(feature.Feature.FeatureElements, s => _.any(s.Tags, t => isTextPresentRegEx(tag, t)));
+        var scenarios = _.filter(
+            feature.Feature.FeatureElements, s => _.any(s.tagsInternal, t => isTextPresentRegEx(tag, t)));
         return !_.any(scenarios) ? null : scenarios;
     }
 

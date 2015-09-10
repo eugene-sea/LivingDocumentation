@@ -61,6 +61,7 @@ var livingDocumentation;
                 _.each(f.Feature.FeatureElements, function (s) {
                     s.isExpanded = true;
                     s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
+                    s.tagsInternal = s.Tags.concat(LivingDocumentationServer.computeStatusTags(s));
                     if (s.Examples) {
                         s.Examples = s.Examples[0];
                     }
@@ -99,6 +100,18 @@ var livingDocumentation;
         };
         LivingDocumentationServer.isManual = function (item) {
             return _.indexOf(item.Tags, '@manual') !== -1;
+        };
+        LivingDocumentationServer.computeStatusTags = function (scenario) {
+            if (scenario.isManual) {
+                return [];
+            }
+            if (!scenario.Result.WasExecuted) {
+                return ['@pending'];
+            }
+            if (!scenario.Result.WasSuccessful) {
+                return ['@failing'];
+            }
+            return [];
         };
         return LivingDocumentationServer;
     })();

@@ -103,14 +103,21 @@ var livingDocumentation;
             var searchText;
             switch (this.filter) {
                 case DocumentationFilter.InProgress:
-                    searchText = '@iteration ' + (this.searchText || '');
+                    searchText = '@iteration ';
+                    break;
+                case DocumentationFilter.Pending:
+                    searchText = '@pending ';
+                    break;
+                case DocumentationFilter.Failed:
+                    searchText = '@failing ';
                     break;
                 case DocumentationFilter.Manual:
-                    searchText = '@manual ' + (this.searchText || '');
+                    searchText = '@manual ';
                     break;
                 default:
-                    searchText = this.searchText;
+                    searchText = '';
             }
+            searchText += this.searchText || '';
             if (searchText !== this.currentSearchText) {
                 var res = this.searchService.search(searchText, this.documentationList);
                 _a = [res.documentationList, res.searchContext, searchText], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];

@@ -32,6 +32,7 @@ module livingDocumentation {
         tests: string[];
         isExpanded: boolean;
         isManual: boolean;
+        tagsInternal: string[];
     }
 
     export interface IFeature {
