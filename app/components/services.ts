@@ -9,6 +9,13 @@
 'use strict';
 
 module livingDocumentation {
+    export enum DocumentationFilter {
+        InProgress,
+        Pending,
+        Failed,
+        Manual
+    }
+
     export interface ILivingDocumentationService {
         loading: boolean;
 
@@ -28,7 +35,7 @@ module livingDocumentation {
 
         urlSearchPart: string;
 
-        showInProgressOnly: boolean;
+        filter: DocumentationFilter;
 
         onStartProcessing: () => void;
 
@@ -38,7 +45,7 @@ module livingDocumentation {
 
         search(searchText: string): void;
 
-        toggleShowInProgressOnly(initialize?: boolean): void;
+        showOnly(filter: DocumentationFilter, initialize?: boolean): void;
     }
 
     const TIMEOUT = 200;
@@ -84,15 +91,14 @@ module livingDocumentation {
         get searchText(): string { return this.$location.search().search; }
 
         get urlSearchPart() {
-            return !this.searchText && !this.showInProgressOnly
+            return !this.searchText && this.filter == null
                 ? ''
-                : `?search=${ encodeURIComponent(this.searchText || '') }` +
-                (!this.showInProgressOnly ? '' : '&showInProgressOnly');
+                : `?search=${ encodeURIComponent(this.searchText || '') }${ this.filter == null ? '' : `&showOnly=${this.filterRaw}` }`;
         }
 
-        get showInProgressOnly() {
-            return !!this.$location.search().showInProgressOnly;
-        }
+        get filter() { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }
+
+        private get filterRaw(): string { return this.$location.search().showOnly; }
 
         startInitialization(): void {
             if (this.onStartProcessing) {
@@ -125,7 +131,7 @@ module livingDocumentation {
             this.$location.search('search', searchText);
 
             if (!searchText) {
-                this.$location.search('showInProgressOnly', null);
+                this.$location.search('showOnly', null);
                 [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
                 [this.documentationList, null, null];
                 return;
@@ -134,9 +140,27 @@ module livingDocumentation {
             this.searchCore();
         }
 
-        toggleShowInProgressOnly(initialize?: boolean): void {
+        showOnly(filter: DocumentationFilter, initialize?: boolean): void {
             if (!initialize) {
-                this.$location.search('showInProgressOnly', !this.showInProgressOnly ? true : null);
+                let filterName: string;
+                switch (filter) {
+                    case DocumentationFilter.InProgress:
+                        filterName = 'InProgress';
+                        break;
+                    case DocumentationFilter.Pending:
+                        filterName = 'Pending';
+                        break;
+                    case DocumentationFilter.Manual:
+                        filterName = 'Manual';
+                        break;
+                    case DocumentationFilter.Failed:
+                        filterName = 'Failed';
+                        break;
+                    default:
+                        filterName = null;
+                }
+
+                this.$location.search('showOnly', filterName);
             }
 
             this.searchCore();
@@ -155,7 +179,8 @@ module livingDocumentation {
         }
 
         private searchCore() {
-            let searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
+            let searchText = this.filter !== DocumentationFilter.InProgress
+                ? this.searchText : '@iteration ' + (this.searchText || '');
 
             if (searchText !== this.currentSearchText) {
                 let res = this.searchService.search(searchText, this.documentationList);

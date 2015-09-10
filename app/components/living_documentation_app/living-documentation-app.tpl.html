@@ -12,13 +12,35 @@
 
     <div class="collapse navbar-collapse navbar-ex1-collapse">
         <form class="navbar-form navbar-right" role="search">
-          <div class="form-group" style="width: 100px">
-            <button 
-              type="button" 
-              class="btn btn-default btn-block" 
-              ng-click="root.toggleShowInProgressOnly()">
-              {{root.showInProgressOnly ? 'All' : 'In Progress'}}
-            </button>
+          <div class="form-group">
+            <div class="btn-group" dropdown>
+              <button 
+                id="split-button" 
+                type="button" 
+                class="btn btn-default"
+                ng-click="root.clearFilter()"
+                ng-class="{active: root.filter == null}">
+                No Filter
+              </button>
+              <button type="button" class="btn btn-default" dropdown-toggle>
+                <span class="caret"></span>
+                <span class="sr-only"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
+                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.InProgress}">
+                  <a ng-click="root.showOnly(root.DocumentationFilter.InProgress)">In Progress</a>
+                </li>
+                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.Pending}">
+                  <a ng-click="root.showOnly(root.DocumentationFilter.Pending)">Pending</a>
+                </li>
+                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.Failed}">
+                  <a ng-click="root.showOnly(root.DocumentationFilter.Failed)">Failed</a>
+                </li>
+                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.Manual}">
+                  <a ng-click="root.showOnly(root.DocumentationFilter.Manual)">Manual</a>
+                </li>
+              </ul>
+            </div>
           </div>
           <div class="form-group">
             <input type="text" class="form-control" placeholder="Search text" ng-model="root.searchText">

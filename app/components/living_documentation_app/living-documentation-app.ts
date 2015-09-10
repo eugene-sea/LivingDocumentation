@@ -17,6 +17,8 @@ module livingDocumentation {
 
         static $inject: string[] = ['livingDocumentationService', '$modal'];
 
+        DocumentationFilter = DocumentationFilter;
+
         constructor(private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
             var modalInstance: ng.ui.bootstrap.IModalServiceInstance;
 
@@ -32,7 +34,7 @@ module livingDocumentation {
             livingDocService.onStopProcessing = () => {
                 if (this_.isClearSearchEnabled) {
                     if (!this_.searchText) {
-                        this_.toggleShowInProgressOnly(true);
+                        this_.showOnly(null, true);
                     } else {
                         this_.search();
                     }
@@ -54,10 +56,10 @@ module livingDocumentation {
 
         get isSearchEnabled() { return !!this.searchText.trim(); }
         get isClearSearchEnabled() {
-            return !!this.livingDocService.searchText || this.livingDocService.showInProgressOnly;
+            return !!this.livingDocService.searchText || this.filter != null;
         }
 
-        get showInProgressOnly() { return this.livingDocService.showInProgressOnly; }
+        get filter() { return this.livingDocService.filter; }
 
         get lastUpdatedOn() {
             return _.find(this.livingDocService.documentationList, doc => !!doc.lastUpdatedOn).lastUpdatedOn;
@@ -73,8 +75,12 @@ module livingDocumentation {
             this.livingDocService.search(null);
         }
 
-        toggleShowInProgressOnly(initialize?: boolean): void {
-            this.livingDocService.toggleShowInProgressOnly(initialize);
+        clearFilter(): void {
+            this.livingDocService.showOnly(null);
+        }
+
+        showOnly(filter: DocumentationFilter, initialize?: boolean): void {
+            this.livingDocService.showOnly(filter, initialize);
         }
     }
 

@@ -8,6 +8,13 @@
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    (function (DocumentationFilter) {
+        DocumentationFilter[DocumentationFilter["InProgress"] = 0] = "InProgress";
+        DocumentationFilter[DocumentationFilter["Pending"] = 1] = "Pending";
+        DocumentationFilter[DocumentationFilter["Failed"] = 2] = "Failed";
+        DocumentationFilter[DocumentationFilter["Manual"] = 3] = "Manual";
+    })(livingDocumentation.DocumentationFilter || (livingDocumentation.DocumentationFilter = {}));
+    var DocumentationFilter = livingDocumentation.DocumentationFilter;
     var TIMEOUT = 200;
     var LivingDocumentationService = (function () {
         function LivingDocumentationService(livingDocumentationServer, $q, $timeout, searchService, $location, $route) {
@@ -32,18 +39,20 @@ var livingDocumentation;
         });
         Object.defineProperty(LivingDocumentationService.prototype, "urlSearchPart", {
             get: function () {
-                return !this.searchText && !this.showInProgressOnly
+                return !this.searchText && this.filter == null
                     ? ''
-                    : ("?search=" + encodeURIComponent(this.searchText || '')) +
-                        (!this.showInProgressOnly ? '' : '&showInProgressOnly');
+                    : "?search=" + encodeURIComponent(this.searchText || '') + (this.filter == null ? '' : "&showOnly=" + this.filterRaw);
             },
             enumerable: true,
             configurable: true
         });
-        Object.defineProperty(LivingDocumentationService.prototype, "showInProgressOnly", {
-            get: function () {
-                return !!this.$location.search().showInProgressOnly;
-            },
+        Object.defineProperty(LivingDocumentationService.prototype, "filter", {
+            get: function () { return !this.filterRaw ? null : DocumentationFilter[this.filterRaw]; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationService.prototype, "filterRaw", {
+            get: function () { return this.$location.search().showOnly; },
             enumerable: true,
             configurable: true
         });
@@ -69,16 +78,33 @@ var livingDocumentation;
         LivingDocumentationService.prototype.search = function (searchText) {
             this.$location.search('search', searchText);
             if (!searchText) {
-                this.$location.search('showInProgressOnly', null);
+                this.$location.search('showOnly', null);
                 _a = [this.documentationList, null, null], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];
                 return;
             }
             this.searchCore();
             var _a;
         };
-        LivingDocumentationService.prototype.toggleShowInProgressOnly = function (initialize) {
+        LivingDocumentationService.prototype.showOnly = function (filter, initialize) {
             if (!initialize) {
-                this.$location.search('showInProgressOnly', !this.showInProgressOnly ? true : null);
+                var filterName;
+                switch (filter) {
+                    case DocumentationFilter.InProgress:
+                        filterName = 'InProgress';
+                        break;
+                    case DocumentationFilter.Pending:
+                        filterName = 'Pending';
+                        break;
+                    case DocumentationFilter.Manual:
+                        filterName = 'Manual';
+                        break;
+                    case DocumentationFilter.Failed:
+                        filterName = 'Failed';
+                        break;
+                    default:
+                        filterName = null;
+                }
+                this.$location.search('showOnly', filterName);
             }
             this.searchCore();
         };
@@ -93,7 +119,8 @@ var livingDocumentation;
             this.filteredDocumentationList = this.documentationList;
         };
         LivingDocumentationService.prototype.searchCore = function () {
-            var searchText = !this.showInProgressOnly ? this.searchText : '@iteration ' + (this.searchText || '');
+            var searchText = this.filter !== DocumentationFilter.InProgress
+                ? this.searchText : '@iteration ' + (this.searchText || '');
             if (searchText !== this.currentSearchText) {
                 var res = this.searchService.search(searchText, this.documentationList);
                 _a = [res.documentationList, res.searchContext, searchText], this.filteredDocumentationList = _a[0], this.searchContext = _a[1], this.currentSearchText = _a[2];
