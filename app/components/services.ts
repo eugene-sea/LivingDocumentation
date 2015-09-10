@@ -91,7 +91,7 @@ module livingDocumentation {
         get searchText(): string { return this.$location.search().search; }
 
         get urlSearchPart() {
-            return `${ !this.searchText ? '' : `?search=${ encodeURIComponent(this.searchText || '') }` }${ this.filter == null ? '' : `&showOnly=${this.filterRaw}` }`;
+            return `${ !this.searchText ? '' : `?search=${ encodeURIComponent(this.searchText || '') }` }${ this.filter == null ? '' : `${ this.searchText ? '&' : '?' }showOnly=${this.filterRaw}` }`;
         }
 
         get filter() { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }

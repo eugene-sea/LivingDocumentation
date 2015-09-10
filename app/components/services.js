@@ -39,7 +39,7 @@ var livingDocumentation;
         });
         Object.defineProperty(LivingDocumentationService.prototype, "urlSearchPart", {
             get: function () {
-                return "" + (!this.searchText ? '' : "?search=" + encodeURIComponent(this.searchText || '')) + (this.filter == null ? '' : "&showOnly=" + this.filterRaw);
+                return "" + (!this.searchText ? '' : "?search=" + encodeURIComponent(this.searchText || '')) + (this.filter == null ? '' : (this.searchText ? '&' : '?') + "showOnly=" + this.filterRaw);
             },
             enumerable: true,
             configurable: true
