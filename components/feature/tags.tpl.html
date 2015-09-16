@@ -1,0 +1,5 @@
+Tags: 
+<span ng-repeat="tag in ctrl.tags" ng-init="issueUri = ctrl.getIssueTrackingUri(tag)">
+  <i ng-bind-html="tag | highlightTag" ng-if="!issueUri"></i> 
+  <a href="{{issueUri}}" target="_blank" ng-if="issueUri"><i ng-bind-html="tag | highlightTag"></i></a> 
+</span>
