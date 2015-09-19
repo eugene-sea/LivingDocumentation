@@ -7,7 +7,7 @@
     "build": "./scripts/build.sh",
     "start": "node server.js",
     "test": "./node_modules/.bin/karma start ./test/karma.conf.js",
-    "update-components": "bower update && tsd update && npm update",
+    "update-components": "bower update && tsd update --save --overwrite && npm update",
     "updates": "bower ls && npm outdated"
   },
   "repository": {
