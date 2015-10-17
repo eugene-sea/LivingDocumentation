@@ -6,43 +6,43 @@
   "bundle": "typings/tsd.d.ts",
   "installed": {
     "jquery/jquery.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "angularjs/angular.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "angularjs/angular-route.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "angularjs/angular-sanitize.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "angular-ui-bootstrap/angular-ui-bootstrap.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "underscore/underscore.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "angularjs/angular-resource.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "node/node.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "express/express.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "should/should.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "mocha/mocha.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "mime/mime.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     },
     "serve-static/serve-static.d.ts": {
-      "commit": "3fc1377ce29dd9670975cb68615edf1b819fc4a5"
+      "commit": "af5b8275d1f2b92738b93fddabc461fc20c553a1"
     }
   }
 }
