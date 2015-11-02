@@ -73,6 +73,7 @@ module livingDocumentation {
         featureEditUri?: string;
         testsResources?: string;
         testUri?: string;
+        externalTestResults?: string;
     }
 
     export interface ILivingDocumentation {

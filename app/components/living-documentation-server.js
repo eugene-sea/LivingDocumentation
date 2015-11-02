@@ -11,6 +11,8 @@ var livingDocumentation;
             this.$q = $q;
             this.featuresSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
             this.featuresTestsSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
+            this.featuresExternalResultsResourceClass =
+                $resource('data/:resource', null, { get: { method: 'GET' } });
             this.livingDocResDefResourceClass =
                 $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
         }
@@ -22,7 +24,10 @@ var livingDocumentation;
             var promiseTests = !resource.testsResources
                 ? this.$q.when(null)
                 : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
-            return this.$q.all([promiseFeatures, promiseTests]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests); });
+            var promiseExternalResults = !resource.externalTestResults
+                ? this.$q.when(null)
+                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
+            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests, arr[2] || {}); });
         };
         LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
             var res = _.find(parent.children, function (c) { return c.name === childName; });
@@ -43,7 +48,7 @@ var livingDocumentation;
             var child = LivingDocumentationServer.findSubfolderOrCreate(parent, folders.shift());
             return LivingDocumentationServer.getSubfolder(child, folders);
         };
-        LivingDocumentationServer.parseFeatures = function (resource, features, lastUpdatedOn, featuresTests) {
+        LivingDocumentationServer.parseFeatures = function (resource, features, lastUpdatedOn, featuresTests, externalTestResults) {
             var root = {
                 name: resource.name,
                 children: [],
@@ -60,6 +65,7 @@ var livingDocumentation;
                 f.isManual = LivingDocumentationServer.isManual(f.Feature);
                 _.each(f.Feature.FeatureElements, function (s) {
                     s.isExpanded = true;
+                    LivingDocumentationServer.updateScenarioStatus(externalTestResults[f.Feature.Name], s);
                     s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
                     s.tagsInternal = s.Tags.concat(LivingDocumentationServer.computeStatusTags(s));
                     if (s.Examples) {
@@ -76,6 +82,7 @@ var livingDocumentation;
                     LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
                 }
                 LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
+                LivingDocumentationServer.updateFeatureStatus(f);
                 resFeatures[f.code] = f;
             });
             return {
@@ -112,6 +119,39 @@ var livingDocumentation;
                 return ['@failing'];
             }
             return [];
+        };
+        LivingDocumentationServer.updateScenarioStatus = function (externalTestResults, scenario) {
+            if (!externalTestResults) {
+                return;
+            }
+            var scenarioTestRes = externalTestResults[scenario.Name];
+            if (!scenarioTestRes) {
+                return;
+            }
+            switch (scenarioTestRes) {
+                case 'passed':
+                    _a = [true, true], scenario.Result.WasExecuted = _a[0], scenario.Result.WasSuccessful = _a[1];
+                    break;
+                case 'pending':
+                    _b = [false, false], scenario.Result.WasExecuted = _b[0], scenario.Result.WasSuccessful = _b[1];
+                    break;
+                case 'failed':
+                    _c = [true, false], scenario.Result.WasExecuted = _c[0], scenario.Result.WasSuccessful = _c[1];
+                    break;
+                default: throw Error();
+            }
+            var _a, _b, _c;
+        };
+        LivingDocumentationServer.updateFeatureStatus = function (feature) {
+            if (_.any(feature.Feature.FeatureElements, function (s) { return s.Result.WasExecuted && !s.Result.WasSuccessful; })) {
+                feature.Feature.Result = { WasExecuted: true, WasSuccessful: false };
+                return;
+            }
+            if (_.any(feature.Feature.FeatureElements, function (s) { return !s.Result.WasExecuted; })) {
+                feature.Feature.Result = { WasExecuted: false, WasSuccessful: false };
+                return;
+            }
+            feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
         };
         return LivingDocumentationServer;
     })();

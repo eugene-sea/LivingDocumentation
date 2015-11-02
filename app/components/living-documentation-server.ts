@@ -28,6 +28,10 @@ module livingDocumentation {
         FeaturesTests: IFeatureTestsSource[];
     }
 
+    interface IFeaturesExternalResults {
+        [feature: string]: { [scenario: string]: string; };
+    }
+
     interface ILivingDocumentationResourceDefinitionResourceClass extends
         angular.resource.IResourceClass<ng.resource.IResource<ILivingDocumentationResourceDefinition[]>> {
     }
@@ -40,6 +44,10 @@ module livingDocumentation {
         angular.resource.IResourceClass<ng.resource.IResource<IFeaturesTestsSource>> {
     }
 
+    interface IFeaturesExternalResultsResourceClass extends
+        angular.resource.IResourceClass<ng.resource.IResource<IFeaturesExternalResults>> {
+    }
+
     export interface ILivingDocumentationServer {
         getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]>;
         get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation>;
@@ -48,6 +56,7 @@ module livingDocumentation {
     class LivingDocumentationServer {
         private featuresSourceResourceClass: IFeaturesSourceResourceClass;
         private featuresTestsSourceResourceClass: IFeaturesTestsSourceResourceClass;
+        private featuresExternalResultsResourceClass: IFeaturesExternalResultsResourceClass;
         private livingDocResDefResourceClass: ILivingDocumentationResourceDefinitionResourceClass;
 
         constructor($resource: ng.resource.IResourceService, private $q: ng.IQService) {
@@ -55,6 +64,10 @@ module livingDocumentation {
                 'data/:resource', null, { get: { method: 'GET' } });
 
             this.featuresTestsSourceResourceClass = $resource<IFeaturesTestsSource, IFeaturesTestsSourceResourceClass>(
+                'data/:resource', null, { get: { method: 'GET' } });
+
+            this.featuresExternalResultsResourceClass =
+            $resource<IFeaturesExternalResults, IFeaturesExternalResultsResourceClass>(
                 'data/:resource', null, { get: { method: 'GET' } });
 
             this.livingDocResDefResourceClass =
@@ -67,23 +80,28 @@ module livingDocumentation {
         }
 
         get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
-            var promiseFeatures = this.featuresSourceResourceClass.get(
+            let promiseFeatures = this.featuresSourceResourceClass.get(
                 { resource: resource.featuresResource }).$promise;
 
-            var promiseTests = !resource.testsResources
+            let promiseTests = !resource.testsResources
                 ? this.$q.when(null)
                 : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
 
-            return this.$q.all([promiseFeatures, promiseTests]).then(
+            let promiseExternalResults = !resource.externalTestResults
+                ? this.$q.when(null)
+                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
+
+            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(
                 (arr: any[]) => LivingDocumentationServer.parseFeatures(
                     resource,
                     arr[0].Features,
                     arr[0].Configuration.GeneratedOn,
-                    !arr[1] ? null : arr[1].FeaturesTests));
+                    !arr[1] ? null : arr[1].FeaturesTests,
+                    arr[2] || {}));
         }
 
         private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
-            var res = _.find(parent.children, c => c.name === childName);
+            let res = _.find(parent.children, c => c.name === childName);
             if (!res) {
                 res = {
                     name: childName,
@@ -102,7 +120,7 @@ module livingDocumentation {
                 return parent;
             }
 
-            var child = LivingDocumentationServer.findSubfolderOrCreate(parent, folders.shift());
+            let child = LivingDocumentationServer.findSubfolderOrCreate(parent, folders.shift());
             return LivingDocumentationServer.getSubfolder(child, folders);
         }
 
@@ -110,26 +128,28 @@ module livingDocumentation {
             resource: ILivingDocumentationResourceDefinition,
             features: IFeature[],
             lastUpdatedOn: Date,
-            featuresTests: IFeatureTestsSource[]): ILivingDocumentation {
-            var root: IFolder = {
+            featuresTests: IFeatureTestsSource[],
+            externalTestResults: IFeaturesExternalResults): ILivingDocumentation {
+            let root: IFolder = {
                 name: resource.name,
                 children: [],
                 features: [],
                 isRoot: true
             };
 
-            var featuresTestsMap = featuresTests === null
+            let featuresTestsMap = featuresTests === null
                 ? undefined : _.indexBy(featuresTests, f => f.RelativeFolder);
 
-            var resFeatures: IFeatures = {};
+            let resFeatures: IFeatures = {};
             _.each(features, f => {
-                var folders = f.RelativeFolder.match(/[^\\/]+/g);
+                let folders = f.RelativeFolder.match(/[^\\/]+/g);
                 f.code = folders.pop();
 
                 f.isExpanded = true;
                 f.isManual = LivingDocumentationServer.isManual(f.Feature);
                 _.each(f.Feature.FeatureElements, s => {
                     s.isExpanded = true;
+                    LivingDocumentationServer.updateScenarioStatus(externalTestResults[f.Feature.Name], s);
                     s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
                     s.tagsInternal = s.Tags.concat(LivingDocumentationServer.computeStatusTags(s));
                     if (s.Examples) {
@@ -148,6 +168,7 @@ module livingDocumentation {
                 }
 
                 LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
+                LivingDocumentationServer.updateFeatureStatus(f);
                 resFeatures[f.code] = f;
             });
 
@@ -164,9 +185,9 @@ module livingDocumentation {
                 return;
             }
 
-            var scenarioTestsMap = _.groupBy(featureTests.ScenariosTests, s => s.ScenarioName);
+            let scenarioTestsMap = _.groupBy(featureTests.ScenariosTests, s => s.ScenarioName);
             _.each(feature.Feature.FeatureElements, scenario => {
-                var scenarioTests = scenarioTestsMap[scenario.Name];
+                let scenarioTests = scenarioTestsMap[scenario.Name];
                 if (!scenarioTests) {
                     return;
                 }
@@ -193,6 +214,45 @@ module livingDocumentation {
             }
 
             return [];
+        }
+
+        private static updateScenarioStatus(
+            externalTestResults: { [scenario: string]: string; }, scenario: IScenario): void {
+            if (!externalTestResults) {
+                return;
+            }
+
+            const scenarioTestRes = externalTestResults[scenario.Name];
+            if (!scenarioTestRes) {
+                return;
+            }
+
+            switch (scenarioTestRes) {
+                case 'passed':
+                    [scenario.Result.WasExecuted, scenario.Result.WasSuccessful] = [true, true];
+                    break;
+                case 'pending':
+                    [scenario.Result.WasExecuted, scenario.Result.WasSuccessful] = [false, false];
+                    break;
+                case 'failed':
+                    [scenario.Result.WasExecuted, scenario.Result.WasSuccessful] = [true, false];
+                    break;
+                default: throw Error();
+            }
+        }
+
+        private static updateFeatureStatus(feature: IFeature): void {
+            if (_.any(feature.Feature.FeatureElements, s => s.Result.WasExecuted && !s.Result.WasSuccessful)) {
+                feature.Feature.Result = { WasExecuted: true, WasSuccessful: false };
+                return;
+            }
+
+            if (_.any(feature.Feature.FeatureElements, s => !s.Result.WasExecuted)) {
+                feature.Feature.Result = { WasExecuted: false, WasSuccessful: false };
+                return;
+            }
+
+            feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
         }
     }
 

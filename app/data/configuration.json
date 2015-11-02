@@ -9,6 +9,7 @@
         "issueTrackingUri": "http://example.com/Issues/?Issue={1}",
         "featureEditUri": "http://example.com/Features/edit/{0}",
         "testsResources": "test-data-tests.json",
-        "testUri": "http://example.com/Tests/?Test="
+        "testUri": "http://example.com/Tests/?Test=",
+        "externalTestResults": "external-results.json"
     }
 ]
