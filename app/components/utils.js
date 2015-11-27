@@ -1,6 +1,6 @@
-'use strict';
 var utils;
 (function (utils) {
+    'use strict';
     function wrapInjectionConstructor(constructor, transformer) {
         return (constructor.$inject || []).concat(function () {
             var functionConstructor = constructor.bind.apply(constructor, [null].concat(Array.prototype.slice.call(arguments, 0)));

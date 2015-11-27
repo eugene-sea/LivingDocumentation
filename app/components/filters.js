@@ -2,9 +2,9 @@
 /// <reference path="utils.ts" />
 /// <reference path="search-service.ts" />
 /// <reference path="services.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var NewLineFilter = (function () {
         function NewLineFilter() {
         }

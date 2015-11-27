@@ -5,9 +5,9 @@
 /// <reference path="utils.ts" />
 /// <reference path="living-documentation-server.ts" />
 /// <reference path="search-service.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     (function (DocumentationFilter) {
         DocumentationFilter[DocumentationFilter["InProgress"] = 0] = "InProgress";
         DocumentationFilter[DocumentationFilter["Pending"] = 1] = "Pending";
@@ -24,10 +24,10 @@ var livingDocumentation;
             this.searchService = searchService;
             this.$location = $location;
             this.$route = $route;
-            this.currentSearchText = '';
             this.documentationList = [];
             this.filteredDocumentationList = [];
             this.searchContext = null;
+            this.currentSearchText = '';
             this.loading = true;
             this.deferred = $q.defer();
             this.resolve = this.deferred.promise;
@@ -39,7 +39,8 @@ var livingDocumentation;
         });
         Object.defineProperty(LivingDocumentationService.prototype, "urlSearchPart", {
             get: function () {
-                return "" + (!this.searchText ? '' : "?search=" + encodeURIComponent(this.searchText || '')) + (this.filter == null ? '' : (this.searchText ? '&' : '?') + "showOnly=" + this.filterRaw);
+                return (!this.searchText ? '' : "?search=" + encodeURIComponent(this.searchText || '')) +
+                    (this.filter == null ? '' : (this.searchText ? '&' : '?') + "showOnly=" + this.filterRaw);
             },
             enumerable: true,
             configurable: true

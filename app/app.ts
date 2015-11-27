@@ -8,9 +8,9 @@ angular.module('livingDocumentation', [
     'ngRoute',
     'livingDocumentation.app',
     'livingDocumentation.controllers.dashboard',
-    'livingDocumentation.feature',
+    'livingDocumentation.feature'
 ]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
-    var resolve: { [key: string]: any; } = {
+    const resolve: { [key: string]: any; } = {
         livingDocumentationServiceReady: [
             'livingDocumentationService',
             (service: livingDocumentation.ILivingDocumentationService) => service.resolve
@@ -18,17 +18,17 @@ angular.module('livingDocumentation', [
     };
 
     $routeProvider.when('/dashboard', {
-        template: '<div dashboard></div>',
-        resolve: resolve
+        resolve: resolve,
+        template: '<div dashboard></div>'
     });
 
     $routeProvider.when('/feature/:documentationCode/:featureCode', {
+        resolve: resolve,
         template: ($routeParams: angular.route.IRouteParamsService) =>
             `<div feature
                 feature-code="${$routeParams['featureCode']}"
                 documentation-code="${$routeParams['documentationCode']}">
-             </div>`,
-        resolve: resolve
+             </div>`
     });
 
     $routeProvider.otherwise({ redirectTo: '/dashboard' });

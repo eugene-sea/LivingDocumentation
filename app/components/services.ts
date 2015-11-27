@@ -6,9 +6,9 @@
 /// <reference path="living-documentation-server.ts" />
 /// <reference path="search-service.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     export enum DocumentationFilter {
         InProgress,
         Pending,
@@ -51,8 +51,9 @@ module livingDocumentation {
     const TIMEOUT = 200;
 
     class LivingDocumentationService implements ILivingDocumentationService {
-        private deferred: ng.IDeferred<ILivingDocumentationService>;
-        private currentSearchText = '';
+        static $inject: string[] = [
+            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$route'
+        ];
 
         loading: boolean;
 
@@ -72,9 +73,8 @@ module livingDocumentation {
 
         onStopProcessing: () => void;
 
-        static $inject: string[] = [
-            'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$route'
-        ];
+        private deferred: ng.IDeferred<ILivingDocumentationService>;
+        private currentSearchText = '';
 
         constructor(
             private livingDocumentationServer: ILivingDocumentationServer,
@@ -91,7 +91,8 @@ module livingDocumentation {
         get searchText(): string { return this.$location.search().search; }
 
         get urlSearchPart() {
-            return `${ !this.searchText ? '' : `?search=${ encodeURIComponent(this.searchText || '') }` }${ this.filter == null ? '' : `${ this.searchText ? '&' : '?' }showOnly=${this.filterRaw}` }`;
+            return (!this.searchText ? '' : `?search=${ encodeURIComponent(this.searchText || '') }`) +
+                (this.filter == null ? '' : `${ this.searchText ? '&' : '?' }showOnly=${this.filterRaw}`);
         }
 
         get filter() { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }
@@ -108,21 +109,21 @@ module livingDocumentation {
             this.livingDocumentationServer.getResourceDefinitions()
                 .then(resources => this.$q.all(_.map(resources, r => this.livingDocumentationServer.get(r))))
                 .then(
-                    (docs: ILivingDocumentation[]) => {
-                        this.documentationList = docs;
-                        this.$timeout(
-                            () => {
-                                this.deferred.resolve(this);
-                                this.initialize();
-                            },
-                            TIMEOUT);
-                    },
-                    err => this.$timeout(
+                (docs: ILivingDocumentation[]) => {
+                    this.documentationList = docs;
+                    this.$timeout(
                         () => {
-                            this.deferred.reject(err);
-                            this.onError(err);
+                            this.deferred.resolve(this);
+                            this.initialize();
                         },
-                        TIMEOUT));
+                        TIMEOUT);
+                },
+                err => this.$timeout(
+                    () => {
+                        this.deferred.reject(err);
+                        this.onError(err);
+                    },
+                    TIMEOUT));
         }
 
         search(searchText: string): void {

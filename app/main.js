@@ -1,7 +1,10 @@
-'use strict';
-'use strict';
+var livingDocumentation;
+(function (livingDocumentation) {
+    'use strict';
+})(livingDocumentation || (livingDocumentation = {}));
 var utils;
 (function (utils) {
+    'use strict';
     function wrapInjectionConstructor(constructor, transformer) {
         return (constructor.$inject || []).concat(function () {
             var functionConstructor = constructor.bind.apply(constructor, [null].concat(Array.prototype.slice.call(arguments, 0)));
@@ -34,9 +37,9 @@ var utils;
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
 /// <reference path="utils.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var LivingDocumentationServer = (function () {
         function LivingDocumentationServer($resource, $q) {
             this.$q = $q;
@@ -47,19 +50,6 @@ var livingDocumentation;
             this.livingDocResDefResourceClass =
                 $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
         }
-        LivingDocumentationServer.prototype.getResourceDefinitions = function () {
-            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
-        };
-        LivingDocumentationServer.prototype.get = function (resource) {
-            var promiseFeatures = this.featuresSourceResourceClass.get({ resource: resource.featuresResource }).$promise;
-            var promiseTests = !resource.testsResources
-                ? this.$q.when(null)
-                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
-            var promiseExternalResults = !resource.externalTestResults
-                ? this.$q.when(null)
-                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
-            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests, arr[2] || {}); });
-        };
         LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
             var res = _.find(parent.children, function (c) { return c.name === childName; });
             if (!res) {
@@ -183,6 +173,19 @@ var livingDocumentation;
                 return;
             }
             feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
+        };
+        LivingDocumentationServer.prototype.getResourceDefinitions = function () {
+            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
+        };
+        LivingDocumentationServer.prototype.get = function (resource) {
+            var promiseFeatures = this.featuresSourceResourceClass.get({ resource: resource.featuresResource }).$promise;
+            var promiseTests = !resource.testsResources
+                ? this.$q.when(null)
+                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
+            var promiseExternalResults = !resource.externalTestResults
+                ? this.$q.when(null)
+                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
+            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests, arr[2] || {}); });
         };
         return LivingDocumentationServer;
     })();
@@ -363,9 +366,9 @@ var livingDocumentation;
 /// <reference path="utils.ts" />
 /// <reference path="living-documentation-server.ts" />
 /// <reference path="search-service.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     (function (DocumentationFilter) {
         DocumentationFilter[DocumentationFilter["InProgress"] = 0] = "InProgress";
         DocumentationFilter[DocumentationFilter["Pending"] = 1] = "Pending";
@@ -382,10 +385,10 @@ var livingDocumentation;
             this.searchService = searchService;
             this.$location = $location;
             this.$route = $route;
-            this.currentSearchText = '';
             this.documentationList = [];
             this.filteredDocumentationList = [];
             this.searchContext = null;
+            this.currentSearchText = '';
             this.loading = true;
             this.deferred = $q.defer();
             this.resolve = this.deferred.promise;
@@ -397,7 +400,8 @@ var livingDocumentation;
         });
         Object.defineProperty(LivingDocumentationService.prototype, "urlSearchPart", {
             get: function () {
-                return "" + (!this.searchText ? '' : "?search=" + encodeURIComponent(this.searchText || '')) + (this.filter == null ? '' : (this.searchText ? '&' : '?') + "showOnly=" + this.filterRaw);
+                return (!this.searchText ? '' : "?search=" + encodeURIComponent(this.searchText || '')) +
+                    (this.filter == null ? '' : (this.searchText ? '&' : '?') + "showOnly=" + this.filterRaw);
             },
             enumerable: true,
             configurable: true
@@ -531,7 +535,7 @@ angular.module('livingDocumentation', [
     'ngRoute',
     'livingDocumentation.app',
     'livingDocumentation.controllers.dashboard',
-    'livingDocumentation.feature',
+    'livingDocumentation.feature'
 ]).config(['$routeProvider', function ($routeProvider) {
         var resolve = {
             livingDocumentationServiceReady: [
@@ -540,14 +544,14 @@ angular.module('livingDocumentation', [
             ]
         };
         $routeProvider.when('/dashboard', {
-            template: '<div dashboard></div>',
-            resolve: resolve
+            resolve: resolve,
+            template: '<div dashboard></div>'
         });
         $routeProvider.when('/feature/:documentationCode/:featureCode', {
+            resolve: resolve,
             template: function ($routeParams) {
                 return ("<div feature\n                feature-code=\"" + $routeParams['featureCode'] + "\"\n                documentation-code=\"" + $routeParams['documentationCode'] + "\">\n             </div>");
-            },
-            resolve: resolve
+            }
         });
         $routeProvider.otherwise({ redirectTo: '/dashboard' });
     }]);
@@ -665,9 +669,9 @@ var livingDocumentation;
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../utils.ts" />
 /// <reference path="../services.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var DashboardDirective = (function () {
         function DashboardDirective() {
             this.restrict = 'A';
@@ -881,15 +885,15 @@ var livingDocumentation;
 /// <reference path="../../../typings/underscore/underscore.d.ts" />
 /// <reference path="../utils.ts" />
 /// <reference path="../services.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var FeatureDirective = (function () {
         function FeatureDirective() {
             this.restrict = 'A';
             this.scope = {
-                featureCode: '@',
-                documentationCode: '@'
+                documentationCode: '@',
+                featureCode: '@'
             };
             this.controller = 'Feature';
             this.controllerAs = 'ctrl';
@@ -987,8 +991,8 @@ var livingDocumentation;
         function StatusDirective() {
             this.restrict = 'A';
             this.scope = {
-                status: '=',
-                isManual: '='
+                isManual: '=',
+                status: '='
             };
             this.controller = Status;
             this.controllerAs = 'ctrl';
@@ -1074,9 +1078,9 @@ var livingDocumentation;
 /// <reference path="utils.ts" />
 /// <reference path="search-service.ts" />
 /// <reference path="services.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var NewLineFilter = (function () {
         function NewLineFilter() {
         }

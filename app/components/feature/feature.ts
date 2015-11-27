@@ -4,14 +4,14 @@
 /// <reference path="../utils.ts" />
 /// <reference path="../services.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     class FeatureDirective implements ng.IDirective {
         restrict = 'A';
         scope = {
-            featureCode: '@',
-            documentationCode: '@'
+            documentationCode: '@',
+            featureCode: '@'
         };
         controller = 'Feature';
         controllerAs = 'ctrl';
@@ -94,7 +94,7 @@ module livingDocumentation {
         documentation: ILivingDocumentation;
 
         getIssueTrackingUri(tag: string): string {
-            var match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
+            const match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
             return match === null ? null : utils.format(this.documentation.definition.issueTrackingUri, ...match);
         }
     }
@@ -102,8 +102,8 @@ module livingDocumentation {
     class StatusDirective implements ng.IDirective {
         restrict = 'A';
         scope = {
-            status: '=',
-            isManual: '='
+            isManual: '=',
+            status: '='
         };
         controller = Status;
         controllerAs = 'ctrl';

@@ -2,9 +2,9 @@
 /// <reference path="../utils.ts" />
 /// <reference path="../services.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     class DashboardDirective implements ng.IDirective {
         restrict = 'A';
         controller = 'Dashboard';

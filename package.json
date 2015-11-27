@@ -30,7 +30,8 @@
     "karma-mocha": "^0.2.0",
     "mocha": "^2.2.5",
     "should": "^7.0.4",
-    "source-map-support": "^0.3.0"
+    "source-map-support": "^0.3.0",
+    "tslint": "^3.0.0"
   },
   "dependencies": {
     "express": "^4.12.4",

@@ -3,9 +3,9 @@
 /// <reference path="search-service.ts" />
 /// <reference path="services.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     class NewLineFilter implements utils.IFilter {
         filter(str: string): string {
             return !str ? str : str.replace(/\r\n/mg, '<br />');
@@ -20,7 +20,8 @@ module livingDocumentation {
 
     class ScenarioOutlinePlaceholderFilter implements utils.IFilter {
         filter(str: string): string {
-            return !str ? str : str.replace(/\&lt;([^<>]+?)\&gt;/g,
+            return !str ? str : str.replace(
+                /\&lt;([^<>]+?)\&gt;/g,
                 (_, c) => `<span class="text-warning">&lt;${ c.replace(/ /g, '&nbsp;') }&gt;</span>`);
         }
     }
@@ -61,9 +62,9 @@ module livingDocumentation {
         }
 
         regEx.lastIndex = 0;
-        var regExRes: RegExpExecArray;
-        var resStr = '';
-        var prevLastIndex = 0;
+        let regExRes: RegExpExecArray;
+        let resStr = '';
+        let prevLastIndex = 0;
         while ((regExRes = regEx.exec(str)) !== null) {
             resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
             if (!regExRes[0]) {

@@ -3,9 +3,9 @@
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
 /// <reference path="utils.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var LivingDocumentationServer = (function () {
         function LivingDocumentationServer($resource, $q) {
             this.$q = $q;
@@ -16,19 +16,6 @@ var livingDocumentation;
             this.livingDocResDefResourceClass =
                 $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
         }
-        LivingDocumentationServer.prototype.getResourceDefinitions = function () {
-            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
-        };
-        LivingDocumentationServer.prototype.get = function (resource) {
-            var promiseFeatures = this.featuresSourceResourceClass.get({ resource: resource.featuresResource }).$promise;
-            var promiseTests = !resource.testsResources
-                ? this.$q.when(null)
-                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
-            var promiseExternalResults = !resource.externalTestResults
-                ? this.$q.when(null)
-                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
-            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests, arr[2] || {}); });
-        };
         LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
             var res = _.find(parent.children, function (c) { return c.name === childName; });
             if (!res) {
@@ -152,6 +139,19 @@ var livingDocumentation;
                 return;
             }
             feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
+        };
+        LivingDocumentationServer.prototype.getResourceDefinitions = function () {
+            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
+        };
+        LivingDocumentationServer.prototype.get = function (resource) {
+            var promiseFeatures = this.featuresSourceResourceClass.get({ resource: resource.featuresResource }).$promise;
+            var promiseTests = !resource.testsResources
+                ? this.$q.when(null)
+                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
+            var promiseExternalResults = !resource.externalTestResults
+                ? this.$q.when(null)
+                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
+            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests, arr[2] || {}); });
         };
         return LivingDocumentationServer;
     })();

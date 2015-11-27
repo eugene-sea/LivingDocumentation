@@ -1,14 +1,14 @@
-'use strict';
+namespace utils {
+    'use strict';
 
-module utils {
     export function wrapInjectionConstructor<T>(
         constructor: { $inject?: string[]; }, transformer?: (inst: T) => any): any {
         return (<any[]>constructor.$inject || []).concat(
             function() {
-                var functionConstructor = (<Function><any>constructor).bind.apply(
+                const functionConstructor = (<Function><any>constructor).bind.apply(
                     constructor, [<any>null].concat(Array.prototype.slice.call(arguments, 0)));
 
-                var res = <T>new functionConstructor();
+                const res = <T>new functionConstructor();
                 return !transformer ? res : transformer(res);
             });
     }

@@ -1,6 +1,6 @@
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     export interface ITable {
         HeaderRow: string[];
         DataRows: string[][];

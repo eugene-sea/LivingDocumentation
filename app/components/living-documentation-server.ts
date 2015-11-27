@@ -4,9 +4,9 @@
 /// <reference path="../domain-model.ts" />
 /// <reference path="utils.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     interface IFeaturesSource {
         Features: IFeature[];
         Configuration: {
@@ -73,31 +73,6 @@ module livingDocumentation {
             this.livingDocResDefResourceClass =
             $resource<ILivingDocumentationResourceDefinition[], ILivingDocumentationResourceDefinitionResourceClass>(
                 'data/:definition', null, { get: { method: 'GET', isArray: true } });
-        }
-
-        getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]> {
-            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
-        }
-
-        get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
-            let promiseFeatures = this.featuresSourceResourceClass.get(
-                { resource: resource.featuresResource }).$promise;
-
-            let promiseTests = !resource.testsResources
-                ? this.$q.when(null)
-                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
-
-            let promiseExternalResults = !resource.externalTestResults
-                ? this.$q.when(null)
-                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
-
-            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(
-                (arr: any[]) => LivingDocumentationServer.parseFeatures(
-                    resource,
-                    arr[0].Features,
-                    arr[0].Configuration.GeneratedOn,
-                    !arr[1] ? null : arr[1].FeaturesTests,
-                    arr[2] || {}));
         }
 
         private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
@@ -253,6 +228,31 @@ module livingDocumentation {
             }
 
             feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
+        }
+
+        getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]> {
+            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
+        }
+
+        get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
+            let promiseFeatures = this.featuresSourceResourceClass.get(
+                { resource: resource.featuresResource }).$promise;
+
+            let promiseTests = !resource.testsResources
+                ? this.$q.when(null)
+                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
+
+            let promiseExternalResults = !resource.externalTestResults
+                ? this.$q.when(null)
+                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
+
+            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(
+                (arr: any[]) => LivingDocumentationServer.parseFeatures(
+                    resource,
+                    arr[0].Features,
+                    arr[0].Configuration.GeneratedOn,
+                    !arr[1] ? null : arr[1].FeaturesTests,
+                    arr[2] || {}));
         }
     }
 
