@@ -378,7 +378,7 @@ var livingDocumentation;
                 feature.Feature.Result = { WasExecuted: true, WasSuccessful: false };
                 return;
             }
-            if (_.any(feature.Feature.FeatureElements, function (s) { return !s.Result.WasExecuted; })) {
+            if (_.any(feature.Feature.FeatureElements, function (s) { return !s.isManual && !s.Result.WasExecuted; })) {
                 feature.Feature.Result = { WasExecuted: false, WasSuccessful: false };
                 return;
             }

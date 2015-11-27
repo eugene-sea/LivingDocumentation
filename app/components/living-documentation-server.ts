@@ -222,7 +222,7 @@ namespace livingDocumentation {
                 return;
             }
 
-            if (_.any(feature.Feature.FeatureElements, s => !s.Result.WasExecuted)) {
+            if (_.any(feature.Feature.FeatureElements, s => !s.isManual && !s.Result.WasExecuted)) {
                 feature.Feature.Result = { WasExecuted: false, WasSuccessful: false };
                 return;
             }
