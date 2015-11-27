@@ -33,165 +33,48 @@ var utils;
     utils.format = format;
 })(utils || (utils = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-resource.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
-/// <reference path="../domain-model.ts" />
-/// <reference path="utils.ts" />
-var livingDocumentation;
-(function (livingDocumentation) {
-    'use strict';
-    var LivingDocumentationServer = (function () {
-        function LivingDocumentationServer($resource, $q) {
-            this.$q = $q;
-            this.featuresSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
-            this.featuresTestsSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
-            this.featuresExternalResultsResourceClass =
-                $resource('data/:resource', null, { get: { method: 'GET' } });
-            this.livingDocResDefResourceClass =
-                $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
+'use strict';
+var utils;
+(function (utils) {
+    var RecursionHelper = (function () {
+        function RecursionHelper($compile) {
+            this.$compile = $compile;
         }
-        LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
-            var res = _.find(parent.children, function (c) { return c.name === childName; });
-            if (!res) {
-                res = {
-                    name: childName,
-                    children: [],
-                    features: []
-                };
-                parent.children.push(res);
+        RecursionHelper.prototype.compile = function (element, linkArg) {
+            var link;
+            // Normalize the link parameter
+            if (angular.isFunction(linkArg)) {
+                link = { post: linkArg };
             }
-            return res;
-        };
-        LivingDocumentationServer.getSubfolder = function (parent, folders) {
-            if (!folders || folders.length === 0) {
-                return parent;
-            }
-            var child = LivingDocumentationServer.findSubfolderOrCreate(parent, folders.shift());
-            return LivingDocumentationServer.getSubfolder(child, folders);
-        };
-        LivingDocumentationServer.parseFeatures = function (resource, features, lastUpdatedOn, featuresTests, externalTestResults) {
-            var root = {
-                name: resource.name,
-                children: [],
-                features: [],
-                isRoot: true
-            };
-            var featuresTestsMap = featuresTests === null
-                ? undefined : _.indexBy(featuresTests, function (f) { return f.RelativeFolder; });
-            var resFeatures = {};
-            _.each(features, function (f) {
-                var folders = f.RelativeFolder.match(/[^\\/]+/g);
-                f.code = folders.pop();
-                f.isExpanded = true;
-                f.isManual = LivingDocumentationServer.isManual(f.Feature);
-                _.each(f.Feature.FeatureElements, function (s) {
-                    s.isExpanded = true;
-                    LivingDocumentationServer.updateScenarioStatus(externalTestResults[f.Feature.Name], s);
-                    s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
-                    s.tagsInternal = s.Tags.concat(LivingDocumentationServer.computeStatusTags(s));
-                    if (s.Examples) {
-                        s.Examples = s.Examples[0];
-                    }
-                });
-                if (f.Feature.Background) {
-                    f.Feature.Background.isExpanded = true;
-                    if (f.Feature.Background.Examples) {
-                        f.Feature.Background.Examples = f.Feature.Background.Examples[0];
-                    }
-                }
-                if (featuresTestsMap) {
-                    LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
-                }
-                LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
-                LivingDocumentationServer.updateFeatureStatus(f);
-                resFeatures[f.code] = f;
-            });
+            // Break the recursion loop by removing the contents
+            var contents = element.contents().remove();
+            var compiledContents;
+            var _this = this;
             return {
-                definition: resource,
-                root: root,
-                features: resFeatures,
-                lastUpdatedOn: new Date(lastUpdatedOn.valueOf())
+                pre: link && link.pre ? link.pre : null,
+                post: function (scope, element) {
+                    // Compile the contents
+                    if (!compiledContents) {
+                        compiledContents = _this.$compile(contents);
+                    }
+                    // Re-add the compiled contents to the element
+                    compiledContents(scope, function (clone) {
+                        element.append(clone);
+                    });
+                    // Call the post-linking function, if any
+                    if (link && link.post) {
+                        link.post.apply(null, arguments);
+                    }
+                }
             };
         };
-        LivingDocumentationServer.addTests = function (feature, featureTests, testUri) {
-            if (!featureTests) {
-                return;
-            }
-            var scenarioTestsMap = _.groupBy(featureTests.ScenariosTests, function (s) { return s.ScenarioName; });
-            _.each(feature.Feature.FeatureElements, function (scenario) {
-                var scenarioTests = scenarioTestsMap[scenario.Name];
-                if (!scenarioTests) {
-                    return;
-                }
-                scenario.tests = _.map(scenarioTests, function (s) { return (testUri || '') + s.Test; });
-            });
-        };
-        LivingDocumentationServer.isManual = function (item) {
-            return _.indexOf(item.Tags, '@manual') !== -1;
-        };
-        LivingDocumentationServer.computeStatusTags = function (scenario) {
-            if (scenario.isManual) {
-                return [];
-            }
-            if (!scenario.Result.WasExecuted) {
-                return ['@pending'];
-            }
-            if (!scenario.Result.WasSuccessful) {
-                return ['@failing'];
-            }
-            return [];
-        };
-        LivingDocumentationServer.updateScenarioStatus = function (externalTestResults, scenario) {
-            if (!externalTestResults) {
-                return;
-            }
-            var scenarioTestRes = externalTestResults[scenario.Name];
-            if (!scenarioTestRes) {
-                return;
-            }
-            switch (scenarioTestRes) {
-                case 'passed':
-                    _a = [true, true], scenario.Result.WasExecuted = _a[0], scenario.Result.WasSuccessful = _a[1];
-                    break;
-                case 'pending':
-                    _b = [false, false], scenario.Result.WasExecuted = _b[0], scenario.Result.WasSuccessful = _b[1];
-                    break;
-                case 'failed':
-                    _c = [true, false], scenario.Result.WasExecuted = _c[0], scenario.Result.WasSuccessful = _c[1];
-                    break;
-                default: throw Error();
-            }
-            var _a, _b, _c;
-        };
-        LivingDocumentationServer.updateFeatureStatus = function (feature) {
-            if (_.any(feature.Feature.FeatureElements, function (s) { return s.Result.WasExecuted && !s.Result.WasSuccessful; })) {
-                feature.Feature.Result = { WasExecuted: true, WasSuccessful: false };
-                return;
-            }
-            if (_.any(feature.Feature.FeatureElements, function (s) { return !s.Result.WasExecuted; })) {
-                feature.Feature.Result = { WasExecuted: false, WasSuccessful: false };
-                return;
-            }
-            feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
-        };
-        LivingDocumentationServer.prototype.getResourceDefinitions = function () {
-            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
-        };
-        LivingDocumentationServer.prototype.get = function (resource) {
-            var promiseFeatures = this.featuresSourceResourceClass.get({ resource: resource.featuresResource }).$promise;
-            var promiseTests = !resource.testsResources
-                ? this.$q.when(null)
-                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
-            var promiseExternalResults = !resource.externalTestResults
-                ? this.$q.when(null)
-                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
-            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests, arr[2] || {}); });
-        };
-        return LivingDocumentationServer;
+        RecursionHelper.$inject = ['$compile'];
+        return RecursionHelper;
     })();
-    angular.module('livingDocumentation.services.server', ['ngResource'])
-        .service('livingDocumentationServer', LivingDocumentationServer);
-})(livingDocumentation || (livingDocumentation = {}));
+    utils.RecursionHelper = RecursionHelper;
+    angular.module('livingDocumentation.services.recursionHelper', [])
+        .service('recursionHelper', RecursionHelper);
+})(utils || (utils = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
@@ -358,6 +241,166 @@ var livingDocumentation;
     })();
     angular.module('livingDocumentation.services.search', [])
         .service('search', SearchService);
+})(livingDocumentation || (livingDocumentation = {}));
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="../../typings/angularjs/angular-resource.d.ts" />
+/// <reference path="../../typings/underscore/underscore.d.ts" />
+/// <reference path="../domain-model.ts" />
+/// <reference path="utils.ts" />
+var livingDocumentation;
+(function (livingDocumentation) {
+    'use strict';
+    var LivingDocumentationServer = (function () {
+        function LivingDocumentationServer($resource, $q) {
+            this.$q = $q;
+            this.featuresSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
+            this.featuresTestsSourceResourceClass = $resource('data/:resource', null, { get: { method: 'GET' } });
+            this.featuresExternalResultsResourceClass =
+                $resource('data/:resource', null, { get: { method: 'GET' } });
+            this.livingDocResDefResourceClass =
+                $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
+        }
+        LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
+            var res = _.find(parent.children, function (c) { return c.name === childName; });
+            if (!res) {
+                res = {
+                    name: childName,
+                    children: [],
+                    features: []
+                };
+                parent.children.push(res);
+            }
+            return res;
+        };
+        LivingDocumentationServer.getSubfolder = function (parent, folders) {
+            if (!folders || folders.length === 0) {
+                return parent;
+            }
+            var child = LivingDocumentationServer.findSubfolderOrCreate(parent, folders.shift());
+            return LivingDocumentationServer.getSubfolder(child, folders);
+        };
+        LivingDocumentationServer.parseFeatures = function (resource, features, lastUpdatedOn, featuresTests, externalTestResults) {
+            var root = {
+                name: resource.name,
+                children: [],
+                features: [],
+                isRoot: true
+            };
+            var featuresTestsMap = featuresTests === null
+                ? undefined : _.indexBy(featuresTests, function (f) { return f.RelativeFolder; });
+            var resFeatures = {};
+            _.each(features, function (f) {
+                var folders = f.RelativeFolder.match(/[^\\/]+/g);
+                f.code = folders.pop();
+                f.isExpanded = true;
+                f.isManual = LivingDocumentationServer.isManual(f.Feature);
+                _.each(f.Feature.FeatureElements, function (s) {
+                    s.isExpanded = true;
+                    LivingDocumentationServer.updateScenarioStatus(externalTestResults[f.Feature.Name], s);
+                    s.isManual = f.isManual || LivingDocumentationServer.isManual(s);
+                    s.tagsInternal = s.Tags.concat(LivingDocumentationServer.computeStatusTags(s));
+                    if (s.Examples) {
+                        s.Examples = s.Examples[0];
+                    }
+                });
+                if (f.Feature.Background) {
+                    f.Feature.Background.isExpanded = true;
+                    if (f.Feature.Background.Examples) {
+                        f.Feature.Background.Examples = f.Feature.Background.Examples[0];
+                    }
+                }
+                if (featuresTestsMap) {
+                    LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
+                }
+                LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
+                LivingDocumentationServer.updateFeatureStatus(f);
+                resFeatures[f.code] = f;
+            });
+            return {
+                definition: resource,
+                root: root,
+                features: resFeatures,
+                lastUpdatedOn: new Date(lastUpdatedOn.valueOf())
+            };
+        };
+        LivingDocumentationServer.addTests = function (feature, featureTests, testUri) {
+            if (!featureTests) {
+                return;
+            }
+            var scenarioTestsMap = _.groupBy(featureTests.ScenariosTests, function (s) { return s.ScenarioName; });
+            _.each(feature.Feature.FeatureElements, function (scenario) {
+                var scenarioTests = scenarioTestsMap[scenario.Name];
+                if (!scenarioTests) {
+                    return;
+                }
+                scenario.tests = _.map(scenarioTests, function (s) { return (testUri || '') + s.Test; });
+            });
+        };
+        LivingDocumentationServer.isManual = function (item) {
+            return _.indexOf(item.Tags, '@manual') !== -1;
+        };
+        LivingDocumentationServer.computeStatusTags = function (scenario) {
+            if (scenario.isManual) {
+                return [];
+            }
+            if (!scenario.Result.WasExecuted) {
+                return ['@pending'];
+            }
+            if (!scenario.Result.WasSuccessful) {
+                return ['@failing'];
+            }
+            return [];
+        };
+        LivingDocumentationServer.updateScenarioStatus = function (externalTestResults, scenario) {
+            if (!externalTestResults) {
+                return;
+            }
+            var scenarioTestRes = externalTestResults[scenario.Name];
+            if (!scenarioTestRes) {
+                return;
+            }
+            switch (scenarioTestRes) {
+                case 'passed':
+                    _a = [true, true], scenario.Result.WasExecuted = _a[0], scenario.Result.WasSuccessful = _a[1];
+                    break;
+                case 'pending':
+                    _b = [false, false], scenario.Result.WasExecuted = _b[0], scenario.Result.WasSuccessful = _b[1];
+                    break;
+                case 'failed':
+                    _c = [true, false], scenario.Result.WasExecuted = _c[0], scenario.Result.WasSuccessful = _c[1];
+                    break;
+                default: throw Error();
+            }
+            var _a, _b, _c;
+        };
+        LivingDocumentationServer.updateFeatureStatus = function (feature) {
+            if (_.any(feature.Feature.FeatureElements, function (s) { return s.Result.WasExecuted && !s.Result.WasSuccessful; })) {
+                feature.Feature.Result = { WasExecuted: true, WasSuccessful: false };
+                return;
+            }
+            if (_.any(feature.Feature.FeatureElements, function (s) { return !s.Result.WasExecuted; })) {
+                feature.Feature.Result = { WasExecuted: false, WasSuccessful: false };
+                return;
+            }
+            feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
+        };
+        LivingDocumentationServer.prototype.getResourceDefinitions = function () {
+            return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
+        };
+        LivingDocumentationServer.prototype.get = function (resource) {
+            var promiseFeatures = this.featuresSourceResourceClass.get({ resource: resource.featuresResource }).$promise;
+            var promiseTests = !resource.testsResources
+                ? this.$q.when(null)
+                : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
+            var promiseExternalResults = !resource.externalTestResults
+                ? this.$q.when(null)
+                : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
+            return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(function (arr) { return LivingDocumentationServer.parseFeatures(resource, arr[0].Features, arr[0].Configuration.GeneratedOn, !arr[1] ? null : arr[1].FeaturesTests, arr[2] || {}); });
+        };
+        return LivingDocumentationServer;
+    })();
+    angular.module('livingDocumentation.services.server', ['ngResource'])
+        .service('livingDocumentationServer', LivingDocumentationServer);
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/angularjs/angular-route.d.ts" />
@@ -527,144 +570,170 @@ var livingDocumentation;
         .value('version', '0.9')
         .service('livingDocumentationService', LivingDocumentationService);
 })(livingDocumentation || (livingDocumentation = {}));
-/// <reference path="../typings/angularjs/angular.d.ts" />
-/// <reference path="../typings/angularjs/angular-route.d.ts" />
-/// <reference path="components/services.ts" />
-'use strict';
-angular.module('livingDocumentation', [
-    'ngRoute',
-    'livingDocumentation.app',
-    'livingDocumentation.controllers.dashboard',
-    'livingDocumentation.feature'
-]).config(['$routeProvider', function ($routeProvider) {
-        var resolve = {
-            livingDocumentationServiceReady: [
-                'livingDocumentationService',
-                function (service) { return service.resolve; }
-            ]
-        };
-        $routeProvider.when('/dashboard', {
-            resolve: resolve,
-            template: '<div dashboard></div>'
-        });
-        $routeProvider.when('/feature/:documentationCode/:featureCode', {
-            resolve: resolve,
-            template: function ($routeParams) {
-                return ("<div feature\n                feature-code=\"" + $routeParams['featureCode'] + "\"\n                documentation-code=\"" + $routeParams['documentationCode'] + "\">\n             </div>");
-            }
-        });
-        $routeProvider.otherwise({ redirectTo: '/dashboard' });
-    }]);
-/// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-/// <reference path="../services.ts" />
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="utils.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
-    var LivingDocumentationAppDirective = (function () {
-        function LivingDocumentationAppDirective() {
-            this.restrict = 'A';
-            this.controller = 'LivingDocumentationApp';
-            this.controllerAs = 'root';
-            this.bindToController = true;
-            this.templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html';
+    var AppVersion = (function () {
+        function AppVersion(version) {
+            var _this = this;
+            this.version = version;
+            this.link = function (scope, element, attributes) { return _this.linkCore(element); };
         }
-        return LivingDocumentationAppDirective;
+        AppVersion.prototype.linkCore = function (element) {
+            element.text(this.version);
+        };
+        AppVersion.$inject = ['version'];
+        return AppVersion;
     })();
-    var LivingDocumentationApp = (function () {
-        function LivingDocumentationApp(livingDocService, $modal) {
+    var IsActive = (function () {
+        function IsActive($location) {
+            var _this = this;
+            this.$location = $location;
+            this.link = function (scope, element, attributes) { return _this.linkCore(scope, element, attributes); };
+        }
+        IsActive.prototype.linkCore = function (scope, element, attributes) {
+            var _this = this;
+            var handler = function () {
+                var isActive;
+                if (attributes['isActive']) {
+                    isActive = _this.$location.path().indexOf(attributes['isActive']) === 0;
+                }
+                else {
+                    var indexOf = _this.$location.path().indexOf(attributes['isActiveLast']);
+                    isActive = indexOf >= 0 &&
+                        (indexOf + attributes['isActiveLast'].length === _this.$location.path().length);
+                }
+                if (isActive) {
+                    element.addClass('active');
+                }
+                else {
+                    element.removeClass('active');
+                }
+            };
+            handler();
+            IsActive.subscribe(scope, handler);
+        };
+        IsActive.subscribe = function (scope, handler) {
+            scope.$on('$routeChangeSuccess', handler);
+            scope.$on('$includeContentLoaded', handler);
+        };
+        IsActive.$inject = ['$location'];
+        return IsActive;
+    })();
+    angular
+        .module('livingDocumentation.directives', [])
+        .directive('appVersion', utils.wrapInjectionConstructor(AppVersion))
+        .directive('isActive', utils.wrapInjectionConstructor(IsActive))
+        .directive('isActiveLast', utils.wrapInjectionConstructor(IsActive));
+})(livingDocumentation || (livingDocumentation = {}));
+/// <reference path="../../typings/angularjs/angular.d.ts" />
+/// <reference path="utils.ts" />
+/// <reference path="search-service.ts" />
+/// <reference path="services.ts" />
+var livingDocumentation;
+(function (livingDocumentation) {
+    'use strict';
+    var NewLineFilter = (function () {
+        function NewLineFilter() {
+        }
+        NewLineFilter.prototype.filter = function (str) {
+            return !str ? str : str.replace(/\r\n/mg, '<br />');
+        };
+        return NewLineFilter;
+    })();
+    var SplitWordsFilter = (function () {
+        function SplitWordsFilter() {
+        }
+        SplitWordsFilter.prototype.filter = function (str) {
+            return livingDocumentation.splitWords(str);
+        };
+        return SplitWordsFilter;
+    })();
+    var ScenarioOutlinePlaceholderFilter = (function () {
+        function ScenarioOutlinePlaceholderFilter() {
+        }
+        ScenarioOutlinePlaceholderFilter.prototype.filter = function (str) {
+            return !str ? str : str.replace(/\&lt;([^<>]+?)\&gt;/g, function (_, c) { return ("<span class=\"text-warning\">&lt;" + c.replace(/ /g, '&nbsp;') + "&gt;</span>"); });
+        };
+        return ScenarioOutlinePlaceholderFilter;
+    })();
+    var HighlightFilter = (function () {
+        function HighlightFilter(livingDocService) {
             this.livingDocService = livingDocService;
-            this.DocumentationFilter = livingDocumentation.DocumentationFilter;
-            var modalInstance;
-            livingDocService.onStartProcessing = function () {
-                if (modalInstance) {
-                    return;
-                }
-                modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
-            };
-            var this_ = this;
-            livingDocService.onStopProcessing = function () {
-                if (this_.isClearSearchEnabled) {
-                    if (!this_.searchText) {
-                        this_.showOnly(null, true);
-                    }
-                    else {
-                        this_.search();
-                    }
-                }
-                modalInstance.close();
-                modalInstance = null;
-            };
-            this.searchText = livingDocService.searchText || '';
-            livingDocService.startInitialization();
         }
-        Object.defineProperty(LivingDocumentationApp.prototype, "loading", {
-            get: function () { return this.livingDocService.loading; },
-            set: function (value) { },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(LivingDocumentationApp.prototype, "error", {
-            get: function () { return this.livingDocService.error; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(LivingDocumentationApp.prototype, "ready", {
-            get: function () { return this.livingDocService.ready; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(LivingDocumentationApp.prototype, "isSearchEnabled", {
-            get: function () { return !!this.searchText.trim(); },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(LivingDocumentationApp.prototype, "isClearSearchEnabled", {
-            get: function () {
-                return !!this.livingDocService.searchText || this.filter != null;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(LivingDocumentationApp.prototype, "filter", {
-            get: function () { return this.livingDocService.filter; },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(LivingDocumentationApp.prototype, "lastUpdatedOn", {
-            get: function () {
-                return _.find(this.livingDocService.documentationList, function (doc) { return !!doc.lastUpdatedOn; }).lastUpdatedOn;
-            },
-            enumerable: true,
-            configurable: true
-        });
-        Object.defineProperty(LivingDocumentationApp.prototype, "searchPart", {
-            get: function () { return this.livingDocService.urlSearchPart; },
-            enumerable: true,
-            configurable: true
-        });
-        LivingDocumentationApp.prototype.search = function () {
-            this.livingDocService.search(this.searchText);
+        HighlightFilter.prototype.filter = function (str) {
+            return !this.livingDocService.searchContext
+                ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
         };
-        LivingDocumentationApp.prototype.clearSearch = function () {
-            this.livingDocService.search(null);
-        };
-        LivingDocumentationApp.prototype.clearFilter = function () {
-            this.livingDocService.showOnly(null);
-        };
-        LivingDocumentationApp.prototype.showOnly = function (filter, initialize) {
-            this.livingDocService.showOnly(filter, initialize);
-        };
-        LivingDocumentationApp.$inject = ['livingDocumentationService', '$modal'];
-        return LivingDocumentationApp;
+        HighlightFilter.$inject = ['livingDocumentationService'];
+        return HighlightFilter;
     })();
-    angular.module('livingDocumentation.app', [
-        'ui.bootstrap',
-        'livingDocumentation.services',
-        'livingDocumentation.directives',
-        'livingDocumentation.documentationList',
-    ])
-        .directive('livingDocumentationApp', utils.wrapInjectionConstructor(LivingDocumentationAppDirective))
-        .controller('LivingDocumentationApp', LivingDocumentationApp);
+    var HighlightTagFilter = (function () {
+        function HighlightTagFilter(livingDocService) {
+            this.livingDocService = livingDocService;
+        }
+        HighlightTagFilter.prototype.filter = function (str) {
+            return !this.livingDocService.searchContext || !_.any(this.livingDocService.searchContext.tags)
+                ? escapeHTML(str)
+                : highlightAndEscape(new RegExp(_.map(this.livingDocService.searchContext.tags, function (t) { return t.source; }).join('|'), 'gi'), str);
+        };
+        HighlightTagFilter.$inject = ['livingDocumentationService'];
+        return HighlightTagFilter;
+    })();
+    var WidenFilter = (function () {
+        function WidenFilter() {
+        }
+        WidenFilter.prototype.filter = function (str) {
+            return widen(str);
+        };
+        return WidenFilter;
+    })();
+    function highlightAndEscape(regEx, str) {
+        if (!str || !regEx) {
+            return escapeHTML(str);
+        }
+        regEx.lastIndex = 0;
+        var regExRes;
+        var resStr = '';
+        var prevLastIndex = 0;
+        while ((regExRes = regEx.exec(str)) !== null) {
+            resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
+            if (!regExRes[0]) {
+                ++regEx.lastIndex;
+            }
+            else {
+                resStr += "<mark>" + escapeHTML(regExRes[0]) + "</mark>";
+                prevLastIndex = regEx.lastIndex;
+            }
+        }
+        resStr += escapeHTML(str.slice(prevLastIndex, str.length));
+        return resStr;
+    }
+    function escapeHTML(str) {
+        if (!str) {
+            return str;
+        }
+        return str.
+            replace(/&/g, '&amp;').
+            replace(/</g, '&lt;').
+            replace(/>/g, '&gt;').
+            replace(/'/g, '&#39;').
+            replace(/"/g, '&quot;');
+    }
+    function widen(str) {
+        var i = 1;
+        return str.replace(/ /g, function () { return i++ % 3 === 0 ? ' ' : '&nbsp;'; });
+    }
+    livingDocumentation.widen = widen;
+    angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
+        .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
+        .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
+        .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
+        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter))
+        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter))
+        .filter('widen', utils.wrapFilterInjectionConstructor(WidenFilter));
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../utils.ts" />
@@ -768,49 +837,6 @@ var livingDocumentation;
         .directive('documentationDashboard', utils.wrapInjectionConstructor(DocumentationDashboardDirective))
         .directive('statistics', utils.wrapInjectionConstructor(StatisticsDirective));
 })(livingDocumentation || (livingDocumentation = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-'use strict';
-var utils;
-(function (utils) {
-    var RecursionHelper = (function () {
-        function RecursionHelper($compile) {
-            this.$compile = $compile;
-        }
-        RecursionHelper.prototype.compile = function (element, linkArg) {
-            var link;
-            // Normalize the link parameter
-            if (angular.isFunction(linkArg)) {
-                link = { post: linkArg };
-            }
-            // Break the recursion loop by removing the contents
-            var contents = element.contents().remove();
-            var compiledContents;
-            var _this = this;
-            return {
-                pre: link && link.pre ? link.pre : null,
-                post: function (scope, element) {
-                    // Compile the contents
-                    if (!compiledContents) {
-                        compiledContents = _this.$compile(contents);
-                    }
-                    // Re-add the compiled contents to the element
-                    compiledContents(scope, function (clone) {
-                        element.append(clone);
-                    });
-                    // Call the post-linking function, if any
-                    if (link && link.post) {
-                        link.post.apply(null, arguments);
-                    }
-                }
-            };
-        };
-        RecursionHelper.$inject = ['$compile'];
-        return RecursionHelper;
-    })();
-    utils.RecursionHelper = RecursionHelper;
-    angular.module('livingDocumentation.services.recursionHelper', [])
-        .service('recursionHelper', RecursionHelper);
-})(utils || (utils = {}));
 /// <reference path="../../../typings/angularjs/angular.d.ts" />
 /// <reference path="../utils.ts" />
 /// <reference path="../services.ts" />
@@ -1016,169 +1042,143 @@ var livingDocumentation;
         .directive('tags', utils.wrapInjectionConstructor(TagsDirective))
         .directive('status', utils.wrapInjectionConstructor(StatusDirective));
 })(livingDocumentation || (livingDocumentation = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="utils.ts" />
+/// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+/// <reference path="../services.ts" />
 'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
-    var AppVersion = (function () {
-        function AppVersion(version) {
-            var _this = this;
-            this.version = version;
-            this.link = function (scope, element, attributes) { return _this.linkCore(element); };
+    var LivingDocumentationAppDirective = (function () {
+        function LivingDocumentationAppDirective() {
+            this.restrict = 'A';
+            this.controller = 'LivingDocumentationApp';
+            this.controllerAs = 'root';
+            this.bindToController = true;
+            this.templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html';
         }
-        AppVersion.prototype.linkCore = function (element) {
-            element.text(this.version);
-        };
-        AppVersion.$inject = ['version'];
-        return AppVersion;
+        return LivingDocumentationAppDirective;
     })();
-    var IsActive = (function () {
-        function IsActive($location) {
-            var _this = this;
-            this.$location = $location;
-            this.link = function (scope, element, attributes) { return _this.linkCore(scope, element, attributes); };
-        }
-        IsActive.prototype.linkCore = function (scope, element, attributes) {
-            var _this = this;
-            var handler = function () {
-                var isActive;
-                if (attributes['isActive']) {
-                    isActive = _this.$location.path().indexOf(attributes['isActive']) === 0;
+    var LivingDocumentationApp = (function () {
+        function LivingDocumentationApp(livingDocService, $modal) {
+            this.livingDocService = livingDocService;
+            this.DocumentationFilter = livingDocumentation.DocumentationFilter;
+            var modalInstance;
+            livingDocService.onStartProcessing = function () {
+                if (modalInstance) {
+                    return;
                 }
-                else {
-                    var indexOf = _this.$location.path().indexOf(attributes['isActiveLast']);
-                    isActive = indexOf >= 0 &&
-                        (indexOf + attributes['isActiveLast'].length === _this.$location.path().length);
-                }
-                if (isActive) {
-                    element.addClass('active');
-                }
-                else {
-                    element.removeClass('active');
-                }
+                modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
             };
-            handler();
-            IsActive.subscribe(scope, handler);
+            var this_ = this;
+            livingDocService.onStopProcessing = function () {
+                if (this_.isClearSearchEnabled) {
+                    if (!this_.searchText) {
+                        this_.showOnly(null, true);
+                    }
+                    else {
+                        this_.search();
+                    }
+                }
+                modalInstance.close();
+                modalInstance = null;
+            };
+            this.searchText = livingDocService.searchText || '';
+            livingDocService.startInitialization();
+        }
+        Object.defineProperty(LivingDocumentationApp.prototype, "loading", {
+            get: function () { return this.livingDocService.loading; },
+            set: function (value) { },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "error", {
+            get: function () { return this.livingDocService.error; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "ready", {
+            get: function () { return this.livingDocService.ready; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "isSearchEnabled", {
+            get: function () { return !!this.searchText.trim(); },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "isClearSearchEnabled", {
+            get: function () {
+                return !!this.livingDocService.searchText || this.filter != null;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "filter", {
+            get: function () { return this.livingDocService.filter; },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "lastUpdatedOn", {
+            get: function () {
+                return _.find(this.livingDocService.documentationList, function (doc) { return !!doc.lastUpdatedOn; }).lastUpdatedOn;
+            },
+            enumerable: true,
+            configurable: true
+        });
+        Object.defineProperty(LivingDocumentationApp.prototype, "searchPart", {
+            get: function () { return this.livingDocService.urlSearchPart; },
+            enumerable: true,
+            configurable: true
+        });
+        LivingDocumentationApp.prototype.search = function () {
+            this.livingDocService.search(this.searchText);
         };
-        IsActive.subscribe = function (scope, handler) {
-            scope.$on('$routeChangeSuccess', handler);
-            scope.$on('$includeContentLoaded', handler);
+        LivingDocumentationApp.prototype.clearSearch = function () {
+            this.livingDocService.search(null);
         };
-        IsActive.$inject = ['$location'];
-        return IsActive;
+        LivingDocumentationApp.prototype.clearFilter = function () {
+            this.livingDocService.showOnly(null);
+        };
+        LivingDocumentationApp.prototype.showOnly = function (filter, initialize) {
+            this.livingDocService.showOnly(filter, initialize);
+        };
+        LivingDocumentationApp.$inject = ['livingDocumentationService', '$modal'];
+        return LivingDocumentationApp;
     })();
-    angular
-        .module('livingDocumentation.directives', [])
-        .directive('appVersion', utils.wrapInjectionConstructor(AppVersion))
-        .directive('isActive', utils.wrapInjectionConstructor(IsActive))
-        .directive('isActiveLast', utils.wrapInjectionConstructor(IsActive));
+    angular.module('livingDocumentation.app', [
+        'ui.bootstrap',
+        'livingDocumentation.services',
+        'livingDocumentation.directives',
+        'livingDocumentation.documentationList',
+    ])
+        .directive('livingDocumentationApp', utils.wrapInjectionConstructor(LivingDocumentationAppDirective))
+        .controller('LivingDocumentationApp', LivingDocumentationApp);
 })(livingDocumentation || (livingDocumentation = {}));
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="utils.ts" />
-/// <reference path="search-service.ts" />
-/// <reference path="services.ts" />
-var livingDocumentation;
-(function (livingDocumentation) {
-    'use strict';
-    var NewLineFilter = (function () {
-        function NewLineFilter() {
-        }
-        NewLineFilter.prototype.filter = function (str) {
-            return !str ? str : str.replace(/\r\n/mg, '<br />');
+/// <reference path="../typings/angularjs/angular.d.ts" />
+/// <reference path="../typings/angularjs/angular-route.d.ts" />
+/// <reference path="components/services.ts" />
+'use strict';
+angular.module('livingDocumentation', [
+    'ngRoute',
+    'livingDocumentation.app',
+    'livingDocumentation.controllers.dashboard',
+    'livingDocumentation.feature'
+]).config(['$routeProvider', function ($routeProvider) {
+        var resolve = {
+            livingDocumentationServiceReady: [
+                'livingDocumentationService',
+                function (service) { return service.resolve; }
+            ]
         };
-        return NewLineFilter;
-    })();
-    var SplitWordsFilter = (function () {
-        function SplitWordsFilter() {
-        }
-        SplitWordsFilter.prototype.filter = function (str) {
-            return livingDocumentation.splitWords(str);
-        };
-        return SplitWordsFilter;
-    })();
-    var ScenarioOutlinePlaceholderFilter = (function () {
-        function ScenarioOutlinePlaceholderFilter() {
-        }
-        ScenarioOutlinePlaceholderFilter.prototype.filter = function (str) {
-            return !str ? str : str.replace(/\&lt;([^<>]+?)\&gt;/g, function (_, c) { return ("<span class=\"text-warning\">&lt;" + c.replace(/ /g, '&nbsp;') + "&gt;</span>"); });
-        };
-        return ScenarioOutlinePlaceholderFilter;
-    })();
-    var HighlightFilter = (function () {
-        function HighlightFilter(livingDocService) {
-            this.livingDocService = livingDocService;
-        }
-        HighlightFilter.prototype.filter = function (str) {
-            return !this.livingDocService.searchContext
-                ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
-        };
-        HighlightFilter.$inject = ['livingDocumentationService'];
-        return HighlightFilter;
-    })();
-    var HighlightTagFilter = (function () {
-        function HighlightTagFilter(livingDocService) {
-            this.livingDocService = livingDocService;
-        }
-        HighlightTagFilter.prototype.filter = function (str) {
-            return !this.livingDocService.searchContext || !_.any(this.livingDocService.searchContext.tags)
-                ? escapeHTML(str)
-                : highlightAndEscape(new RegExp(_.map(this.livingDocService.searchContext.tags, function (t) { return t.source; }).join('|'), 'gi'), str);
-        };
-        HighlightTagFilter.$inject = ['livingDocumentationService'];
-        return HighlightTagFilter;
-    })();
-    var WidenFilter = (function () {
-        function WidenFilter() {
-        }
-        WidenFilter.prototype.filter = function (str) {
-            return widen(str);
-        };
-        return WidenFilter;
-    })();
-    function highlightAndEscape(regEx, str) {
-        if (!str || !regEx) {
-            return escapeHTML(str);
-        }
-        regEx.lastIndex = 0;
-        var regExRes;
-        var resStr = '';
-        var prevLastIndex = 0;
-        while ((regExRes = regEx.exec(str)) !== null) {
-            resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
-            if (!regExRes[0]) {
-                ++regEx.lastIndex;
+        $routeProvider.when('/dashboard', {
+            resolve: resolve,
+            template: '<div dashboard></div>'
+        });
+        $routeProvider.when('/feature/:documentationCode/:featureCode', {
+            resolve: resolve,
+            template: function ($routeParams) {
+                return ("<div feature\n                feature-code=\"" + $routeParams['featureCode'] + "\"\n                documentation-code=\"" + $routeParams['documentationCode'] + "\">\n             </div>");
             }
-            else {
-                resStr += "<mark>" + escapeHTML(regExRes[0]) + "</mark>";
-                prevLastIndex = regEx.lastIndex;
-            }
-        }
-        resStr += escapeHTML(str.slice(prevLastIndex, str.length));
-        return resStr;
-    }
-    function escapeHTML(str) {
-        if (!str) {
-            return str;
-        }
-        return str.
-            replace(/&/g, '&amp;').
-            replace(/</g, '&lt;').
-            replace(/>/g, '&gt;').
-            replace(/'/g, '&#39;').
-            replace(/"/g, '&quot;');
-    }
-    function widen(str) {
-        var i = 1;
-        return str.replace(/ /g, function () { return i++ % 3 === 0 ? ' ' : '&nbsp;'; });
-    }
-    livingDocumentation.widen = widen;
-    angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
-        .filter('newline', utils.wrapFilterInjectionConstructor(NewLineFilter))
-        .filter('splitWords', utils.wrapFilterInjectionConstructor(SplitWordsFilter))
-        .filter('scenarioOutlinePlaceholder', utils.wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
-        .filter('highlight', utils.wrapFilterInjectionConstructor(HighlightFilter))
-        .filter('highlightTag', utils.wrapFilterInjectionConstructor(HighlightTagFilter))
-        .filter('widen', utils.wrapFilterInjectionConstructor(WidenFilter));
-})(livingDocumentation || (livingDocumentation = {}));
+        });
+        $routeProvider.otherwise({ redirectTo: '/dashboard' });
+    }]);
 //# sourceMappingURL=main.js.map
