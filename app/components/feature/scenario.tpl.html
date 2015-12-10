@@ -36,7 +36,10 @@
     </div>
     <div ng-if="step.DocStringArgument">
       <div class="well h-scrollable">
-        <span class="no-wrap" ng-bind-html="step.DocStringArgument | highlight | newline"></span>
+        <span
+          class="no-wrap"
+          ng-bind-html="step.DocStringArgument | highlight | scenarioOutlinePlaceholder | newline">
+        </span>
       </div>
     </div>
   </div>
