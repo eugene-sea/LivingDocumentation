@@ -1,6 +1,6 @@
 ﻿<table>
   <tr>
-    <td><h4 ng-bind-html="ctrl.scenario.Name || 'Background' | highlight"></h4></td> 
+    <td><h4 ng-bind-html="ctrl.scenario.Name || 'Background' | highlight"></h4></td>
     <td class="no-stretch" ng-if="ctrl.scenario.tests && ctrl.scenario.tests.length == 1">
       <a class="text-right" href="{{ctrl.scenario.tests[0]}}" target="_blank">Run test</a>
     </td>
@@ -35,7 +35,9 @@
       <div table="step.TableArgument"></div>
     </div>
     <div ng-if="step.DocStringArgument">
-      <pre ng-bind-html="step.DocStringArgument | highlight | newline"></pre>
+      <div class="well h-scrollable">
+        <span class="no-wrap" ng-bind-html="step.DocStringArgument | highlight | newline"></span>
+      </div>
     </div>
   </div>
 

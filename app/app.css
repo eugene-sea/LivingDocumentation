@@ -26,6 +26,10 @@ body, html {
     overflow: auto;
 }
 
+.no-wrap {
+    white-space: nowrap;
+}
+
 .vertical-pane {
     margin-top: -20px;
     padding-top: 20px;
@@ -71,6 +75,6 @@ body, html {
 
 .borders {
     border-width: 1px;
-    border-style: solid; 
+    border-style: solid;
     border-color: #ddd;
 }
