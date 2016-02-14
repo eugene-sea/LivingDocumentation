@@ -1069,6 +1069,7 @@ var livingDocumentation;
     var LivingDocumentationApp = (function () {
         function LivingDocumentationApp(livingDocService, $modal) {
             this.livingDocService = livingDocService;
+            this.documentationFilter = livingDocumentation.DocumentationFilter;
             var modalInstance;
             livingDocService.onStartProcessing = function () {
                 if (modalInstance) {

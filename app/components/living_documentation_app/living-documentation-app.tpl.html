@@ -14,9 +14,9 @@
         <form class="navbar-form navbar-right" role="search">
           <div class="form-group">
             <div class="btn-group" dropdown>
-              <button 
-                id="split-button" 
-                type="button" 
+              <button
+                id="split-button"
+                type="button"
                 class="btn btn-default"
                 ng-click="root.clearFilter()"
                 ng-class="{active: root.filter == null}">
@@ -27,17 +27,17 @@
                 <span class="sr-only"></span>
               </button>
               <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
-                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.InProgress}">
-                  <a ng-click="root.showOnly(root.DocumentationFilter.InProgress)">In Progress</a>
+                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.InProgress}">
+                  <a ng-click="root.showOnly(root.documentationFilter.InProgress)">In Progress</a>
                 </li>
-                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.Pending}">
-                  <a ng-click="root.showOnly(root.DocumentationFilter.Pending)">Pending</a>
+                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.Pending}">
+                  <a ng-click="root.showOnly(root.documentationFilter.Pending)">Pending</a>
                 </li>
-                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.Failing}">
-                  <a ng-click="root.showOnly(root.DocumentationFilter.Failing)">Failing</a>
+                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.Failing}">
+                  <a ng-click="root.showOnly(root.documentationFilter.Failing)">Failing</a>
                 </li>
-                <li role="menuitem" ng-class="{active: root.filter === root.DocumentationFilter.Manual}">
-                  <a ng-click="root.showOnly(root.DocumentationFilter.Manual)">Manual</a>
+                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.Manual}">
+                  <a ng-click="root.showOnly(root.documentationFilter.Manual)">Manual</a>
                 </li>
               </ul>
             </div>
@@ -45,16 +45,16 @@
           <div class="form-group">
             <input type="text" class="form-control" placeholder="Search text" ng-model="root.searchText">
           </div>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
-            ng-disabled="!root.isSearchEnabled" 
+          <button
+            type="submit"
+            class="btn btn-primary"
+            ng-disabled="!root.isSearchEnabled"
             ng-click="root.search()">
             Search
           </button>
-          <button 
-            type="button" 
-            class="btn btn-warning" 
+          <button
+            type="button"
+            class="btn btn-warning"
             ng-disabled="!root.isClearSearchEnabled"
             ng-click="root.clearSearch()">
             Clear

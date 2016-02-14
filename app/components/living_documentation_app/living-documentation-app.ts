@@ -17,6 +17,8 @@ namespace livingDocumentation {
 
         searchText: string;
 
+        documentationFilter = DocumentationFilter;
+
         constructor(private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
             let modalInstance: ng.ui.bootstrap.IModalServiceInstance;
 
