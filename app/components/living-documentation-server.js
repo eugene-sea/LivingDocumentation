@@ -14,15 +14,15 @@ var livingDocumentation;
             this.featuresExternalResultsResourceClass =
                 $resource('data/:resource', null, { get: { method: 'GET' } });
             this.livingDocResDefResourceClass =
-                $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
+                $resource('data/:definition', null, { get: { isArray: true, method: 'GET' } });
         }
         LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
             var res = _.find(parent.children, function (c) { return c.name === childName; });
             if (!res) {
                 res = {
-                    name: childName,
                     children: [],
-                    features: []
+                    features: [],
+                    name: childName
                 };
                 parent.children.push(res);
             }
@@ -37,10 +37,10 @@ var livingDocumentation;
         };
         LivingDocumentationServer.parseFeatures = function (resource, features, lastUpdatedOn, featuresTests, externalTestResults) {
             var root = {
-                name: resource.name,
                 children: [],
                 features: [],
-                isRoot: true
+                isRoot: true,
+                name: resource.name
             };
             var featuresTestsMap = featuresTests === null
                 ? undefined : _.indexBy(featuresTests, function (f) { return f.RelativeFolder; });
@@ -74,9 +74,9 @@ var livingDocumentation;
             });
             return {
                 definition: resource,
-                root: root,
                 features: resFeatures,
-                lastUpdatedOn: new Date(lastUpdatedOn.valueOf())
+                lastUpdatedOn: new Date(lastUpdatedOn.valueOf()),
+                root: root
             };
         };
         LivingDocumentationServer.addTests = function (feature, featureTests, testUri) {

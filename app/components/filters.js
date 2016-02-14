@@ -68,7 +68,11 @@ var livingDocumentation;
         var regExRes;
         var resStr = '';
         var prevLastIndex = 0;
-        while ((regExRes = regEx.exec(str)) !== null) {
+        while (true) {
+            regExRes = regEx.exec(str);
+            if (regExRes === null) {
+                break;
+            }
             resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
             if (!regExRes[0]) {
                 ++regEx.lastIndex;

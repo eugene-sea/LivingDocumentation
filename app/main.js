@@ -33,9 +33,9 @@ var utils;
     utils.format = format;
 })(utils || (utils = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
-'use strict';
 var utils;
 (function (utils) {
+    'use strict';
     var RecursionHelper = (function () {
         function RecursionHelper($compile) {
             this.$compile = $compile;
@@ -51,21 +51,21 @@ var utils;
             var compiledContents;
             var _this = this;
             return {
-                pre: link && link.pre ? link.pre : null,
-                post: function (scope, element) {
+                post: function (scope, e) {
                     // Compile the contents
                     if (!compiledContents) {
                         compiledContents = _this.$compile(contents);
                     }
                     // Re-add the compiled contents to the element
                     compiledContents(scope, function (clone) {
-                        element.append(clone);
+                        e.append(clone);
                     });
                     // Call the post-linking function, if any
                     if (link && link.post) {
                         link.post.apply(null, arguments);
                     }
-                }
+                },
+                pre: link && link.pre ? link.pre : null
             };
         };
         RecursionHelper.$inject = ['$compile'];
@@ -78,9 +78,9 @@ var utils;
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     function splitWords(str) {
         var res = str[0];
         for (var i = 1; i < str.length; ++i) {
@@ -115,14 +115,18 @@ var livingDocumentation;
         var resStr = '';
         var resTags = [];
         var prevLastIndex = 0;
-        while ((regExRes = tagRegEx.exec(searchText)) !== null) {
+        while (true) {
+            regExRes = tagRegEx.exec(searchText);
+            if (regExRes === null) {
+                break;
+            }
             resStr += searchText.slice(prevLastIndex, regExRes.index);
             resTags.push(new RegExp(regExRes[1], 'i'));
             prevLastIndex = tagRegEx.lastIndex;
         }
         resStr += searchText.slice(prevLastIndex, searchText.length);
         resStr = resStr.trim();
-        return { tags: resTags, searchRegExp: resStr ? new RegExp(resStr, 'gi') : null };
+        return { searchRegExp: resStr ? new RegExp(resStr, 'gi') : null, tags: resTags };
     }
     function isTextPresentInDocumentation(searchContext, doc) {
         var root = isTextPresentInFolder(searchContext, doc.root);
@@ -133,9 +137,9 @@ var livingDocumentation;
         addFeatures(root, features);
         return {
             definition: doc.definition,
-            root: root,
             features: features,
-            lastUpdatedOn: doc.lastUpdatedOn
+            lastUpdatedOn: doc.lastUpdatedOn,
+            root: root
         };
     }
     function isTextPresentInFolder(searchContext, folder) {
@@ -147,10 +151,10 @@ var livingDocumentation;
             return null;
         }
         return {
-            name: folder.name,
             children: folders,
             features: features,
-            isRoot: folder.isRoot
+            isRoot: folder.isRoot,
+            name: folder.name
         };
     }
     function isTextPresentInFeature(searchContext, feature) {
@@ -161,7 +165,8 @@ var livingDocumentation;
         var tagsScenarios = _.union.apply(_, tagsScenariosMap);
         var isTextPresentInTitle = isTextPresent(searchContext, feature.Feature.Name);
         var isTextPresentInDescription = isTextPresent(searchContext, feature.Feature.Description);
-        var isTextPresentInBackground = feature.Feature.Background && isTextPresentInScenario(searchContext, feature.Feature.Background);
+        var isTextPresentInBackground = feature.Feature.Background &&
+            isTextPresentInScenario(searchContext, feature.Feature.Background);
         // Intersection is made to preserve original order between scenarios
         var scenarios = !_.any(searchContext.tags)
             ? feature.Feature.FeatureElements : _.intersection(feature.Feature.FeatureElements, tagsScenarios);
@@ -170,19 +175,19 @@ var livingDocumentation;
             return null;
         }
         return {
+            Feature: {
+                Background: !isTextPresentInBackground ? null : feature.Feature.Background,
+                Description: feature.Feature.Description,
+                FeatureElements: scenarios,
+                Name: feature.Feature.Name,
+                Result: feature.Feature.Result,
+                Tags: feature.Feature.Tags
+            },
+            RelativeFolder: feature.RelativeFolder,
             code: feature.code,
             get isExpanded() { return feature.isExpanded; },
             set isExpanded(value) { feature.isExpanded = value; },
-            isManual: feature.isManual,
-            RelativeFolder: feature.RelativeFolder,
-            Feature: {
-                Name: feature.Feature.Name,
-                Description: feature.Feature.Description,
-                Tags: feature.Feature.Tags,
-                Background: !isTextPresentInBackground ? null : feature.Feature.Background,
-                FeatureElements: scenarios,
-                Result: feature.Feature.Result
-            }
+            isManual: feature.isManual
         };
     }
     function isTextPresentInScenario(searchContext, scenario) {
@@ -230,7 +235,7 @@ var livingDocumentation;
         }
         SearchService.prototype.search = function (searchText, documentationList) {
             var searchContext = getSearchContext(searchText);
-            var documentationList = _.filter(_.map(documentationList, function (d) { return isTextPresentInDocumentation(searchContext, d); }), function (d) { return !!d; });
+            documentationList = _.filter(_.map(documentationList, function (d) { return isTextPresentInDocumentation(searchContext, d); }), function (d) { return !!d; });
             documentationList = _.sortBy(documentationList, function (d) { return d.definition.sortOrder; });
             return {
                 documentationList: documentationList,
@@ -258,15 +263,15 @@ var livingDocumentation;
             this.featuresExternalResultsResourceClass =
                 $resource('data/:resource', null, { get: { method: 'GET' } });
             this.livingDocResDefResourceClass =
-                $resource('data/:definition', null, { get: { method: 'GET', isArray: true } });
+                $resource('data/:definition', null, { get: { isArray: true, method: 'GET' } });
         }
         LivingDocumentationServer.findSubfolderOrCreate = function (parent, childName) {
             var res = _.find(parent.children, function (c) { return c.name === childName; });
             if (!res) {
                 res = {
-                    name: childName,
                     children: [],
-                    features: []
+                    features: [],
+                    name: childName
                 };
                 parent.children.push(res);
             }
@@ -281,10 +286,10 @@ var livingDocumentation;
         };
         LivingDocumentationServer.parseFeatures = function (resource, features, lastUpdatedOn, featuresTests, externalTestResults) {
             var root = {
-                name: resource.name,
                 children: [],
                 features: [],
-                isRoot: true
+                isRoot: true,
+                name: resource.name
             };
             var featuresTestsMap = featuresTests === null
                 ? undefined : _.indexBy(featuresTests, function (f) { return f.RelativeFolder; });
@@ -318,9 +323,9 @@ var livingDocumentation;
             });
             return {
                 definition: resource,
-                root: root,
                 features: resFeatures,
-                lastUpdatedOn: new Date(lastUpdatedOn.valueOf())
+                lastUpdatedOn: new Date(lastUpdatedOn.valueOf()),
+                root: root
             };
         };
         LivingDocumentationServer.addTests = function (feature, featureTests, testUri) {
@@ -572,9 +577,9 @@ var livingDocumentation;
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var AppVersion = (function () {
         function AppVersion(version) {
             var _this = this;
@@ -593,6 +598,10 @@ var livingDocumentation;
             this.$location = $location;
             this.link = function (scope, element, attributes) { return _this.linkCore(scope, element, attributes); };
         }
+        IsActive.subscribe = function (scope, handler) {
+            scope.$on('$routeChangeSuccess', handler);
+            scope.$on('$includeContentLoaded', handler);
+        };
         IsActive.prototype.linkCore = function (scope, element, attributes) {
             var _this = this;
             var handler = function () {
@@ -614,10 +623,6 @@ var livingDocumentation;
             };
             handler();
             IsActive.subscribe(scope, handler);
-        };
-        IsActive.subscribe = function (scope, handler) {
-            scope.$on('$routeChangeSuccess', handler);
-            scope.$on('$includeContentLoaded', handler);
         };
         IsActive.$inject = ['$location'];
         return IsActive;
@@ -698,7 +703,11 @@ var livingDocumentation;
         var regExRes;
         var resStr = '';
         var prevLastIndex = 0;
-        while ((regExRes = regEx.exec(str)) !== null) {
+        while (true) {
+            regExRes = regEx.exec(str);
+            if (regExRes === null) {
+                break;
+            }
             resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
             if (!regExRes[0]) {
                 ++regEx.lastIndex;
@@ -773,10 +782,10 @@ var livingDocumentation;
     })();
     var DocumentationDashboard = (function () {
         function DocumentationDashboard() {
-            this.iterationFeatures = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
-            this.iterationScenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
-            this.features = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
-            this.scenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
+            this.iterationFeatures = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
+            this.iterationScenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
+            this.features = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
+            this.scenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
             DocumentationDashboard.processFeatures(this.documentation.features, DocumentationDashboard.isIteration, this.iterationFeatures, this.iterationScenarios);
             DocumentationDashboard.processFeatures(this.documentation.features, function (_) { return true; }, this.features, this.scenarios);
         }
@@ -841,9 +850,9 @@ var livingDocumentation;
 /// <reference path="../utils.ts" />
 /// <reference path="../services.ts" />
 /// <reference path="../recursion-helper.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var DocumentationListDirective = (function () {
         function DocumentationListDirective() {
             this.restrict = 'A';
@@ -873,8 +882,8 @@ var livingDocumentation;
             this.$location = $location;
             this.restrict = 'A';
             this.scope = {
-                folder: '=',
-                documentationCode: '='
+                documentationCode: '=',
+                folder: '='
             };
             this.controller = Folder;
             this.controllerAs = 'ctrl';
@@ -1044,9 +1053,9 @@ var livingDocumentation;
 })(livingDocumentation || (livingDocumentation = {}));
 /// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
 /// <reference path="../services.ts" />
-'use strict';
 var livingDocumentation;
 (function (livingDocumentation) {
+    'use strict';
     var LivingDocumentationAppDirective = (function () {
         function LivingDocumentationAppDirective() {
             this.restrict = 'A';
@@ -1060,22 +1069,21 @@ var livingDocumentation;
     var LivingDocumentationApp = (function () {
         function LivingDocumentationApp(livingDocService, $modal) {
             this.livingDocService = livingDocService;
-            this.DocumentationFilter = livingDocumentation.DocumentationFilter;
             var modalInstance;
             livingDocService.onStartProcessing = function () {
                 if (modalInstance) {
                     return;
                 }
-                modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
+                modalInstance = $modal.open({ backdrop: 'static', keyboard: false, templateUrl: 'processing.html' });
             };
-            var this_ = this;
+            var _this = this;
             livingDocService.onStopProcessing = function () {
-                if (this_.isClearSearchEnabled) {
-                    if (!this_.searchText) {
-                        this_.showOnly(null, true);
+                if (_this.isClearSearchEnabled) {
+                    if (!_this.searchText) {
+                        _this.showOnly(null, true);
                     }
                     else {
-                        this_.search();
+                        _this.search();
                     }
                 }
                 modalInstance.close();
@@ -1086,7 +1094,7 @@ var livingDocumentation;
         }
         Object.defineProperty(LivingDocumentationApp.prototype, "loading", {
             get: function () { return this.livingDocService.loading; },
-            set: function (value) { },
+            set: function (value) { ; },
             enumerable: true,
             configurable: true
         });
@@ -1148,7 +1156,7 @@ var livingDocumentation;
         'ui.bootstrap',
         'livingDocumentation.services',
         'livingDocumentation.directives',
-        'livingDocumentation.documentationList',
+        'livingDocumentation.documentationList'
     ])
         .directive('livingDocumentationApp', utils.wrapInjectionConstructor(LivingDocumentationAppDirective))
         .controller('LivingDocumentationApp', LivingDocumentationApp);

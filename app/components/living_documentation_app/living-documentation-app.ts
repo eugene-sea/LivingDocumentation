@@ -1,42 +1,40 @@
 /// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
 /// <reference path="../services.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     class LivingDocumentationAppDirective implements ng.IDirective {
         restrict = 'A';
         controller = 'LivingDocumentationApp';
         controllerAs = 'root';
         bindToController = true;
-        templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html'
+        templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html';
     }
 
     class LivingDocumentationApp {
-        searchText: string;
-
         static $inject: string[] = ['livingDocumentationService', '$modal'];
 
-        DocumentationFilter = DocumentationFilter;
+        searchText: string;
 
         constructor(private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
-            var modalInstance: ng.ui.bootstrap.IModalServiceInstance;
+            let modalInstance: ng.ui.bootstrap.IModalServiceInstance;
 
             livingDocService.onStartProcessing = () => {
                 if (modalInstance) {
                     return;
                 }
 
-                modalInstance = $modal.open({ templateUrl: 'processing.html', backdrop: 'static', keyboard: false });
+                modalInstance = $modal.open({ backdrop: 'static', keyboard: false, templateUrl: 'processing.html' });
             };
 
-            var this_ = this;
+            let _this = this;
             livingDocService.onStopProcessing = () => {
-                if (this_.isClearSearchEnabled) {
-                    if (!this_.searchText) {
-                        this_.showOnly(null, true);
+                if (_this.isClearSearchEnabled) {
+                    if (!_this.searchText) {
+                        _this.showOnly(null, true);
                     } else {
-                        this_.search();
+                        _this.search();
                     }
                 }
 
@@ -49,7 +47,7 @@ module livingDocumentation {
         }
 
         get loading() { return this.livingDocService.loading; }
-        set loading(value) { }
+        set loading(value) { ; }
 
         get error() { return this.livingDocService.error; }
         get ready() { return this.livingDocService.ready; }
@@ -88,7 +86,7 @@ module livingDocumentation {
         'ui.bootstrap',
         'livingDocumentation.services',
         'livingDocumentation.directives',
-        'livingDocumentation.documentationList',
+        'livingDocumentation.documentationList'
     ])
         .directive('livingDocumentationApp', utils.wrapInjectionConstructor(LivingDocumentationAppDirective))
         .controller('LivingDocumentationApp', LivingDocumentationApp);

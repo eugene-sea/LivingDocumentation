@@ -1,8 +1,8 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 
-'use strict';
+namespace utils {
+    'use strict';
 
-module utils {
     export class RecursionHelper {
         static $inject = ['$compile'];
 
@@ -10,35 +10,35 @@ module utils {
 
         compile(
             element: ng.IAugmentedJQuery, linkArg?: ng.IDirectiveLinkFn | ng.IDirectivePrePost): ng.IDirectivePrePost {
-            var link: ng.IDirectivePrePost;
-            
+            let link: ng.IDirectivePrePost;
+
             // Normalize the link parameter
             if (angular.isFunction(linkArg)) {
                 link = { post: <ng.IDirectiveLinkFn>linkArg };
             }
 
             // Break the recursion loop by removing the contents
-            var contents = element.contents().remove();
-            var compiledContents: ng.ITemplateLinkingFunction;
-            var _this = this;
+            let contents = element.contents().remove();
+            let compiledContents: ng.ITemplateLinkingFunction;
+            let _this = this;
             return {
-                pre: link && link.pre ? link.pre : null,
-                post: function(scope, element) {
+                post: function(scope, e) {
                     // Compile the contents
                     if (!compiledContents) {
                         compiledContents = _this.$compile(contents);
                     }
-                    
+
                     // Re-add the compiled contents to the element
                     compiledContents(scope, function(clone) {
-                        element.append(clone);
+                        e.append(clone);
                     });
 
                     // Call the post-linking function, if any
                     if (link && link.post) {
                         link.post.apply(null, arguments);
                     }
-                }
+                },
+                pre: link && link.pre ? link.pre : null
             };
         }
     }

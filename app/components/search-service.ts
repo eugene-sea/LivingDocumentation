@@ -2,9 +2,9 @@
 /// <reference path="../../typings/underscore/underscore.d.ts" />
 /// <reference path="../domain-model.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     export interface ISearchContext {
         tags: RegExp[];
         searchRegExp: RegExp;
@@ -16,9 +16,9 @@ module livingDocumentation {
     }
 
     export function splitWords(str: string): string {
-        var res = str[0];
-        for (var i = 1; i < str.length; ++i) {
-            var prev = str[i - 1], cur = str[i], next = i < str.length - 1 ? str[i] : null;
+        let res = str[0];
+        for (let i = 1; i < str.length; ++i) {
+            let prev = str[i - 1], cur = str[i], next = i < str.length - 1 ? str[i] : null;
 
             if (!isUpperCase(prev)) {
                 if (prev !== ' ' && isUpperCase(cur)) {
@@ -48,12 +48,17 @@ module livingDocumentation {
 
     function getSearchContext(searchText: string): ISearchContext {
         searchText = searchText || '';
-        var tagRegEx = /(@[^\s]+)(\s|$)/g;
-        var regExRes: RegExpExecArray;
-        var resStr = '';
-        var resTags: RegExp[] = [];
-        var prevLastIndex = 0;
-        while ((regExRes = tagRegEx.exec(searchText)) !== null) {
+        let tagRegEx = /(@[^\s]+)(\s|$)/g;
+        let regExRes: RegExpExecArray;
+        let resStr = '';
+        let resTags: RegExp[] = [];
+        let prevLastIndex = 0;
+        while (true) {
+            regExRes = tagRegEx.exec(searchText);
+            if (regExRes === null) {
+                break;
+            }
+
             resStr += searchText.slice(prevLastIndex, regExRes.index);
             resTags.push(new RegExp(regExRes[1], 'i'));
             prevLastIndex = tagRegEx.lastIndex;
@@ -62,60 +67,61 @@ module livingDocumentation {
         resStr += searchText.slice(prevLastIndex, searchText.length);
         resStr = resStr.trim();
 
-        return { tags: resTags, searchRegExp: resStr ? new RegExp(resStr, 'gi') : null };
+        return { searchRegExp: resStr ? new RegExp(resStr, 'gi') : null, tags: resTags };
     }
 
     function isTextPresentInDocumentation(
         searchContext: ISearchContext, doc: ILivingDocumentation): ILivingDocumentation {
-        var root = isTextPresentInFolder(searchContext, doc.root);
+        let root = isTextPresentInFolder(searchContext, doc.root);
         if (!root) {
             return null;
         }
 
-        var features: IFeatures = {};
+        let features: IFeatures = {};
         addFeatures(root, features);
         return {
             definition: doc.definition,
-            root: root,
             features: features,
-            lastUpdatedOn: doc.lastUpdatedOn
+            lastUpdatedOn: doc.lastUpdatedOn,
+            root: root
         };
     }
 
     function isTextPresentInFolder(searchContext: ISearchContext, folder: IFolder): IFolder {
-        var isTextPresentInTitle = !folder.isRoot && !_.any(searchContext.tags) &&
+        let isTextPresentInTitle = !folder.isRoot && !_.any(searchContext.tags) &&
             isTextPresent(searchContext, splitWords(folder.name));
-        var features = _.filter(_.map(folder.features, f => isTextPresentInFeature(searchContext, f)), f => !!f);
-        var folders = _.filter(_.map(folder.children, f => isTextPresentInFolder(searchContext, f)), f => !!f);
+        let features = _.filter(_.map(folder.features, f => isTextPresentInFeature(searchContext, f)), f => !!f);
+        let folders = _.filter(_.map(folder.children, f => isTextPresentInFolder(searchContext, f)), f => !!f);
         if (!isTextPresentInTitle && !_.any(features) && !_.any(folders)) {
             return null;
         }
 
         return {
-            name: folder.name,
             children: folders,
             features: features,
-            isRoot: folder.isRoot
+            isRoot: folder.isRoot,
+            name: folder.name
         };
     }
 
     function isTextPresentInFeature(searchContext: ISearchContext, feature: IFeature): IFeature {
-        var tagsScenariosMap = _.map(searchContext.tags, t => isTagPresentInFeature(t, feature));
+        let tagsScenariosMap = _.map(searchContext.tags, t => isTagPresentInFeature(t, feature));
 
         if (_.any(tagsScenariosMap, a => a === null)) {
             return null;
         }
 
-        var tagsScenarios = _.union(...tagsScenariosMap);
+        let tagsScenarios = _.union(...tagsScenariosMap);
 
-        var isTextPresentInTitle = isTextPresent(searchContext, feature.Feature.Name);
+        let isTextPresentInTitle = isTextPresent(searchContext, feature.Feature.Name);
 
-        var isTextPresentInDescription = isTextPresent(searchContext, feature.Feature.Description);
+        let isTextPresentInDescription = isTextPresent(searchContext, feature.Feature.Description);
 
-        var isTextPresentInBackground = feature.Feature.Background && isTextPresentInScenario(searchContext, feature.Feature.Background);
+        let isTextPresentInBackground = feature.Feature.Background &&
+        isTextPresentInScenario(searchContext, feature.Feature.Background);
 
         // Intersection is made to preserve original order between scenarios
-        var scenarios = !_.any(searchContext.tags)
+        let scenarios = !_.any(searchContext.tags)
             ? feature.Feature.FeatureElements : _.intersection(feature.Feature.FeatureElements, tagsScenarios);
 
         scenarios = _.filter(scenarios, s => isTextPresentInScenario(searchContext, s));
@@ -124,19 +130,19 @@ module livingDocumentation {
         }
 
         return {
+            Feature: {
+                Background: !isTextPresentInBackground ? null : feature.Feature.Background,
+                Description: feature.Feature.Description,
+                FeatureElements: scenarios,
+                Name: feature.Feature.Name,
+                Result: feature.Feature.Result,
+                Tags: feature.Feature.Tags
+            },
+            RelativeFolder: feature.RelativeFolder,
             code: feature.code,
             get isExpanded() { return feature.isExpanded; },
             set isExpanded(value: boolean) { feature.isExpanded = value; },
-            isManual: feature.isManual,
-            RelativeFolder: feature.RelativeFolder,
-            Feature: {
-                Name: feature.Feature.Name,
-                Description: feature.Feature.Description,
-                Tags: feature.Feature.Tags,
-                Background: !isTextPresentInBackground ? null : feature.Feature.Background,
-                FeatureElements: scenarios,
-                Result: feature.Feature.Result
-            }
+            isManual: feature.isManual
         };
     }
 
@@ -183,7 +189,7 @@ module livingDocumentation {
             return feature.Feature.FeatureElements;
         }
 
-        var scenarios = _.filter(
+        let scenarios = _.filter(
             feature.Feature.FeatureElements, s => _.any(s.tagsInternal, t => isTextPresentRegEx(tag, t)));
         return !_.any(scenarios) ? null : scenarios;
     }
@@ -196,8 +202,8 @@ module livingDocumentation {
     class SearchService implements ISearchService {
         search(searchText: string, documentationList: ILivingDocumentation[]):
             { documentationList: ILivingDocumentation[]; searchContext: ISearchContext; } {
-            var searchContext = getSearchContext(searchText);
-            var documentationList = _.filter(
+            let searchContext = getSearchContext(searchText);
+            documentationList = _.filter(
                 _.map(documentationList, d => isTextPresentInDocumentation(searchContext, d)), d => !!d);
             documentationList = _.sortBy(documentationList, d => d.definition.sortOrder);
             return {

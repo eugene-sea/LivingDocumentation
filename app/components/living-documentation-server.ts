@@ -67,21 +67,22 @@ namespace livingDocumentation {
                 'data/:resource', null, { get: { method: 'GET' } });
 
             this.featuresExternalResultsResourceClass =
-            $resource<IFeaturesExternalResults, IFeaturesExternalResultsResourceClass>(
-                'data/:resource', null, { get: { method: 'GET' } });
+                $resource<IFeaturesExternalResults, IFeaturesExternalResultsResourceClass>(
+                    'data/:resource', null, { get: { method: 'GET' } });
 
             this.livingDocResDefResourceClass =
-            $resource<ILivingDocumentationResourceDefinition[], ILivingDocumentationResourceDefinitionResourceClass>(
-                'data/:definition', null, { get: { method: 'GET', isArray: true } });
+                $resource<
+                    ILivingDocumentationResourceDefinition[], ILivingDocumentationResourceDefinitionResourceClass>(
+                    'data/:definition', null, { get: { isArray: true, method: 'GET' } });
         }
 
         private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
             let res = _.find(parent.children, c => c.name === childName);
             if (!res) {
                 res = {
-                    name: childName,
                     children: [],
-                    features: []
+                    features: [],
+                    name: childName
                 };
 
                 parent.children.push(res);
@@ -106,10 +107,10 @@ namespace livingDocumentation {
             featuresTests: IFeatureTestsSource[],
             externalTestResults: IFeaturesExternalResults): ILivingDocumentation {
             let root: IFolder = {
-                name: resource.name,
                 children: [],
                 features: [],
-                isRoot: true
+                isRoot: true,
+                name: resource.name
             };
 
             let featuresTestsMap = featuresTests === null
@@ -149,9 +150,9 @@ namespace livingDocumentation {
 
             return {
                 definition: resource,
-                root: root,
                 features: resFeatures,
-                lastUpdatedOn: new Date(lastUpdatedOn.valueOf())
+                lastUpdatedOn: new Date(lastUpdatedOn.valueOf()),
+                root: root
             };
         }
 

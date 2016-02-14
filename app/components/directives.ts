@@ -1,9 +1,9 @@
 /// <reference path="../../typings/angularjs/angular.d.ts" />
 /// <reference path="utils.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     class AppVersion implements ng.IDirective {
         public static $inject: string[] = ['version'];
 
@@ -27,15 +27,21 @@ module livingDocumentation {
 
         public link: (scope: ng.IScope, element: JQuery, attributes: any) => any;
 
+
+        private static subscribe(scope: ng.IScope, handler: () => void): void {
+            scope.$on('$routeChangeSuccess', handler);
+            scope.$on('$includeContentLoaded', handler);
+        }
+
         private linkCore(scope: ng.IScope, element: JQuery, attributes: any): any {
-            var handler = () => {
-                var isActive: boolean;
+            let handler = () => {
+                let isActive: boolean;
                 if (attributes['isActive']) {
                     isActive = this.$location.path().indexOf(attributes['isActive']) === 0;
                 } else {
-                    var indexOf = this.$location.path().indexOf(attributes['isActiveLast']);
+                    let indexOf = this.$location.path().indexOf(attributes['isActiveLast']);
                     isActive = indexOf >= 0 &&
-                    (indexOf + attributes['isActiveLast'].length === this.$location.path().length);
+                        (indexOf + attributes['isActiveLast'].length === this.$location.path().length);
                 }
 
                 if (isActive) {
@@ -47,11 +53,6 @@ module livingDocumentation {
 
             handler();
             IsActive.subscribe(scope, handler);
-        }
-
-        private static subscribe(scope: ng.IScope, handler: () => void): void {
-            scope.$on('$routeChangeSuccess', handler);
-            scope.$on('$includeContentLoaded', handler);
         }
     }
 

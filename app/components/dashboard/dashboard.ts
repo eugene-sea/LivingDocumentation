@@ -44,10 +44,10 @@ namespace livingDocumentation {
 
     class DocumentationDashboard {
         documentation: ILivingDocumentation;
-        iterationFeatures = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
-        iterationScenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
-        features = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
-        scenarios = { passed: 0, pending: 0, failed: 0, manual: 0, total: 0 };
+        iterationFeatures = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
+        iterationScenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
+        features = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
+        scenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
 
         constructor() {
             DocumentationDashboard.processFeatures(

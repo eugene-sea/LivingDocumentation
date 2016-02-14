@@ -65,7 +65,12 @@ namespace livingDocumentation {
         let regExRes: RegExpExecArray;
         let resStr = '';
         let prevLastIndex = 0;
-        while ((regExRes = regEx.exec(str)) !== null) {
+        while (true) {
+            regExRes = regEx.exec(str);
+            if (regExRes === null) {
+                break;
+            }
+
             resStr += escapeHTML(str.slice(prevLastIndex, regExRes.index));
             if (!regExRes[0]) {
                 ++regEx.lastIndex;

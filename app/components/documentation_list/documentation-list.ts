@@ -3,15 +3,15 @@
 /// <reference path="../services.ts" />
 /// <reference path="../recursion-helper.ts" />
 
-'use strict';
+namespace livingDocumentation {
+    'use strict';
 
-module livingDocumentation {
     class DocumentationListDirective implements ng.IDirective {
         restrict = 'A';
         controller = 'DocumentationList';
         controllerAs = 'root';
         bindToController = true;
-        templateUrl = 'components/documentation_list/documentation-list.tpl.html'
+        templateUrl = 'components/documentation_list/documentation-list.tpl.html';
     }
 
     class DocumentationList {
@@ -29,8 +29,8 @@ module livingDocumentation {
 
         restrict = 'A';
         scope = {
-            folder: '=',
-            documentationCode: '='
+            documentationCode: '=',
+            folder: '='
         };
         controller = Folder;
         controllerAs = 'ctrl';
