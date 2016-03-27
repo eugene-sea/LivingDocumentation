@@ -8,16 +8,32 @@ module.exports = function (config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['mocha'],
+    frameworks: ['systemjs', 'mocha'],
 
     // list of files / patterns to load in the browser
     files: [
       'node_modules/should/should.js',
       'app/bower_components/angular/angular.min.js',
       'app/bower_components/underscore/underscore-min.js',
-      'app/main.js',
-      'test/*.js'
+      'app/**/*.ts',
+      'test/*.ts'
     ],
+
+    systemjs: {
+      config: {
+        paths: {
+          systemjs: 'node_modules/systemjs/dist/system.js',
+          typescript: 'node_modules/typescript/lib/typescript.js'
+        },
+        transpiler: 'typescript',
+        packages: {
+          'node_modules': { },
+          'app/bower_components': { },
+          'app': { defaultExtension: 'ts' },
+          'test': { defaultExtension: 'ts' }
+        }
+      }
+    },
 
     // list of files to exclude
     exclude: [

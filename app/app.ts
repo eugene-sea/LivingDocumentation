@@ -1,8 +1,14 @@
 /// <reference path="../typings/angularjs/angular.d.ts" />
 /// <reference path="../typings/angularjs/angular-route.d.ts" />
-/// <reference path="components/services.ts" />
 
-'use strict';
+import { ILivingDocumentationService } from './components/services';
+
+import './components/living_documentation_app/living-documentation-app';
+import './components/dashboard/dashboard';
+import './components/documentation_list/documentation-list';
+import './components/feature/feature';
+import './components/directives';
+import './components/filters';
 
 angular.module('livingDocumentation', [
     'ngRoute',
@@ -13,7 +19,7 @@ angular.module('livingDocumentation', [
     const resolve: { [key: string]: any; } = {
         livingDocumentationServiceReady: [
             'livingDocumentationService',
-            (service: livingDocumentation.ILivingDocumentationService) => service.resolve
+            (service: ILivingDocumentationService) => service.resolve
         ]
     };
 
