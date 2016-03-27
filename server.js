@@ -1,5 +1,6 @@
 /// <reference path="typings/node/node.d.ts" />
 /// <reference path="typings/express/express.d.ts" />
+"use strict";
 require('source-map-support').install();
 var express = require('express');
 var http = require('http');
