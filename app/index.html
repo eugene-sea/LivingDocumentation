@@ -32,11 +32,7 @@
         '/': { defaultExtension: 'ts' }
       }
     });
-    System.import('./app').then(function() {
-      angular.element(document).ready(function() {
-        angular.bootstrap(document, ['livingDocumentation']);
-      });
-    }, console.error.bind(console));
+    System.import('./app').catch(console.error.bind(console));
   </script>
 </body>
 </html>

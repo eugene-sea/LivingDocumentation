@@ -39,3 +39,7 @@ angular.module('livingDocumentation', [
 
     $routeProvider.otherwise({ redirectTo: '/dashboard' });
 }]);
+
+angular.element(document).ready(function() {
+    angular.bootstrap(document, ['livingDocumentation']);
+});
