@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { wrapInjectionConstructor } from '../utils';

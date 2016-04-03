@@ -1,7 +1,3 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-route.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
-
 import { ILivingDocumentation } from '../domain-model';
 import { ILivingDocumentationServer } from './living-documentation-server';
 import './living-documentation-server';

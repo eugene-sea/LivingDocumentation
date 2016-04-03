@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-
 import { ILivingDocumentationService } from '../services';
 import { RecursionHelper } from '../recursion-helper';
 import '../recursion-helper';

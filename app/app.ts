@@ -1,6 +1,3 @@
-/// <reference path="../typings/angularjs/angular.d.ts" />
-/// <reference path="../typings/angularjs/angular-route.d.ts" />
-
 import { ILivingDocumentationService } from './components/services';
 
 import './components/living_documentation_app/living-documentation-app';

@@ -1,7 +1,3 @@
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../../typings/angularjs/angular-route.d.ts" />
-/// <reference path="../../../typings/underscore/underscore.d.ts" />
-
 import { ILivingDocumentation, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { wrapInjectionConstructor, format } from '../utils';

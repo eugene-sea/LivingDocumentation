@@ -1,6 +1,3 @@
-/// <reference path="typings/node/node.d.ts" />
-/// <reference path="typings/express/express.d.ts" />
-
 require('source-map-support').install();
 
 import express = require('express');

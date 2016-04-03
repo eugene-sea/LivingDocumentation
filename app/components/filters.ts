@@ -1,5 +1,3 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-
 import { ILivingDocumentationService } from './services';
 import { splitWords } from './search-service';
 import { IFilter, wrapFilterInjectionConstructor } from './utils';

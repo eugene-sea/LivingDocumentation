@@ -1,7 +1,3 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-resource.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
-
 import {
     ILivingDocumentation, IFeature, ILivingDocumentationResourceDefinition, IFolder, IFeatures, IScenario
 } from '../domain-model';

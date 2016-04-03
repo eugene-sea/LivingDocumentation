@@ -1,5 +1,3 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-
 import { wrapInjectionConstructor } from './utils';
 
 class AppVersion implements ng.IDirective {

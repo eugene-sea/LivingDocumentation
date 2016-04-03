@@ -1,6 +1,3 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
-
 import { ILivingDocumentation, IFolder, IFeatures, IFeature, IScenario, IStep, ITable } from '../domain-model';
 
 export interface ISearchContext {

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+./node_modules/.bin/typings install
+cd ./app/
+../node_modules/.bin/typings install
+cd ..
+
 tsc -p .
 tsc -p ./app
 tsc -p ./test

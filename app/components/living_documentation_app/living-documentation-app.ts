@@ -1,5 +1,3 @@
-/// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
-
 import { ILivingDocumentationService, DocumentationFilter } from '../services';
 import { wrapInjectionConstructor } from '../utils';
 

@@ -37,6 +37,7 @@ module.exports = function (config) {
 
     // list of files to exclude
     exclude: [
+      'app/typings/**/*.ts',
     ],
 
     // preprocess matching files before serving them to the browser

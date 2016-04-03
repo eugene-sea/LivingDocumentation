@@ -1,5 +1,3 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-
 export class RecursionHelper {
     static $inject = ['$compile'];
 

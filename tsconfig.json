@@ -1,14 +1,17 @@
 {
     "compilerOptions": {
-        "target": "ES5",
+        "target": "es5",
         "module": "commonjs",
         "noImplicitAny": true,
         "removeComments": false,
         "preserveConstEnums": true,
         "sourceMap": true
     },
-    "files": [
-        "config.ts",
-        "server.ts"
+    "exclude": [
+        "app",
+        "test",
+        "node_modules",
+        "typings/browser",
+        "typings/browser.d.ts"
     ]
 }
