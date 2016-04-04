@@ -1,4 +1,5 @@
 import { ILivingDocumentationService } from './components/services';
+import { adapter } from './components/adapter';
 
 import './components/living_documentation_app/living-documentation-app';
 import './components/dashboard/dashboard';
@@ -37,6 +38,4 @@ angular.module('livingDocumentation', [
     $routeProvider.otherwise({ redirectTo: '/dashboard' });
 }]);
 
-angular.element(document).ready(function() {
-    angular.bootstrap(document, ['livingDocumentation']);
-});
+adapter.bootstrap(document.body, ['livingDocumentation']);

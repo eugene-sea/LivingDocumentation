@@ -16,6 +16,11 @@
 <body>
   <div living-documentation-app></div>
 
+  <!-- IE required polyfills, in this exact order -->
+  <script src="node_components/es6-shim/es6-shim.min.js"></script>
+  <script src="node_components/systemjs/system-polyfills.src.js"></script>
+  <script src="node_components/angular2/shims_for_IE.js"></script>
+
   <script src="bower_components/angular/angular.min.js"></script>
   <script src="bower_components/angular-route/angular-route.min.js"></script>
   <script src="bower_components/angular-resource/angular-resource.min.js"></script>
@@ -23,16 +28,27 @@
   <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="bower_components/underscore/underscore-min.js"></script>
 
-  <script src="node_modules/systemjs/system.js"></script>
-  <script src="node_modules/typescript/typescript.js"></script>
+  <script src="node_components/angular2/angular2-polyfills.js"></script>
+  <script src="node_components/systemjs/system.src.js"></script>
+  <script src="node_components/typescript/typescript.js"></script>
   <script>
     System.config({
+      baseURL: '../',
       transpiler: 'typescript',
+      typescriptOptions: {
+        emitDecoratorMetadata: true,
+        experimentalDecorators: true
+      },
       packages: {
-        '/': { defaultExtension: 'ts' }
+        'app': { defaultExtension: 'ts' }
       }
     });
-    System.import('./app').catch(console.error.bind(console));
+  </script>
+  <script src="node_components/rxjs/Rx.js"></script>
+  <script src="node_components/angular2/angular2.dev.js"></script>
+  <script src="node_components/angular2/upgrade.dev.js"></script>
+  <script>
+    System.import('app/app').catch(console.error.bind(console));
   </script>
 </body>
 </html>

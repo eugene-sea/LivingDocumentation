@@ -8,7 +8,8 @@ var app = express();
 app.set('port', config.port.toString());
 var logger = require('morgan');
 app.use(logger('dev'));
-app.use(express.static(path.join(__dirname, 'app')));
+app.use(express.static(path.join(__dirname, '.')));
+app.get('/', function (req, res) { return res.redirect('/app/'); });
 app.use(function (err, req, res, next) {
     console.error(err);
     next(err);
