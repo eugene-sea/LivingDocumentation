@@ -1,4 +1,5 @@
 var System = require('systemjs');
+require('source-map-support').install();
 
 System.config({
     map: {
@@ -10,7 +11,7 @@ System.config({
         emitDecoratorMetadata: true,
         experimentalDecorators: true,
         sourceMap: true,
-        inlineSourceMap: true
+        inlineSourceMap: false
     },
     packages: {
         'app': { defaultExtension: 'ts' },

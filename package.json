@@ -27,7 +27,7 @@
   "devDependencies": {
     "mocha": "^2.2.5",
     "should": "^7.0.4",
-    "source-map-support": "^0.3.0",
+    "source-map-support": "^0.4.0",
     "tslint": "^3.0.0",
     "typings": "^0.7.11"
   },
