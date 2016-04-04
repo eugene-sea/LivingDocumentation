@@ -98,10 +98,12 @@ export function widen(str: string): string {
     return str.replace(/ /g, () => i++ % 3 === 0 ? ' ' : '&nbsp;');
 }
 
-angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
-    .filter('newline', wrapFilterInjectionConstructor(NewLineFilter))
-    .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
-    .filter('scenarioOutlinePlaceholder', wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
-    .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter))
-    .filter('highlightTag', wrapFilterInjectionConstructor(HighlightTagFilter))
-    .filter('widen', wrapFilterInjectionConstructor(WidenFilter));
+if (typeof angular !== 'undefined') {
+    angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
+        .filter('newline', wrapFilterInjectionConstructor(NewLineFilter))
+        .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
+        .filter('scenarioOutlinePlaceholder', wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
+        .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter))
+        .filter('highlightTag', wrapFilterInjectionConstructor(HighlightTagFilter))
+        .filter('widen', wrapFilterInjectionConstructor(WidenFilter));
+}

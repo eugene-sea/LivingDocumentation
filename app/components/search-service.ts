@@ -208,5 +208,7 @@ class SearchService implements ISearchService {
     }
 }
 
-angular.module('livingDocumentation.services.search', [])
-    .service('search', SearchService);
+if (typeof angular !== 'undefined') {
+    angular.module('livingDocumentation.services.search', [])
+        .service('search', SearchService);
+}
