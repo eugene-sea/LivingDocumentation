@@ -9,7 +9,6 @@ System.config({
     typescriptOptions: {
         emitDecoratorMetadata: true,
         experimentalDecorators: true,
-        resolveTypings: true,
         sourceMap: true,
         inlineSourceMap: true
     },
