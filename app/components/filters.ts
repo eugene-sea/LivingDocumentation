@@ -1,3 +1,5 @@
+import { Pipe, PipeTransform, Inject } from 'angular2/core';
+
 import { ILivingDocumentationService } from './services';
 import { splitWords } from './search-service';
 import { IFilter, wrapFilterInjectionConstructor } from './utils';
@@ -33,12 +35,13 @@ class HighlightFilter implements IFilter {
     }
 }
 
-class HighlightTagFilter implements IFilter {
-    static $inject = ['livingDocumentationService'];
+@Pipe({ name: 'highlightTag' })
+export class HighlightTagPipe implements PipeTransform {
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
+    ) { }
 
-    constructor(private livingDocService: ILivingDocumentationService) { }
-
-    filter(str: string): string {
+    transform(str: string): string {
         return !this.livingDocService.searchContext || !_.any(this.livingDocService.searchContext.tags)
             ? escapeHTML(str)
             : highlightAndEscape(
@@ -104,6 +107,5 @@ if (typeof angular !== 'undefined') {
         .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
         .filter('scenarioOutlinePlaceholder', wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
         .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter))
-        .filter('highlightTag', wrapFilterInjectionConstructor(HighlightTagFilter))
         .filter('widen', wrapFilterInjectionConstructor(WidenFilter));
 }

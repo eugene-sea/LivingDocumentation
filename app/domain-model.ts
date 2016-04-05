@@ -79,3 +79,5 @@ export interface ILivingDocumentation {
     features: IFeatures;
     lastUpdatedOn: Date;
 }
+
+export function dummy(): void { ; } // NOTE: non-interface export is required for module to be generated

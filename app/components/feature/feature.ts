@@ -1,6 +1,11 @@
+import { Component, Input, OnInit } from 'angular2/core';
+
+import { adapter } from '../adapter';
+
 import { ILivingDocumentation, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { wrapInjectionConstructor, format } from '../utils';
+import { HighlightTagPipe } from '../filters';
 
 class FeatureDirective implements ng.IDirective {
     restrict = 'A';
@@ -73,22 +78,24 @@ class TableDirective implements ng.IDirective {
 
 class Table { }
 
-class TagsDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentation: '=',
-        tags: '='
-    };
-    controller = Tags;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/tags.tpl.html';
-}
+@Component({
+    pipes: [HighlightTagPipe],
+    selector: 'tags',
+    templateUrl: 'components/feature/tags.tpl.html'
+})
+class Tags implements OnInit {
+    @Input() documentation: ILivingDocumentation;
+    @Input() tags: string[];
 
-class Tags {
-    documentation: ILivingDocumentation;
+    tagsWithIssueUrl: { issueUrl: string; tag: string; }[];
 
-    getIssueTrackingUri(tag: string): string {
+    ngOnInit(): void {
+        this.tagsWithIssueUrl = this.tags.map(t => {
+            return { issueUrl: this.getIssueTrackingUri(t), tag: t };
+        });
+    }
+
+    private getIssueTrackingUri(tag: string): string {
         const match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
         return match === null ? null : format(this.documentation.definition.issueTrackingUri, ...match);
     }
@@ -115,5 +122,5 @@ angular.module('livingDocumentation.feature', [
     .controller('Feature', Feature)
     .directive('scenario', wrapInjectionConstructor(ScenarioDirective))
     .directive('table', wrapInjectionConstructor(TableDirective))
-    .directive('tags', wrapInjectionConstructor(TagsDirective))
+    .directive('tags', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Tags))
     .directive('status', wrapInjectionConstructor(StatusDirective));

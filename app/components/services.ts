@@ -1,3 +1,5 @@
+import { adapter } from './adapter';
+
 import { ILivingDocumentation } from '../domain-model';
 import { ILivingDocumentationServer } from './living-documentation-server';
 import './living-documentation-server';
@@ -224,3 +226,5 @@ angular.module('livingDocumentation.services', [
 ])
     .value('version', '0.9')
     .service('livingDocumentationService', LivingDocumentationService);
+
+adapter.upgradeNg1Provider('livingDocumentationService');
