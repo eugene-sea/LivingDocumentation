@@ -2,7 +2,7 @@ import { Component, Input, OnInit } from 'angular2/core';
 
 import { adapter } from '../adapter';
 
-import { ILivingDocumentation, IFeature } from '../../domain-model';
+import { ILivingDocumentation, IFeature, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { wrapInjectionConstructor, format } from '../utils';
 import { HighlightTagPipe } from '../filters';
@@ -101,19 +101,14 @@ class Tags implements OnInit {
     }
 }
 
-class StatusDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        isManual: '=',
-        status: '='
-    };
-    controller = Status;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/status.tpl.html';
+@Component({
+    selector: 'status',
+    templateUrl: 'components/feature/status.tpl.html'
+})
+class Status {
+    @Input() isManual: boolean;
+    @Input() status: IResult;
 }
-
-class Status { }
 
 angular.module('livingDocumentation.feature', [
     'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
@@ -123,4 +118,4 @@ angular.module('livingDocumentation.feature', [
     .directive('scenario', wrapInjectionConstructor(ScenarioDirective))
     .directive('table', wrapInjectionConstructor(TableDirective))
     .directive('tags', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Tags))
-    .directive('status', wrapInjectionConstructor(StatusDirective));
+    .directive('status', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Status));
