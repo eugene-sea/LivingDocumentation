@@ -33,12 +33,12 @@
 
 <div ng-if="ctrl.feature.Feature.Background" class="panel panel-default">
   <div class="panel-body">
-    <div scenario="ctrl.feature.Feature.Background" documentation="ctrl.documentation"></div>
+    <scenario [scenario]="ctrl.feature.Feature.Background" [documentation]="ctrl.documentation"></scenario>
   </div>
 </div>
 
 <div class="panel panel-default" ng-repeat="scenario in ctrl.feature.Feature.FeatureElements">
   <div class="panel-body">
-    <div scenario="scenario" documentation="ctrl.documentation"></div>
+    <scenario [scenario]="scenario" [documentation]="ctrl.documentation"></scenario>
   </div>
 </div>

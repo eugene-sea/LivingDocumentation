@@ -2,10 +2,10 @@ import { Component, Input, OnInit } from 'angular2/core';
 
 import { adapter } from '../adapter';
 
-import { ILivingDocumentation, IFeature, ITable, IResult } from '../../domain-model';
+import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { wrapInjectionConstructor, format } from '../utils';
-import { HighlightPipe, HighlightTagPipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../filters';
+import { HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../filters';
 
 class FeatureDirective implements ng.IDirective {
     restrict = 'A';
@@ -50,20 +50,6 @@ class Feature {
     }
 }
 
-class ScenarioDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentation: '=',
-        scenario: '='
-    };
-    controller = Scenario;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/scenario.tpl.html';
-}
-
-class Scenario { }
-
 @Component({
     pipes: [HighlightPipe, WidenPipe, ScenarioOutlinePlaceholderPipe],
     selector: 'feature-table',
@@ -106,12 +92,23 @@ class Status {
     @Input() status: IResult;
 }
 
+@Component({
+    directives: [Status, Tags, Table],
+    pipes: [HighlightPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe],
+    selector: 'scenario',
+    templateUrl: 'components/feature/scenario.tpl.html'
+})
+class Scenario {
+    @Input() documentation: ILivingDocumentation;
+    @Input() scenario: IScenario;
+}
+
 angular.module('livingDocumentation.feature', [
     'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
 ])
     .directive('feature', wrapInjectionConstructor(FeatureDirective))
     .controller('Feature', Feature)
-    .directive('scenario', wrapInjectionConstructor(ScenarioDirective))
+    .directive('scenario', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Scenario))
     .directive('featureTable', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Table))
     .directive('tags', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Tags))
     .directive('status', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Status));

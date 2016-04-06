@@ -10,24 +10,25 @@ class NewLineFilter implements IFilter {
     }
 }
 
+@Pipe({ name: 'newline' })
+export class NewLinePipe implements PipeTransform {
+    transform(str: string): string {
+        return new NewLineFilter().filter(str);
+    }
+}
+
 class SplitWordsFilter implements IFilter {
     filter(str: string): string {
         return splitWords(str);
     }
 }
 
-class ScenarioOutlinePlaceholderFilter implements IFilter {
-    filter(str: string): string {
-        return !str ? str : str.replace(
-            /\&lt;([^<>]+?)\&gt;/g,
-            (_, c) => `<span class="text-warning">&lt;${c.replace(/ /g, '&nbsp;')}&gt;</span>`);
-    }
-}
-
 @Pipe({ name: 'scenarioOutlinePlaceholder' })
 export class ScenarioOutlinePlaceholderPipe implements PipeTransform {
     transform(str: string): string {
-        return new ScenarioOutlinePlaceholderFilter().filter(str);
+        return !str ? str : str.replace(
+            /\&lt;([^<>]+?)\&gt;/g,
+            (_, c) => `<span class="text-warning">&lt;${c.replace(/ /g, '&nbsp;')}&gt;</span>`);
     }
 }
 
@@ -124,6 +125,5 @@ if (typeof angular !== 'undefined') {
     angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
         .filter('newline', wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
-        .filter('scenarioOutlinePlaceholder', wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
         .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter));
 }
