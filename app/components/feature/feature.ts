@@ -2,10 +2,10 @@ import { Component, Input, OnInit } from 'angular2/core';
 
 import { adapter } from '../adapter';
 
-import { ILivingDocumentation, IFeature, IResult } from '../../domain-model';
+import { ILivingDocumentation, IFeature, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { wrapInjectionConstructor, format } from '../utils';
-import { HighlightTagPipe } from '../filters';
+import { HighlightPipe, HighlightTagPipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../filters';
 
 class FeatureDirective implements ng.IDirective {
     restrict = 'A';
@@ -64,19 +64,15 @@ class ScenarioDirective implements ng.IDirective {
 
 class Scenario { }
 
-class TableDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        table: '=',
-        tests: '='
-    };
-    controller = Table;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/table.tpl.html';
+@Component({
+    pipes: [HighlightPipe, WidenPipe, ScenarioOutlinePlaceholderPipe],
+    selector: 'feature-table',
+    templateUrl: 'components/feature/table.tpl.html'
+})
+class Table {
+    @Input() table: ITable;
+    @Input() tests: string[];
 }
-
-class Table { }
 
 @Component({
     pipes: [HighlightTagPipe],
@@ -116,6 +112,6 @@ angular.module('livingDocumentation.feature', [
     .directive('feature', wrapInjectionConstructor(FeatureDirective))
     .controller('Feature', Feature)
     .directive('scenario', wrapInjectionConstructor(ScenarioDirective))
-    .directive('table', wrapInjectionConstructor(TableDirective))
+    .directive('featureTable', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Table))
     .directive('tags', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Tags))
     .directive('status', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Status));

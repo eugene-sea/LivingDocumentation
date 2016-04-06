@@ -32,7 +32,7 @@
   <div ng-repeat="step in ctrl.scenario.Steps" style="margin-bottom: 10px">
     <b>{{step.Keyword}}</b> <span ng-bind-html="step.Name | highlight | scenarioOutlinePlaceholder"></span>
     <div ng-if="step.TableArgument">
-      <div table="step.TableArgument"></div>
+      <feature-table [table]="step.TableArgument"></feature-table>
     </div>
     <div ng-if="step.DocStringArgument">
       <div class="well h-scrollable">
@@ -48,7 +48,7 @@
     <div style="margin-bottom: 10px">
       <b>Examples:</b>
       <p><i ng-bind-html="ctrl.scenario.Examples.Description | highlight | newline"></i></p>
-      <div table="ctrl.scenario.Examples.TableArgument" tests="ctrl.scenario.tests"></div>
+      <feature-table [table]="ctrl.scenario.Examples.TableArgument" [tests]="ctrl.scenario.tests"></feature-table>
     </div>
   </div>
 </div>

@@ -24,6 +24,13 @@ class ScenarioOutlinePlaceholderFilter implements IFilter {
     }
 }
 
+@Pipe({ name: 'scenarioOutlinePlaceholder' })
+export class ScenarioOutlinePlaceholderPipe implements PipeTransform {
+    transform(str: string): string {
+        return new ScenarioOutlinePlaceholderFilter().filter(str);
+    }
+}
+
 class HighlightFilter implements IFilter {
     static $inject = ['livingDocumentationService'];
 
@@ -32,6 +39,17 @@ class HighlightFilter implements IFilter {
     filter(str: string): string {
         return !this.livingDocService.searchContext
             ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
+    }
+}
+
+@Pipe({ name: 'highlight' })
+export class HighlightPipe implements PipeTransform {
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
+    ) { }
+
+    transform(str: string): string {
+        return new HighlightFilter(this.livingDocService).filter(str);
     }
 }
 
@@ -49,8 +67,9 @@ export class HighlightTagPipe implements PipeTransform {
     }
 }
 
-class WidenFilter implements IFilter {
-    filter(str: string): string {
+@Pipe({ name: 'widen' })
+export class WidenPipe implements PipeTransform {
+    transform(str: string): string {
         return widen(str);
     }
 }
@@ -106,6 +125,5 @@ if (typeof angular !== 'undefined') {
         .filter('newline', wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
         .filter('scenarioOutlinePlaceholder', wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
-        .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter))
-        .filter('widen', wrapFilterInjectionConstructor(WidenFilter));
+        .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter));
 }

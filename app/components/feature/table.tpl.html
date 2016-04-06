@@ -3,24 +3,24 @@
     <table class="table table-condensed table-striped table-bordered no-borders">
       <thead>
         <tr>
-          <th 
-            ng-repeat="col in ctrl.table.HeaderRow"
-            ng-class="{'no-left-border': $first, 'no-right-border': $last && !ctrl.tests}" 
-            ng-bind-html="col | highlight">
+          <th
+            *ngFor="#col of table.HeaderRow; #i = index; #last = last"
+            [ngClass]="{'no-left-border': i === 0, 'no-right-border': last && !tests}"
+            [innerHTML]="col | highlight">
           </th>
-          <th class="no-stretch no-right-border" ng-if="ctrl.tests">Test</th>
+          <th class="no-stretch no-right-border" *ngIf="tests">Test</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr ng-repeat="row in ctrl.table.DataRows">
-          <td 
-            ng-repeat="col in row track by $index"
-            ng-class="{'no-left-border': $first, 'no-right-border': $last && !ctrl.tests, 'no-bottom-border': $parent.$last}" 
-            ng-bind-html="col | highlight | widen | scenarioOutlinePlaceholder">
+        <tr *ngFor="#row of table.DataRows; #rowIndex = index; #lastRow = last">
+          <td
+            *ngFor="#col of row; #i = index; #last = last"
+            [ngClass]="{'no-left-border': i ===0, 'no-right-border': last && !tests, 'no-bottom-border': lastRow}"
+            [innerHTML]="col | highlight | widen | scenarioOutlinePlaceholder">
           </td>
-          <td class="no-stretch no-right-border" ng-class="{'no-bottom-border': $parent.$last}" ng-if="ctrl.tests">
-            <a href="{{ctrl.tests[$index]}}" target="_blank">Run</a>
+          <td class="no-stretch no-right-border" [ngClass]="{'no-bottom-border': lastRow}" *ngIf="tests">
+            <a [href]="tests[rowIndex]" target="_blank">Run</a>
           </td>
         </tr>
       </tbody>
