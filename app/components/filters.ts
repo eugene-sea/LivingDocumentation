@@ -4,16 +4,10 @@ import { ILivingDocumentationService } from './services';
 import { splitWords } from './search-service';
 import { IFilter, wrapFilterInjectionConstructor } from './utils';
 
-class NewLineFilter implements IFilter {
-    filter(str: string): string {
-        return !str ? str : str.replace(/\r\n/mg, '<br />');
-    }
-}
-
 @Pipe({ name: 'newline' })
 export class NewLinePipe implements PipeTransform {
     transform(str: string): string {
-        return new NewLineFilter().filter(str);
+        return !str ? str : str.replace(/\r\n/mg, '<br />');
     }
 }
 
@@ -123,7 +117,6 @@ export function widen(str: string): string {
 
 if (typeof angular !== 'undefined') {
     angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
-        .filter('newline', wrapFilterInjectionConstructor(NewLineFilter))
         .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
         .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter));
 }

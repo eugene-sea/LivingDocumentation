@@ -29,10 +29,10 @@ angular.module('livingDocumentation', [
     $routeProvider.when('/feature/:documentationCode/:featureCode', {
         resolve: resolve,
         template: ($routeParams: angular.route.IRouteParamsService) =>
-            `<div feature
-                feature-code="${$routeParams['featureCode']}"
-                documentation-code="${$routeParams['documentationCode']}">
-             </div>`
+            `<feature
+                [feature-code]="'${$routeParams['featureCode']}'"
+                [documentation-code]="'${$routeParams['documentationCode']}'">
+             </feature>`
     });
 
     $routeProvider.otherwise({ redirectTo: '/dashboard' });

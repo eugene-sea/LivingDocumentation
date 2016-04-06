@@ -1,54 +1,11 @@
-import { Component, Input, OnInit } from 'angular2/core';
+import { Component, Input, Inject, OnInit } from 'angular2/core';
 
 import { adapter } from '../adapter';
 
 import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
-import { wrapInjectionConstructor, format } from '../utils';
+import { format } from '../utils';
 import { HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../filters';
-
-class FeatureDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentationCode: '@',
-        featureCode: '@'
-    };
-    controller = 'Feature';
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/feature.tpl.html';
-}
-
-class Feature {
-    static $inject: string[] = ['livingDocumentationService'];
-
-    featureCode: string;
-    documentationCode: string;
-    documentation: ILivingDocumentation;
-    feature: IFeature;
-    featureEditUri: string;
-
-    constructor(livingDocumentationService: ILivingDocumentationService) {
-        this.documentation = _.find(
-            livingDocumentationService.filteredDocumentationList,
-            doc => doc.definition.code === this.documentationCode);
-
-        this.feature = this.documentation.features[this.featureCode];
-        if (this.documentation.definition.featureEditUri) {
-            this.featureEditUri = format(
-                this.documentation.definition.featureEditUri, this.feature.RelativeFolder.replace(/\\/g, '/'));
-        }
-    }
-
-    get isExpanded(): boolean { return this.feature.isExpanded; }
-    set isExpanded(value: boolean) {
-        this.feature.isExpanded = value;
-        _.each(this.feature.Feature.FeatureElements, s => s.isExpanded = value);
-        if (this.feature.Feature.Background) {
-            this.feature.Feature.Background.isExpanded = value;
-        }
-    }
-}
 
 @Component({
     pipes: [HighlightPipe, WidenPipe, ScenarioOutlinePlaceholderPipe],
@@ -103,11 +60,49 @@ class Scenario {
     @Input() scenario: IScenario;
 }
 
+@Component({
+    directives: [Status, Tags, Scenario],
+    pipes: [HighlightPipe, NewLinePipe],
+    selector: 'feature',
+    templateUrl: 'components/feature/feature.tpl.html'
+})
+class Feature implements OnInit {
+    @Input() documentationCode: string;
+    @Input() featureCode: string;
+    documentation: ILivingDocumentation;
+    feature: IFeature;
+    featureEditUrl: string;
+
+    constructor(
+        @Inject('livingDocumentationService') private livingDocumentationService: ILivingDocumentationService
+    ) { }
+
+    ngOnInit(): void {
+        this.documentation = _.find(
+            this.livingDocumentationService.filteredDocumentationList,
+            doc => doc.definition.code === this.documentationCode);
+
+        this.feature = this.documentation.features[this.featureCode];
+        if (this.documentation.definition.featureEditUri) {
+            this.featureEditUrl = format(
+                this.documentation.definition.featureEditUri, this.feature.RelativeFolder.replace(/\\/g, '/'));
+        }
+    }
+
+    get isExpanded(): boolean { return this.feature.isExpanded; }
+    set isExpanded(value: boolean) {
+        this.feature.isExpanded = value;
+        _.each(this.feature.Feature.FeatureElements, s => s.isExpanded = value);
+        if (this.feature.Feature.Background) {
+            this.feature.Feature.Background.isExpanded = value;
+        }
+    }
+}
+
 angular.module('livingDocumentation.feature', [
     'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
 ])
-    .directive('feature', wrapInjectionConstructor(FeatureDirective))
-    .controller('Feature', Feature)
+    .directive('feature', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Feature))
     .directive('scenario', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Scenario))
     .directive('featureTable', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Table))
     .directive('tags', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Tags))
