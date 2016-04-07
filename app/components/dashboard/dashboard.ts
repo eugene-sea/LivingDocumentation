@@ -1,4 +1,4 @@
-import { Component, Input } from 'angular2/core';
+import { Component, Input, OnInit } from 'angular2/core';
 
 import { adapter } from '../adapter';
 
@@ -24,17 +24,6 @@ class Dashboard {
     }
 }
 
-class DocumentationDashboardDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentation: '='
-    };
-    controller = DocumentationDashboard;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/dashboard/documentation-dashboard.html';
-}
-
 interface IStatistics {
     passed: number;
     pending: number;
@@ -43,22 +32,26 @@ interface IStatistics {
     total: number;
 }
 
-class DocumentationDashboard {
-    documentation: ILivingDocumentation;
+@Component({
+    selector: 'statistics',
+    templateUrl: 'components/dashboard/statistics.html'
+})
+class Statistics {
+    @Input() name: string;
+    @Input() statistics: IStatistics;
+}
+
+@Component({
+    directives: [Statistics],
+    selector: 'documentation-dashboard',
+    templateUrl: 'components/dashboard/documentation-dashboard.html'
+})
+class DocumentationDashboard implements OnInit {
+    @Input() documentation: ILivingDocumentation;
     iterationFeatures = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     iterationScenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     features = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     scenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
-
-    constructor() {
-        DocumentationDashboard.processFeatures(
-            this.documentation.features,
-            DocumentationDashboard.isIteration,
-            this.iterationFeatures,
-            this.iterationScenarios);
-        DocumentationDashboard.processFeatures(
-            this.documentation.features, _ => true, this.features, this.scenarios);
-    }
 
     private static isIteration(item: { Tags: string[]; }): boolean {
         return _.indexOf(item.Tags, '@iteration') !== -1;
@@ -102,19 +95,20 @@ class DocumentationDashboard {
 
         ++statistics.passed;
     }
-}
 
-@Component({
-    selector: 'statistics',
-    templateUrl: 'components/dashboard/statistics.html'
-})
-class Statistics {
-    @Input() name: string;
-    @Input() statistics: IStatistics;
+    ngOnInit(): void {
+        DocumentationDashboard.processFeatures(
+            this.documentation.features,
+            DocumentationDashboard.isIteration,
+            this.iterationFeatures,
+            this.iterationScenarios);
+        DocumentationDashboard.processFeatures(
+            this.documentation.features, _ => true, this.features, this.scenarios);
+    }
 }
 
 angular.module('livingDocumentation.controllers.dashboard', [])
     .controller('Dashboard', Dashboard)
     .directive('dashboard', wrapInjectionConstructor(DashboardDirective))
-    .directive('documentationDashboard', wrapInjectionConstructor(DocumentationDashboardDirective))
+    .directive('documentationDashboard', <ng.IDirectiveFactory>adapter.downgradeNg2Component(DocumentationDashboard))
     .directive('statistics', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Statistics));
