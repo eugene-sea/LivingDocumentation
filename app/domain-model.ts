@@ -80,4 +80,4 @@ export interface ILivingDocumentation {
     lastUpdatedOn: Date;
 }
 
-export function dummy(): void { ; } // NOTE: non-interface export is required for module to be generated
+export function domainModel(): void { ; } // NOTE: non-interface export is required for module to be generated

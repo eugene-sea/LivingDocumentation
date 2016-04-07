@@ -1,6 +1,6 @@
 import { adapter } from './adapter';
 
-import { ILivingDocumentation, IFeature } from '../domain-model';
+import { ILivingDocumentation } from '../domain-model';
 import { ILivingDocumentationServer } from './living-documentation-server';
 import './living-documentation-server';
 import { ISearchService, ISearchContext } from './search-service';
