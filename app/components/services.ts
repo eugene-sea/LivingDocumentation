@@ -1,6 +1,6 @@
 import { adapter } from './adapter';
 
-import { ILivingDocumentation } from '../domain-model';
+import { ILivingDocumentation, IFeature } from '../domain-model';
 import { ILivingDocumentationServer } from './living-documentation-server';
 import './living-documentation-server';
 import { ISearchService, ISearchContext } from './search-service';
@@ -43,6 +43,8 @@ export interface ILivingDocumentationService {
     search(searchText: string): void;
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void;
+
+    isUrlActive(url: string): boolean;
 }
 
 const TIMEOUT = 200;
@@ -142,6 +144,11 @@ class LivingDocumentationService implements ILivingDocumentationService {
         }
 
         this.searchCore();
+    }
+
+    isUrlActive(url: string): boolean {
+        const indexOf = this.$location.path().indexOf(url);
+        return indexOf >= 0 && (indexOf + url.length === this.$location.path().length);
     }
 
     private onError(err: any) {

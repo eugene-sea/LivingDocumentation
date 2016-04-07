@@ -2,7 +2,6 @@ import { Pipe, PipeTransform, Inject } from 'angular2/core';
 
 import { ILivingDocumentationService } from './services';
 import { splitWords } from './search-service';
-import { IFilter, wrapFilterInjectionConstructor } from './utils';
 
 @Pipe({ name: 'newline' })
 export class NewLinePipe implements PipeTransform {
@@ -11,8 +10,9 @@ export class NewLinePipe implements PipeTransform {
     }
 }
 
-class SplitWordsFilter implements IFilter {
-    filter(str: string): string {
+@Pipe({ name: 'splitWords' })
+export class SplitWordsFilter implements PipeTransform {
+    transform(str: string): string {
         return splitWords(str);
     }
 }
@@ -26,17 +26,6 @@ export class ScenarioOutlinePlaceholderPipe implements PipeTransform {
     }
 }
 
-class HighlightFilter implements IFilter {
-    static $inject = ['livingDocumentationService'];
-
-    constructor(private livingDocService: ILivingDocumentationService) { }
-
-    filter(str: string): string {
-        return !this.livingDocService.searchContext
-            ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
-    }
-}
-
 @Pipe({ name: 'highlight' })
 export class HighlightPipe implements PipeTransform {
     constructor(
@@ -44,7 +33,8 @@ export class HighlightPipe implements PipeTransform {
     ) { }
 
     transform(str: string): string {
-        return new HighlightFilter(this.livingDocService).filter(str);
+        return !this.livingDocService.searchContext
+            ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
     }
 }
 
@@ -113,10 +103,4 @@ function escapeHTML(str: string) {
 export function widen(str: string): string {
     let i = 1;
     return str.replace(/ /g, () => i++ % 3 === 0 ? ' ' : '&nbsp;');
-}
-
-if (typeof angular !== 'undefined') {
-    angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
-        .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
-        .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter));
 }

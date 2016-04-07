@@ -99,9 +99,7 @@ class Feature implements OnInit {
     }
 }
 
-angular.module('livingDocumentation.feature', [
-    'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
-])
+angular.module('livingDocumentation.feature', ['ngSanitize', 'livingDocumentation.services'])
     .directive('feature', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Feature))
     .directive('scenario', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Scenario))
     .directive('featureTable', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Table))
