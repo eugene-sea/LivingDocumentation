@@ -1,3 +1,7 @@
+import { Component, Input } from 'angular2/core';
+
+import { adapter } from '../adapter';
+
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { wrapInjectionConstructor } from '../utils';
@@ -100,22 +104,17 @@ class DocumentationDashboard {
     }
 }
 
-class StatisticsDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        name: '@',
-        statistics: '='
-    };
-    controller = Statistics;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/dashboard/statistics.html';
+@Component({
+    selector: 'statistics',
+    templateUrl: 'components/dashboard/statistics.html'
+})
+class Statistics {
+    @Input() name: string;
+    @Input() statistics: IStatistics;
 }
-
-class Statistics { }
 
 angular.module('livingDocumentation.controllers.dashboard', [])
     .controller('Dashboard', Dashboard)
     .directive('dashboard', wrapInjectionConstructor(DashboardDirective))
     .directive('documentationDashboard', wrapInjectionConstructor(DocumentationDashboardDirective))
-    .directive('statistics', wrapInjectionConstructor(StatisticsDirective));
+    .directive('statistics', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Statistics));
