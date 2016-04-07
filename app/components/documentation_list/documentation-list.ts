@@ -30,11 +30,15 @@ class Folder implements OnInit {
     }
 
     getFeatureUrl(feature: IFeature): string {
-        return `#/feature/${this.documentationCode}/${feature.code}${this.livingDocService.urlSearchPart}`;
+        return `#${this.getFeaturePath(feature)}${this.livingDocService.urlSearchPart}`;
     }
 
     isFeatureActive(feature: IFeature): boolean {
-        return this.livingDocService.isUrlActive(this.getFeatureUrl(feature).substr(1));
+        return this.livingDocService.isUrlActive(this.getFeaturePath(feature));
+    }
+
+    private getFeaturePath(feature: IFeature): string {
+        return `/feature/${this.documentationCode}/${feature.code}`;
     }
 }
 
