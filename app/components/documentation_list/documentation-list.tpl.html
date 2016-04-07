@@ -1,9 +1,8 @@
-﻿<accordion close-others="true">
+﻿<accordion [closeOthers]="true">
   <accordion-group
     heading="{{doc.root.name}}"
-    ng-init="isOpen = $first"
-    is-open="isOpen"
-    ng-repeat="doc in root.documentationList | orderBy: 'definition.sortOrder'">
-    <folder [folder]="doc.root" [documentation-code]="doc.definition.code"></folder>
+    [isOpen]="i === 0"
+    *ngFor="#doc of documentationList; #i = index">
+    <folder [folder]="doc.root" [documentationCode]="doc.definition.code"></folder>
   </accordion-group>
 </accordion>

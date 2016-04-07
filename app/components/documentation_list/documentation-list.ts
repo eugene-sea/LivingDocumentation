@@ -1,27 +1,11 @@
 import { Component, Input, Inject, OnInit, forwardRef } from 'angular2/core';
+import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { adapter } from '../adapter';
 
 import { IFolder, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
-import { wrapInjectionConstructor } from '../utils';
 import { HighlightPipe, SplitWordsFilter } from '../filters';
-
-class DocumentationListDirective implements ng.IDirective {
-    restrict = 'A';
-    controller = 'DocumentationList';
-    controllerAs = 'root';
-    bindToController = true;
-    templateUrl = 'components/documentation_list/documentation-list.tpl.html';
-}
-
-class DocumentationList {
-    static $inject = ['livingDocumentationService'];
-
-    constructor(private livingDocService: ILivingDocumentationService) { }
-
-    get documentationList() { return this.livingDocService.filteredDocumentationList; }
-}
 
 @Component({
     directives: [forwardRef(() => Folder)],
@@ -54,7 +38,23 @@ class Folder implements OnInit {
     }
 }
 
+@Component({
+    directives: [ACCORDION_DIRECTIVES, Folder],
+    selector: 'documentation-list',
+    templateUrl: 'components/documentation_list/documentation-list.tpl.html'
+})
+class DocumentationList {
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
+    ) { }
+
+    get documentationList() {
+        return this.livingDocService.filteredDocumentationList.sort(
+            (a, b) => a.definition.sortOrder - b.definition.sortOrder
+        );
+    }
+}
+
 angular.module('livingDocumentation.documentationList', ['livingDocumentation.services'])
-    .directive('documentationList', wrapInjectionConstructor(DocumentationListDirective))
-    .controller('DocumentationList', DocumentationList)
+    .directive('documentationList', <ng.IDirectiveFactory>adapter.downgradeNg2Component(DocumentationList))
     .directive('folder', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Folder));

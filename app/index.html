@@ -17,7 +17,7 @@
   <div living-documentation-app></div>
 
   <!-- IE required polyfills, in this exact order -->
-  <script src="node_components/es6-shim/es6-shim.min.js"></script>
+  <script src="node_components/es6-shim/es6-shim.js"></script>
   <script src="node_components/systemjs/system-polyfills.src.js"></script>
   <script src="node_components/angular2/shims_for_IE.js"></script>
 
@@ -34,19 +34,24 @@
   <script>
     System.config({
       baseURL: '../',
+      paths: {
+          'moment': 'app/node_components/moment/moment.js'
+      },
       transpiler: 'typescript',
       typescriptOptions: {
         emitDecoratorMetadata: true,
         experimentalDecorators: true
       },
       packages: {
-        'app': { defaultExtension: 'ts' }
+        'app': { defaultExtension: 'ts' },
+        'moment': { }
       }
     });
   </script>
   <script src="node_components/rxjs/Rx.js"></script>
   <script src="node_components/angular2/angular2.dev.js"></script>
   <script src="node_components/angular2/upgrade.dev.js"></script>
+  <script src="node_components/ng2-bootstrap/ng2-bootstrap.js"></script>
   <script>
     System.import('app/app').catch(console.error.bind(console));
   </script>
