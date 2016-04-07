@@ -1,15 +1,12 @@
 ﻿<i *ngIf="!folder.isRoot" [innerHTML]="folder.name | splitWords | highlight"></i>
 
-<div [ngClass]="{'folder-indent': !folder.isRoot}">
+<div [class.folder-indent]="!folder.isRoot">
   <div *ngFor="#child of childrenFolders">
     <folder [folder]="child" [documentationCode]="documentationCode"></folder>
   </div>
 </div>
 
-<div
-  class="folder-item-padding"
-  [ngClass]="{'folder-indent': !folder.isRoot}"
-  *ngFor="#feature of childrenFeatures">
+<div class="folder-item-padding" [class.folder-indent]="!folder.isRoot" *ngFor="#feature of childrenFeatures">
   <a
     class="inactive-feature"
     [href]="getFeatureUrl(feature)"

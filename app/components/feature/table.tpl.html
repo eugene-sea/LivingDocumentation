@@ -5,7 +5,8 @@
         <tr>
           <th
             *ngFor="#col of table.HeaderRow; #i = index; #last = last"
-            [ngClass]="{'no-left-border': i === 0, 'no-right-border': last && !tests}"
+            [class.no-left-border]="!i"
+            [class.no-right-border]="last && !tests"
             [innerHTML]="col | highlight">
           </th>
           <th class="no-stretch no-right-border" *ngIf="tests">Test</th>
@@ -16,10 +17,12 @@
         <tr *ngFor="#row of table.DataRows; #rowIndex = index; #lastRow = last">
           <td
             *ngFor="#col of row; #i = index; #last = last"
-            [ngClass]="{'no-left-border': i ===0, 'no-right-border': last && !tests, 'no-bottom-border': lastRow}"
+            [class.no-left-border]="!i"
+            [class.no-right-border]="last && !tests"
+            [class.no-bottom-border]="lastRow"
             [innerHTML]="col | highlight | widen | scenarioOutlinePlaceholder">
           </td>
-          <td class="no-stretch no-right-border" [ngClass]="{'no-bottom-border': lastRow}" *ngIf="tests">
+          <td class="no-stretch no-right-border" [class.no-bottom-border]="lastRow" *ngIf="tests">
             <a [href]="tests[rowIndex]" target="_blank">Run</a>
           </td>
         </tr>
