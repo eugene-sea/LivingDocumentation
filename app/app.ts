@@ -23,7 +23,7 @@ angular.module('livingDocumentation', [
 
     $routeProvider.when('/dashboard', {
         resolve: resolve,
-        template: '<div dashboard></div>'
+        template: '<dashboard></dashboard>'
     });
 
     $routeProvider.when('/feature/:documentationCode/:featureCode', {

@@ -1,28 +1,9 @@
-import { Component, Input, OnInit } from 'angular2/core';
+import { Component, Input, OnInit, Inject } from 'angular2/core';
 
 import { adapter } from '../adapter';
 
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
-import { wrapInjectionConstructor } from '../utils';
-
-class DashboardDirective implements ng.IDirective {
-    restrict = 'A';
-    controller = 'Dashboard';
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/dashboard/dashboard.html';
-}
-
-class Dashboard {
-    static $inject: string[] = ['livingDocumentationService'];
-
-    documentationList: ILivingDocumentation[];
-
-    constructor(livingDocumentationService: ILivingDocumentationService) {
-        this.documentationList = livingDocumentationService.documentationList;
-    }
-}
 
 interface IStatistics {
     passed: number;
@@ -107,8 +88,24 @@ class DocumentationDashboard implements OnInit {
     }
 }
 
+@Component({
+    directives: [DocumentationDashboard],
+    selector: 'dashboard',
+    templateUrl: 'components/dashboard/dashboard.html'
+})
+class Dashboard {
+    static $inject: string[] = ['livingDocumentationService'];
+
+    documentationList: ILivingDocumentation[];
+
+    constructor(
+        @Inject('livingDocumentationService') livingDocumentationService: ILivingDocumentationService
+    ) {
+        this.documentationList = livingDocumentationService.documentationList;
+    }
+}
+
 angular.module('livingDocumentation.controllers.dashboard', [])
-    .controller('Dashboard', Dashboard)
-    .directive('dashboard', wrapInjectionConstructor(DashboardDirective))
+    .directive('dashboard', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Dashboard))
     .directive('documentationDashboard', <ng.IDirectiveFactory>adapter.downgradeNg2Component(DocumentationDashboard))
     .directive('statistics', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Statistics));
