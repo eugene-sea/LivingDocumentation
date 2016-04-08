@@ -31,11 +31,11 @@ class Tags implements OnInit {
 
     ngOnInit(): void {
         this.tagsWithIssueUrl = this.tags.map(t => {
-            return { issueUrl: this.getIssueTrackingUri(t), tag: t };
+            return { issueUrl: this.getIssueTrackingUrl(t), tag: t };
         });
     }
 
-    private getIssueTrackingUri(tag: string): string {
+    private getIssueTrackingUrl(tag: string): string {
         const match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
         return match === null ? null : format(this.documentation.definition.issueTrackingUrl, ...match);
     }
@@ -82,9 +82,7 @@ class Feature implements OnInit {
 
     ngOnInit(): void {
         this.feature = this.livingDocumentationService.filteredDocumentationListObservable
-            .map(l => _.find(
-                this.livingDocumentationService.filteredDocumentationList,
-                doc => doc.definition.code === this.documentationCode))
+            .map(l => _.find(l, doc => doc.definition.code === this.documentationCode))
             .map(d => {
                 this.documentation = d;
                 this.featureInner = this.documentation.features[this.featureCode];
