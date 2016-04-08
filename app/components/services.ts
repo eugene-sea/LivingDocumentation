@@ -97,7 +97,7 @@ class LivingDocumentationService implements ILivingDocumentationService {
             (this.filter == null ? '' : `${this.searchText ? '&' : '?'}showOnly=${this.filterRaw}`);
     }
 
-    get filter() { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }
+    get filter(): DocumentationFilter { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }
 
     private get filterRaw(): string { return this.$location.search().showOnly; }
 
@@ -105,8 +105,6 @@ class LivingDocumentationService implements ILivingDocumentationService {
         if (this.onStartProcessing) {
             this.onStartProcessing();
         }
-
-        this.deferred.promise.finally(() => this.onStopProcessing()).catch(err => this.onError(err));
 
         this.livingDocumentationServer.getResourceDefinitions()
             .concatMap(resources => Observable.zip(..._.map(resources, r => this.livingDocumentationServer.get(r))))
@@ -125,7 +123,8 @@ class LivingDocumentationService implements ILivingDocumentationService {
                     this.deferred.reject(err);
                     this.onError(err);
                 },
-                TIMEOUT)
+                TIMEOUT),
+            () => this.$timeout(() => this.onStopProcessing(), TIMEOUT)
             );
     }
 
