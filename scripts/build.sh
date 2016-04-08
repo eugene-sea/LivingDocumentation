@@ -24,6 +24,7 @@ cp ./node_modules/angular2/es6/dev/src/testing/shims_for_IE.js ./app/node_compon
 cp ./node_modules/angular2/bundles/angular2-polyfills.js ./app/node_components/angular2/
 cp ./node_modules/angular2/bundles/angular2.dev.js ./app/node_components/angular2/
 cp ./node_modules/angular2/bundles/upgrade.dev.js ./app/node_components/angular2/
+cp ./node_modules/angular2/bundles/http.dev.js ./app/node_components/angular2/
 
 mkdir -p ./app/node_components/rxjs
 cp ./node_modules/rxjs/bundles/Rx.js ./app/node_components/rxjs/

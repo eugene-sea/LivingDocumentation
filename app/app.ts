@@ -1,3 +1,7 @@
+import { HTTP_PROVIDERS } from 'angular2/http';
+
+import 'rxjs/Rx';
+
 import { ILivingDocumentationService } from './components/services';
 import { adapter } from './components/adapter';
 
@@ -7,6 +11,8 @@ import './components/documentation_list/documentation-list';
 import './components/feature/feature';
 import './components/directives';
 import './components/filters';
+
+adapter.addProvider(HTTP_PROVIDERS);
 
 angular.module('livingDocumentation', [
     'ngRoute',

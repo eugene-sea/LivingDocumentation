@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs/Observable';
+
 import { adapter } from './adapter';
 
 import { ILivingDocumentation } from '../domain-model';
@@ -81,7 +83,8 @@ class LivingDocumentationService implements ILivingDocumentationService {
         private $timeout: ng.ITimeoutService,
         private searchService: ISearchService,
         private $location: ng.ILocationService,
-        private $route: angular.route.IRouteService) {
+        private $route: angular.route.IRouteService
+    ) {
         this.loading = true;
         this.deferred = $q.defer<ILivingDocumentationService>();
         this.resolve = this.deferred.promise;
@@ -106,8 +109,8 @@ class LivingDocumentationService implements ILivingDocumentationService {
         this.deferred.promise.finally(() => this.onStopProcessing()).catch(err => this.onError(err));
 
         this.livingDocumentationServer.getResourceDefinitions()
-            .then(resources => this.$q.all(_.map(resources, r => this.livingDocumentationServer.get(r))))
-            .then(
+            .concatMap(resources => Observable.zip(..._.map(resources, r => this.livingDocumentationServer.get(r))))
+            .subscribe(
             (docs: ILivingDocumentation[]) => {
                 this.documentationList = docs;
                 this.$timeout(
@@ -122,7 +125,8 @@ class LivingDocumentationService implements ILivingDocumentationService {
                     this.deferred.reject(err);
                     this.onError(err);
                 },
-                TIMEOUT));
+                TIMEOUT)
+            );
     }
 
     search(searchText: string): void {
