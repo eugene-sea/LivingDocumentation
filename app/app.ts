@@ -2,7 +2,6 @@ import { HTTP_PROVIDERS } from 'angular2/http';
 
 import 'rxjs/Rx';
 
-import { ILivingDocumentationService } from './components/services';
 import { adapter } from './components/adapter';
 
 import './components/living_documentation_app/living-documentation-app';
@@ -20,24 +19,15 @@ angular.module('livingDocumentation', [
     'livingDocumentation.controllers.dashboard',
     'livingDocumentation.feature'
 ]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
-    const resolve: { [key: string]: any; } = {
-        livingDocumentationServiceReady: [
-            'livingDocumentationService',
-            (service: ILivingDocumentationService) => service.resolve
-        ]
-    };
-
     $routeProvider.when('/dashboard', {
-        resolve: resolve,
         template: '<dashboard></dashboard>'
     });
 
     $routeProvider.when('/feature/:documentationCode/:featureCode', {
-        resolve: resolve,
         template: ($routeParams: angular.route.IRouteParamsService) =>
             `<feature
-                [feature-code]="'${$routeParams['featureCode']}'"
-                [documentation-code]="'${$routeParams['documentationCode']}'">
+                feature-code="${$routeParams['featureCode']}"
+                documentation-code="${$routeParams['documentationCode']}">
              </feature>`
     });
 

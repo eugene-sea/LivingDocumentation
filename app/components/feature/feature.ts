@@ -83,6 +83,7 @@ class Feature implements OnInit {
     ngOnInit(): void {
         this.feature = this.livingDocumentationService.filteredDocumentationListObservable
             .map(l => _.find(l, doc => doc.definition.code === this.documentationCode))
+            .filter(d => d != null)
             .map(d => {
                 this.documentation = d;
                 this.featureInner = this.documentation.features[this.featureCode];

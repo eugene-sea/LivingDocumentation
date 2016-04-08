@@ -13,6 +13,7 @@ class LivingDocumentationApp {
     static $inject: string[] = ['livingDocumentationService', '$modal'];
 
     searchText: string;
+    lastUpdatedOn: Date;
 
     documentationFilter = DocumentationFilter;
 
@@ -27,19 +28,24 @@ class LivingDocumentationApp {
             modalInstance = $modal.open({ backdrop: 'static', keyboard: false, templateUrl: 'processing.html' });
         };
 
-        let _this = this;
+        let self = this;
         livingDocService.onStopProcessing = () => {
-            if (_this.isClearSearchEnabled) {
-                if (!_this.searchText) {
-                    _this.showOnly(null, true);
+            if (self.isClearSearchEnabled) {
+                if (!self.searchText) {
+                    self.showOnly(null, true);
                 } else {
-                    _this.search();
+                    self.search();
                 }
             }
 
             modalInstance.close();
             modalInstance = null;
         };
+
+        this.livingDocService.documentationListObservable
+            .map(l => _.find(l, doc => !!doc.lastUpdatedOn))
+            .filter(d => d != null)
+            .subscribe(d => this.lastUpdatedOn = d.lastUpdatedOn);
 
         this.searchText = livingDocService.searchText || '';
         livingDocService.startInitialization();
@@ -57,10 +63,6 @@ class LivingDocumentationApp {
     }
 
     get filter() { return this.livingDocService.filter; }
-
-    get lastUpdatedOn() {
-        return _.find(this.livingDocService.documentationList, doc => !!doc.lastUpdatedOn).lastUpdatedOn;
-    }
 
     get searchPart() { return this.livingDocService.urlSearchPart; }
 

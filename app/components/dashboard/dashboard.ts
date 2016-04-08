@@ -1,4 +1,5 @@
 import { Component, Input, OnInit, Inject } from 'angular2/core';
+import { Observable } from 'rxjs/Rx';
 
 import { adapter } from '../adapter';
 
@@ -94,14 +95,12 @@ class DocumentationDashboard implements OnInit {
     templateUrl: 'components/dashboard/dashboard.html'
 })
 class Dashboard {
-    static $inject: string[] = ['livingDocumentationService'];
-
-    documentationList: ILivingDocumentation[];
+    documentationList: Observable<ILivingDocumentation[]>;
 
     constructor(
         @Inject('livingDocumentationService') livingDocumentationService: ILivingDocumentationService
     ) {
-        this.documentationList = livingDocumentationService.documentationList;
+        this.documentationList = livingDocumentationService.documentationListObservable;
     }
 }
 

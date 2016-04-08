@@ -23,12 +23,9 @@ export interface ILivingDocumentationService {
 
     ready: boolean;
 
-    resolve: ng.IPromise<ILivingDocumentationService>;
-
-    documentationList: ILivingDocumentation[];
+    documentationListObservable: Observable<ILivingDocumentation[]>;
 
     filteredDocumentationListObservable: Observable<ILivingDocumentation[]>;
-    filteredDocumentationList: ILivingDocumentation[];
 
     searchContext: ISearchContext;
 
@@ -53,7 +50,6 @@ export interface ILivingDocumentationService {
 
 const TIMEOUT = 200;
 
-adapter.upgradeNg1Provider('$q');
 adapter.upgradeNg1Provider('$location');
 adapter.upgradeNg1Provider('$route');
 
@@ -65,14 +61,14 @@ class LivingDocumentationService implements ILivingDocumentationService {
 
     ready: boolean;
 
-    resolve: ng.IPromise<ILivingDocumentationService>;
-
-    documentationList: ILivingDocumentation[] = [];
+    documentationListObservable = new BehaviorSubject(<ILivingDocumentation[]>[]);
 
     filteredDocumentationListObservable = new BehaviorSubject(<ILivingDocumentation[]>[]);
-    get filteredDocumentationList(): ILivingDocumentation[] { return this.filteredDocumentationListInner; }
-    set filteredDocumentationList(value: ILivingDocumentation[]) {
-        this.filteredDocumentationListInner = value;
+    private get filteredDocumentationList(): ILivingDocumentation[] {
+        return this.filteredDocumentationListObservable.value;
+    }
+
+    private set filteredDocumentationList(value: ILivingDocumentation[]) {
         this.filteredDocumentationListObservable.next(value);
     }
 
@@ -82,20 +78,15 @@ class LivingDocumentationService implements ILivingDocumentationService {
 
     onStopProcessing: () => void;
 
-    private deferred: ng.IDeferred<ILivingDocumentationService>;
     private currentSearchText = '';
-    private filteredDocumentationListInner: ILivingDocumentation[] = [];
 
     constructor(
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
-        @Inject('$q') private $q: ng.IQService,
         @Inject('search') private searchService: ISearchService,
         @Inject('$location') private $location: ng.ILocationService,
         @Inject('$route') private $route: angular.route.IRouteService
     ) {
         this.loading = true;
-        this.deferred = $q.defer<ILivingDocumentationService>();
-        this.resolve = this.deferred.promise;
     }
 
     get searchText(): string { return this.$location.search().search; }
@@ -119,14 +110,10 @@ class LivingDocumentationService implements ILivingDocumentationService {
             .delay(TIMEOUT)
             .subscribe(
             (docs: ILivingDocumentation[]) => {
-                this.documentationList = docs;
-                this.deferred.resolve(this);
+                this.documentationListObservable.next(docs);
                 this.initialize();
             },
-            err => {
-                this.deferred.reject(err);
-                this.onError(err);
-            },
+            err => this.onError(err),
             () => this.onStopProcessing()
             );
     }
@@ -137,7 +124,7 @@ class LivingDocumentationService implements ILivingDocumentationService {
         if (!searchText) {
             this.$location.search('showOnly', null);
             [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
-                [this.documentationList, null, null];
+                [this.documentationListObservable.value, null, null];
             return;
         }
 
@@ -166,7 +153,7 @@ class LivingDocumentationService implements ILivingDocumentationService {
     private initialize() {
         this.loading = false;
         this.ready = true;
-        this.filteredDocumentationList = this.documentationList;
+        this.filteredDocumentationList = this.documentationListObservable.value;
     }
 
     private searchCore() {
@@ -192,7 +179,7 @@ class LivingDocumentationService implements ILivingDocumentationService {
         searchText += this.searchText || '';
 
         if (searchText !== this.currentSearchText) {
-            let res = this.searchService.search(searchText, this.documentationList);
+            let res = this.searchService.search(searchText, this.documentationListObservable.value);
             [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
                 [res.documentationList, res.searchContext, searchText];
         }
