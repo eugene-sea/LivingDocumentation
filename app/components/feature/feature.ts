@@ -1,4 +1,5 @@
 import { Component, Input, Inject, OnInit } from 'angular2/core';
+import { Observable } from 'rxjs/Rx';
 
 import { adapter } from '../adapter';
 
@@ -69,32 +70,41 @@ class Scenario {
 class Feature implements OnInit {
     @Input() documentationCode: string;
     @Input() featureCode: string;
+    feature: Observable<IFeature[]>;
     documentation: ILivingDocumentation;
-    feature: IFeature;
     featureEditUrl: string;
+
+    private featureInner: IFeature;
 
     constructor(
         @Inject('livingDocumentationService') private livingDocumentationService: ILivingDocumentationService
     ) { }
 
     ngOnInit(): void {
-        this.documentation = _.find(
-            this.livingDocumentationService.filteredDocumentationList,
-            doc => doc.definition.code === this.documentationCode);
+        this.feature = this.livingDocumentationService.filteredDocumentationListObservable
+            .map(l => _.find(
+                this.livingDocumentationService.filteredDocumentationList,
+                doc => doc.definition.code === this.documentationCode))
+            .map(d => {
+                this.documentation = d;
+                this.featureInner = this.documentation.features[this.featureCode];
+                if (this.documentation.definition.featureEditUrl) {
+                    this.featureEditUrl = format(
+                        this.documentation.definition.featureEditUrl,
+                        this.featureInner.RelativeFolder.replace(/\\/g, '/')
+                    );
+                }
 
-        this.feature = this.documentation.features[this.featureCode];
-        if (this.documentation.definition.featureEditUrl) {
-            this.featureEditUrl = format(
-                this.documentation.definition.featureEditUrl, this.feature.RelativeFolder.replace(/\\/g, '/'));
-        }
+                return [this.featureInner];
+            });
     }
 
-    get isExpanded(): boolean { return this.feature.isExpanded; }
+    get isExpanded(): boolean { return this.featureInner.isExpanded; }
     set isExpanded(value: boolean) {
-        this.feature.isExpanded = value;
-        _.each(this.feature.Feature.FeatureElements, s => s.isExpanded = value);
-        if (this.feature.Feature.Background) {
-            this.feature.Feature.Background.isExpanded = value;
+        this.featureInner.isExpanded = value;
+        _.each(this.featureInner.Feature.FeatureElements, s => s.isExpanded = value);
+        if (this.featureInner.Feature.Background) {
+            this.featureInner.Feature.Background.isExpanded = value;
         }
     }
 }

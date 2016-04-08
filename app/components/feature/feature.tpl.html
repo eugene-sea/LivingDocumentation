@@ -1,4 +1,6 @@
-﻿<table style="width: 100%">
+﻿<div *ngFor="#feature of feature | async">
+
+<table style="width: 100%">
   <tr>
     <td><h3 [innerHTML]="feature.Feature.Name | highlight"></h3></td>
     <td class="no-stretch">&nbsp;</td>
@@ -42,3 +44,5 @@
     <scenario [scenario]="scenario" [documentation]="documentation"></scenario>
   </div>
 </div>
+
+<div>

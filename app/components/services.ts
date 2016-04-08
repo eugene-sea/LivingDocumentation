@@ -1,5 +1,5 @@
 import { Injectable, Inject } from 'angular2/core';
-import { Observable } from 'rxjs/Observable';
+import { Observable, BehaviorSubject } from 'rxjs/Rx';
 
 import { adapter } from './adapter';
 
@@ -27,6 +27,7 @@ export interface ILivingDocumentationService {
 
     documentationList: ILivingDocumentation[];
 
+    filteredDocumentationListObservable: Observable<ILivingDocumentation[]>;
     filteredDocumentationList: ILivingDocumentation[];
 
     searchContext: ISearchContext;
@@ -68,7 +69,12 @@ class LivingDocumentationService implements ILivingDocumentationService {
 
     documentationList: ILivingDocumentation[] = [];
 
-    filteredDocumentationList: ILivingDocumentation[] = [];
+    filteredDocumentationListObservable = new BehaviorSubject(<ILivingDocumentation[]>[]);
+    get filteredDocumentationList(): ILivingDocumentation[] { return this.filteredDocumentationListInner; }
+    set filteredDocumentationList(value: ILivingDocumentation[]) {
+        this.filteredDocumentationListInner = value;
+        this.filteredDocumentationListObservable.next(value);
+    }
 
     searchContext: ISearchContext = null;
 
@@ -78,6 +84,7 @@ class LivingDocumentationService implements ILivingDocumentationService {
 
     private deferred: ng.IDeferred<ILivingDocumentationService>;
     private currentSearchText = '';
+    private filteredDocumentationListInner: ILivingDocumentation[] = [];
 
     constructor(
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
