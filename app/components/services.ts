@@ -53,7 +53,7 @@ const TIMEOUT = 200;
 
 class LivingDocumentationService implements ILivingDocumentationService {
     static $inject: string[] = [
-        'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$route'
+        'livingDocumentationServer', '$q', 'search', '$location', '$route'
     ];
 
     loading: boolean;
@@ -80,7 +80,6 @@ class LivingDocumentationService implements ILivingDocumentationService {
     constructor(
         private livingDocumentationServer: ILivingDocumentationServer,
         private $q: ng.IQService,
-        private $timeout: ng.ITimeoutService,
         private searchService: ISearchService,
         private $location: ng.ILocationService,
         private $route: angular.route.IRouteService
@@ -108,23 +107,18 @@ class LivingDocumentationService implements ILivingDocumentationService {
 
         this.livingDocumentationServer.getResourceDefinitions()
             .concatMap(resources => Observable.zip(..._.map(resources, r => this.livingDocumentationServer.get(r))))
+            .delay(TIMEOUT)
             .subscribe(
             (docs: ILivingDocumentation[]) => {
                 this.documentationList = docs;
-                this.$timeout(
-                    () => {
-                        this.deferred.resolve(this);
-                        this.initialize();
-                    },
-                    TIMEOUT);
+                this.deferred.resolve(this);
+                this.initialize();
             },
-            err => this.$timeout(
-                () => {
-                    this.deferred.reject(err);
-                    this.onError(err);
-                },
-                TIMEOUT),
-            () => this.$timeout(() => this.onStopProcessing(), TIMEOUT)
+            err => {
+                this.deferred.reject(err);
+                this.onError(err);
+            },
+            () => this.onStopProcessing()
             );
     }
 
