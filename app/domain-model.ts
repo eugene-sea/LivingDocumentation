@@ -66,10 +66,10 @@ export interface ILivingDocumentationResourceDefinition {
     sortOrder: number;
     featuresResource: string;
     issueTrackingRegExp: string;
-    issueTrackingUri: string;
-    featureEditUri?: string;
+    issueTrackingUrl: string;
+    featureEditUrl?: string;
     testsResources?: string;
-    testUri?: string;
+    testUrl?: string;
     externalTestResults?: string;
 }
 

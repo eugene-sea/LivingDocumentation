@@ -36,7 +36,7 @@ class Tags implements OnInit {
 
     private getIssueTrackingUri(tag: string): string {
         const match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
-        return match === null ? null : format(this.documentation.definition.issueTrackingUri, ...match);
+        return match === null ? null : format(this.documentation.definition.issueTrackingUrl, ...match);
     }
 }
 
@@ -83,9 +83,9 @@ class Feature implements OnInit {
             doc => doc.definition.code === this.documentationCode);
 
         this.feature = this.documentation.features[this.featureCode];
-        if (this.documentation.definition.featureEditUri) {
+        if (this.documentation.definition.featureEditUrl) {
             this.featureEditUrl = format(
-                this.documentation.definition.featureEditUri, this.feature.RelativeFolder.replace(/\\/g, '/'));
+                this.documentation.definition.featureEditUrl, this.feature.RelativeFolder.replace(/\\/g, '/'));
         }
     }
 

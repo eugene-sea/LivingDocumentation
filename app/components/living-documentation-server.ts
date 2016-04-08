@@ -106,7 +106,7 @@ class LivingDocumentationServer {
             }
 
             if (featuresTestsMap) {
-                LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
+                LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUrl);
             }
 
             LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
