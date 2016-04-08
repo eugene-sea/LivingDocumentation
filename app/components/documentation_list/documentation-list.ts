@@ -53,8 +53,8 @@ class DocumentationList {
     ) { }
 
     get documentationList() {
-        return this.livingDocService.filteredDocumentationList.sort(
-            (a, b) => a.definition.sortOrder - b.definition.sortOrder
+        return this.livingDocService.filteredDocumentationListObservable.map(
+            l => l.sort((a, b) => a.definition.sortOrder - b.definition.sortOrder)
         );
     }
 }
