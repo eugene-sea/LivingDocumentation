@@ -1,3 +1,4 @@
+import { Injectable, Inject } from 'angular2/core';
 import { Observable } from 'rxjs/Observable';
 
 import { adapter } from './adapter';
@@ -51,11 +52,12 @@ export interface ILivingDocumentationService {
 
 const TIMEOUT = 200;
 
-class LivingDocumentationService implements ILivingDocumentationService {
-    static $inject: string[] = [
-        'livingDocumentationServer', '$q', 'search', '$location', '$route'
-    ];
+adapter.upgradeNg1Provider('$q');
+adapter.upgradeNg1Provider('$location');
+adapter.upgradeNg1Provider('$route');
 
+@Injectable()
+class LivingDocumentationService implements ILivingDocumentationService {
     loading: boolean;
 
     error: string;
@@ -78,11 +80,11 @@ class LivingDocumentationService implements ILivingDocumentationService {
     private currentSearchText = '';
 
     constructor(
-        private livingDocumentationServer: ILivingDocumentationServer,
-        private $q: ng.IQService,
-        private searchService: ISearchService,
-        private $location: ng.ILocationService,
-        private $route: angular.route.IRouteService
+        @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
+        @Inject('$q') private $q: ng.IQService,
+        @Inject('search') private searchService: ISearchService,
+        @Inject('$location') private $location: ng.ILocationService,
+        @Inject('$route') private $route: angular.route.IRouteService
     ) {
         this.loading = true;
         this.deferred = $q.defer<ILivingDocumentationService>();
@@ -225,10 +227,12 @@ class LivingDocumentationService implements ILivingDocumentationService {
     }
 }
 
+adapter.addProvider(LivingDocumentationService);
+
 angular.module('livingDocumentation.services', [
     'livingDocumentation.services.server', 'livingDocumentation.services.search'
 ])
     .value('version', '0.9')
-    .service('livingDocumentationService', LivingDocumentationService);
+    .factory('livingDocumentationService', adapter.downgradeNg2Provider(LivingDocumentationService));
 
 adapter.upgradeNg1Provider('livingDocumentationService');

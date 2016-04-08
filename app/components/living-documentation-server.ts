@@ -226,3 +226,5 @@ adapter.addProvider(LivingDocumentationServer);
 
 angular.module('livingDocumentation.services.server', [])
     .factory('livingDocumentationServer', adapter.downgradeNg2Provider(LivingDocumentationServer));
+
+adapter.upgradeNg1Provider('livingDocumentationServer');

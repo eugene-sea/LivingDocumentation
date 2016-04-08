@@ -219,3 +219,5 @@ if (typeof angular !== 'undefined') {
     angular.module('livingDocumentation.services.search', [])
         .factory('search', adapter.downgradeNg2Provider(SearchService));
 }
+
+adapter.upgradeNg1Provider('search');
