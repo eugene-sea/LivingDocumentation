@@ -1,7 +1,3 @@
-export interface IFilter {
-    filter(item: any): string;
-}
-
 export function wrapInjectionConstructor<T>(
     constructor: { $inject?: string[]; }, transformer?: (inst: T) => any): any {
     return (<any[]>constructor.$inject || []).concat(
@@ -12,12 +8,6 @@ export function wrapInjectionConstructor<T>(
             const res = <T>new functionConstructor();
             return !transformer ? res : transformer(res);
         });
-}
-
-export function wrapFilterInjectionConstructor<T>(constructor: { $inject?: string[]; }) {
-    return wrapInjectionConstructor(constructor, (f: IFilter) => {
-        return f.filter.bind(f);
-    });
 }
 
 export function format(format: string, ...args: string[]): string {
