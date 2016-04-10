@@ -7,8 +7,8 @@
     "build": "./scripts/build.sh",
     "start": "node server.js",
     "test": "./node_modules/.bin/mocha --reporter spec --delay test/test.js",
-    "update-components": "bower update && npm update",
-    "updates": "bower ls && npm outdated"
+    "update-components": "npm update",
+    "updates": "npm outdated"
   },
   "repository": {
     "type": "git",
@@ -36,10 +36,12 @@
     "es6-shim": "^0.35.0",
     "express": "^4.12.4",
     "morgan": "^1.5.3",
+    "bootstrap": "^3.3.6",
     "ng2-bootstrap": "^1.0.10",
     "reflect-metadata": "^0.1.2",
     "rxjs": "^5.0.0-beta.2",
     "systemjs": "^0.19.24",
-    "typescript": "^1.8.9"
+    "typescript": "^1.8.9",
+    "underscore": "1.8.3"
   }
 }
