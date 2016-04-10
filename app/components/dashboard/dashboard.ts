@@ -1,8 +1,6 @@
 import { Component, Input, OnInit, Inject } from 'angular2/core';
 import { Observable } from 'rxjs/Rx';
 
-import { adapter } from '../adapter';
-
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 
@@ -94,7 +92,7 @@ class DocumentationDashboard implements OnInit {
     selector: 'dashboard',
     templateUrl: 'components/dashboard/dashboard.html'
 })
-class Dashboard {
+export class Dashboard {
     documentationList: Observable<ILivingDocumentation[]>;
 
     constructor(
@@ -103,8 +101,3 @@ class Dashboard {
         this.documentationList = livingDocumentationService.documentationListObservable;
     }
 }
-
-angular.module('livingDocumentation.controllers.dashboard', [])
-    .directive('dashboard', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Dashboard))
-    .directive('documentationDashboard', <ng.IDirectiveFactory>adapter.downgradeNg2Component(DocumentationDashboard))
-    .directive('statistics', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Statistics));

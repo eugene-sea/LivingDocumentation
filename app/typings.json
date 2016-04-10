@@ -2,11 +2,6 @@
   "name": "living-documentation",
   "version": false,
   "ambientDependencies": {
-    "jquery": "github:DefinitelyTyped/DefinitelyTyped/jquery/jquery.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
-    "angular": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
-    "angular-route": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular-route.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
-    "angular-sanitize": "github:DefinitelyTyped/DefinitelyTyped/angularjs/angular-sanitize.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
-    "angular-ui-bootstrap": "github:DefinitelyTyped/DefinitelyTyped/angular-ui-bootstrap/angular-ui-bootstrap.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "underscore": "github:DefinitelyTyped/DefinitelyTyped/underscore/underscore.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "should": "github:DefinitelyTyped/DefinitelyTyped/should/should.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "mocha": "github:DefinitelyTyped/DefinitelyTyped/mocha/mocha.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",

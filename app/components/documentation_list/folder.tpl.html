@@ -9,14 +9,14 @@
 <div class="folder-item-padding" [class.folder-indent]="!folder.isRoot" *ngFor="#feature of childrenFeatures">
   <a
     class="inactive-feature"
-    [href]="getFeatureUrl(feature)"
+    [routerLink]="getFeaturePath(feature)"
     [class.active]="isFeatureActive(feature)"
     [innerHTML]="feature.Feature.Name | highlight">
   </a>
   <b>
     <a
       class="active-feature"
-      [href]="getFeatureUrl(feature)"
+      [routerLink]="getFeaturePath(feature)"
       [class.active]="isFeatureActive(feature)"
       [innerHTML]="feature.Feature.Name | highlight">
     </a>

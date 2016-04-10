@@ -1,7 +1,5 @@
 import { Injectable } from 'angular2/core';
 
-import { adapter } from './adapter';
-
 import { ILivingDocumentation, IFolder, IFeatures, IFeature, IScenario, IStep, ITable } from '../domain-model';
 
 export interface ISearchContext {
@@ -199,7 +197,7 @@ function addFeatures(folder: IFolder, features: IFeatures) {
 }
 
 @Injectable()
-class SearchService implements ISearchService {
+export class SearchService implements ISearchService {
     search(searchText: string, documentationList: ILivingDocumentation[]):
         { documentationList: ILivingDocumentation[]; searchContext: ISearchContext; } {
         let searchContext = getSearchContext(searchText);
@@ -212,12 +210,3 @@ class SearchService implements ISearchService {
         };
     }
 }
-
-adapter.addProvider(SearchService);
-
-if (typeof angular !== 'undefined') {
-    angular.module('livingDocumentation.services.search', [])
-        .factory('search', adapter.downgradeNg2Provider(SearchService));
-}
-
-adapter.upgradeNg1Provider('search');

@@ -1,37 +1,21 @@
+import { provide } from 'angular2/core';
+import { bootstrap } from 'angular2/platform/browser';
+import { LocationStrategy, HashLocationStrategy, ROUTER_PROVIDERS } from 'angular2/router';
 import { HTTP_PROVIDERS } from 'angular2/http';
 
 import 'rxjs/Rx';
 
-import { adapter } from './components/adapter';
+import { LivingDocumentationApp } from './components/living_documentation_app/living-documentation-app';
+import { SearchService } from './components/search-service';
+import { LivingDocumentationServer } from './components/living-documentation-server';
+import { LivingDocumentationService } from './components/services';
 
-import './components/living_documentation_app/living-documentation-app';
-import './components/dashboard/dashboard';
-import './components/documentation_list/documentation-list';
-import './components/feature/feature';
-import './components/directives';
-import './components/filters';
-
-adapter.addProvider(HTTP_PROVIDERS);
-
-angular.module('livingDocumentation', [
-    'ngRoute',
-    'livingDocumentation.app',
-    'livingDocumentation.controllers.dashboard',
-    'livingDocumentation.feature'
-]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
-    $routeProvider.when('/dashboard', {
-        template: '<dashboard></dashboard>'
-    });
-
-    $routeProvider.when('/feature/:documentationCode/:featureCode', {
-        template: ($routeParams: angular.route.IRouteParamsService) =>
-            `<feature
-                feature-code="${$routeParams['featureCode']}"
-                documentation-code="${$routeParams['documentationCode']}">
-             </feature>`
-    });
-
-    $routeProvider.otherwise({ redirectTo: '/dashboard' });
-}]);
-
-adapter.bootstrap(document.body, ['livingDocumentation']);
+bootstrap(LivingDocumentationApp, [
+    HTTP_PROVIDERS,
+    ROUTER_PROVIDERS,
+    provide(LocationStrategy, { useClass: HashLocationStrategy }),
+    provide('version', { useValue: '0.9' }),
+    provide('search', { useClass: SearchService }),
+    provide('livingDocumentationServer', { useClass: LivingDocumentationServer }),
+    provide('livingDocumentationService', { useClass: LivingDocumentationService })
+]);

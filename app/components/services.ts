@@ -1,13 +1,11 @@
 import { Injectable, Inject } from 'angular2/core';
+import { Router } from 'angular2/router';
+import { URLSearchParams } from 'angular2/http';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
-
-import { adapter } from './adapter';
 
 import { ILivingDocumentation } from '../domain-model';
 import { ILivingDocumentationServer } from './living-documentation-server';
-import './living-documentation-server';
 import { ISearchService, ISearchContext } from './search-service';
-import './search-service';
 
 export enum DocumentationFilter {
     InProgress,
@@ -31,8 +29,6 @@ export interface ILivingDocumentationService {
 
     searchText: string;
 
-    urlSearchPart: string;
-
     filter: DocumentationFilter;
 
     onStartProcessing: () => void;
@@ -45,16 +41,13 @@ export interface ILivingDocumentationService {
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void;
 
-    isUrlActive(url: string): boolean;
+    addQueryParameters(params: any): any;
 }
 
 const TIMEOUT = 200;
 
-adapter.upgradeNg1Provider('$location');
-adapter.upgradeNg1Provider('$route');
-
 @Injectable()
-class LivingDocumentationService implements ILivingDocumentationService {
+export class LivingDocumentationService implements ILivingDocumentationService {
     loading: boolean;
 
     error: string;
@@ -83,22 +76,20 @@ class LivingDocumentationService implements ILivingDocumentationService {
     constructor(
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
         @Inject('search') private searchService: ISearchService,
-        @Inject('$location') private $location: ng.ILocationService,
-        @Inject('$route') private $route: angular.route.IRouteService
+        private router: Router
     ) {
         this.loading = true;
     }
 
-    get searchText(): string { return this.$location.search().search; }
-
-    get urlSearchPart() {
-        return (!this.searchText ? '' : `?search=${encodeURIComponent(this.searchText || '')}`) +
-            (this.filter == null ? '' : `${this.searchText ? '&' : '?'}showOnly=${this.filterRaw}`);
+    get searchText(): string {
+        return this.router.currentInstruction && this.router.currentInstruction.component.params['search'];
     }
 
-    get filter(): DocumentationFilter { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }
+    get filter(): DocumentationFilter { return this.filterRaw && (<any>DocumentationFilter)[this.filterRaw]; }
 
-    private get filterRaw(): string { return this.$location.search().showOnly; }
+    private get filterRaw(): string {
+        return this.router.currentInstruction && this.router.currentInstruction.component.params['showOnly'];
+    }
 
     startInitialization(): void {
         if (this.onStartProcessing) {
@@ -119,29 +110,35 @@ class LivingDocumentationService implements ILivingDocumentationService {
     }
 
     search(searchText: string): void {
-        this.$location.search('search', searchText);
-
         if (!searchText) {
-            this.$location.search('showOnly', null);
             [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
                 [this.documentationListObservable.value, null, null];
+            this.router.navigateByUrl(this.router.currentInstruction.urlPath);
             return;
         }
 
-        this.searchCore();
+        this.updateQueryParameterAndNavigate('search', searchText);
     }
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void {
-        if (!initialize) {
-            this.$location.search('showOnly', DocumentationFilter[filter]);
+        if (initialize) {
+            this.searchCore();
+        } else {
+            this.updateQueryParameterAndNavigate('showOnly', DocumentationFilter[filter]);
         }
-
-        this.searchCore();
     }
 
-    isUrlActive(url: string): boolean {
-        const indexOf = this.$location.path().indexOf(url);
-        return indexOf >= 0 && (indexOf + url.length === this.$location.path().length);
+    addQueryParameters(params: any): any {
+        params = params || {};
+        if (this.searchText) {
+            params.search = this.searchText;
+        }
+
+        if (this.filterRaw) {
+            params.showOnly = this.filterRaw;
+        }
+
+        return params;
     }
 
     private onError(err: any) {
@@ -154,6 +151,14 @@ class LivingDocumentationService implements ILivingDocumentationService {
         this.loading = false;
         this.ready = true;
         this.filteredDocumentationList = this.documentationListObservable.value;
+    }
+
+    private updateQueryParameterAndNavigate(param: string, paramValue: string) {
+        const query = this.router.currentInstruction.toUrlQuery();
+        const params = new URLSearchParams(query && query.slice(1));
+        params.set(param, paramValue);
+        this.router.navigateByUrl(`/${this.router.currentInstruction.urlPath}?${params.toString()}`)
+            .then(() => this.searchCore());
     }
 
     private searchCore() {
@@ -179,18 +184,15 @@ class LivingDocumentationService implements ILivingDocumentationService {
         searchText += this.searchText || '';
 
         if (searchText !== this.currentSearchText) {
-            let res = this.searchService.search(searchText, this.documentationListObservable.value);
+            const res = this.searchService.search(searchText, this.documentationListObservable.value);
             [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
                 [res.documentationList, res.searchContext, searchText];
         }
 
-        let [documentationCode, featureCode] =
-            !this.$route.current
-                ? [null, null]
-                : [
-                    <string>this.$route.current.params['documentationCode'],
-                    <string>this.$route.current.params['featureCode']
-                ];
+        let [documentationCode, featureCode] = [
+            this.router.currentInstruction.component.params['documentationCode'],
+            this.router.currentInstruction.component.params['featureCode']
+        ];
 
         if (documentationCode && featureCode) {
             let documentation = _.find(
@@ -214,19 +216,12 @@ class LivingDocumentationService implements ILivingDocumentationService {
         }
 
         if (!documentationCode || !featureCode) {
-            this.$location.path('/dashboard');
+            this.router.navigate(['/Dashboard', this.addQueryParameters({})]);
         } else {
-            this.$location.path(`/feature/${documentationCode}/${featureCode}`);
+            this.router.navigate(['/Feature', this.addQueryParameters({
+                documentationCode: documentationCode,
+                featureCode: featureCode
+            })]);
         }
     }
 }
-
-adapter.addProvider(LivingDocumentationService);
-
-angular.module('livingDocumentation.services', [
-    'livingDocumentation.services.server', 'livingDocumentation.services.search'
-])
-    .value('version', '0.9')
-    .factory('livingDocumentationService', adapter.downgradeNg2Provider(LivingDocumentationService));
-
-adapter.upgradeNg1Provider('livingDocumentationService');

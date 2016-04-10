@@ -1,31 +1,48 @@
-import { ILivingDocumentationService, DocumentationFilter } from '../services';
-import { wrapInjectionConstructor } from '../utils';
+import { Component, Inject } from 'angular2/core';
+import { RouteConfig, RouteParams, Router, ROUTER_DIRECTIVES } from 'angular2/router';
+import { Observable } from 'rxjs/Rx';
+import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
-class LivingDocumentationAppDirective implements ng.IDirective {
-    restrict = 'A';
-    controller = 'LivingDocumentationApp';
-    controllerAs = 'root';
-    bindToController = true;
-    templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html';
+import { ILivingDocumentationService, DocumentationFilter } from '../services';
+import { DocumentationList } from '../documentation_list/documentation-list';
+import { Dashboard } from '../dashboard/dashboard';
+import { Feature } from '../feature/feature';
+
+@Component({
+    directives: [Feature],
+    selector: 'feature-container',
+    template: `
+        <feature [documentationCode]="params.get('documentationCode')" [featureCode]="params.get('featureCode')">
+        </feature>
+    `
+})
+class FeatureContainer {
+    constructor(public params: RouteParams) { ; }
 }
 
-class LivingDocumentationApp {
-    static $inject: string[] = ['livingDocumentationService', '$modal'];
-
-    searchText: string;
-    lastUpdatedOn: Date;
+@RouteConfig([
+    { component: Dashboard, name: 'Dashboard', path: '/dashboard' },
+    { component: FeatureContainer, name: 'Feature', path: '/feature/:documentationCode/:featureCode' },
+    { path: '/**', redirectTo: ['Dashboard'] }
+])
+@Component({
+    directives: [ROUTER_DIRECTIVES, DROPDOWN_DIRECTIVES, DocumentationList],
+    selector: 'living-documentation-app',
+    templateUrl: 'components/living_documentation_app/living-documentation-app.tpl.html'
+})
+export class LivingDocumentationApp {
+    searchText: string = '';
+    lastUpdatedOn: Observable<Date>;
 
     documentationFilter = DocumentationFilter;
 
-    constructor(private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
-        let modalInstance: ng.ui.bootstrap.IModalServiceInstance;
-
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
+        @Inject('version') public appVersion: string,
+        router: Router
+    ) {
         livingDocService.onStartProcessing = () => {
-            if (modalInstance) {
-                return;
-            }
-
-            modalInstance = $modal.open({ backdrop: 'static', keyboard: false, templateUrl: 'processing.html' });
+            // TODO:
         };
 
         let self = this;
@@ -37,17 +54,14 @@ class LivingDocumentationApp {
                     self.search();
                 }
             }
-
-            modalInstance.close();
-            modalInstance = null;
         };
 
-        this.livingDocService.documentationListObservable
+        this.lastUpdatedOn = this.livingDocService.documentationListObservable
             .map(l => _.find(l, doc => !!doc.lastUpdatedOn))
             .filter(d => d != null)
-            .subscribe(d => this.lastUpdatedOn = d.lastUpdatedOn);
+            .map(d => d.lastUpdatedOn);
 
-        this.searchText = livingDocService.searchText || '';
+        router.subscribe(() => this.searchText = this.livingDocService.searchText || '');
         livingDocService.startInitialization();
     }
 
@@ -64,8 +78,6 @@ class LivingDocumentationApp {
 
     get filter() { return this.livingDocService.filter; }
 
-    get searchPart() { return this.livingDocService.urlSearchPart; }
-
     search(): void {
         this.livingDocService.search(this.searchText);
     }
@@ -81,13 +93,8 @@ class LivingDocumentationApp {
     showOnly(filter: DocumentationFilter, initialize?: boolean): void {
         this.livingDocService.showOnly(filter, initialize);
     }
-}
 
-angular.module('livingDocumentation.app', [
-    'ui.bootstrap',
-    'livingDocumentation.services',
-    'livingDocumentation.directives',
-    'livingDocumentation.documentationList'
-])
-    .directive('livingDocumentationApp', wrapInjectionConstructor(LivingDocumentationAppDirective))
-    .controller('LivingDocumentationApp', LivingDocumentationApp);
+    addQueryParameters(params: any): any {
+        return this.livingDocService.addQueryParameters(params);
+    }
+}

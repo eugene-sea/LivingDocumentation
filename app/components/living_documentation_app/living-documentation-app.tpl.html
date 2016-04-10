@@ -7,7 +7,7 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="#/dashboard{{root.searchPart}}">Living Documentation</a>
+      <a class="navbar-brand" [routerLink]="['/Dashboard', addQueryParameters()]">Living Documentation</a>
     </div>
 
     <div class="collapse navbar-collapse navbar-ex1-collapse">
@@ -18,45 +18,37 @@
                 id="split-button"
                 type="button"
                 class="btn btn-default"
-                ng-click="root.clearFilter()"
-                ng-class="{active: root.filter == null}">
+                (click)="clearFilter()"
+                [class.active]="filter == null">
                 No Filter
               </button>
-              <button type="button" class="btn btn-default" dropdown-toggle>
+              <button type="button" class="btn btn-default dropdown-toggle" dropdownToggle>
                 <span class="caret"></span>
                 <span class="sr-only"></span>
               </button>
               <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
-                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.InProgress}">
-                  <a ng-click="root.showOnly(root.documentationFilter.InProgress)">In Progress</a>
+                <li role="menuitem" [class.active]="filter === documentationFilter.InProgress">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.InProgress)">In Progress</a>
                 </li>
-                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.Pending}">
-                  <a ng-click="root.showOnly(root.documentationFilter.Pending)">Pending</a>
+                <li role="menuitem" [class.active]="filter === documentationFilter.Pending">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Pending)">Pending</a>
                 </li>
-                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.Failing}">
-                  <a ng-click="root.showOnly(root.documentationFilter.Failing)">Failing</a>
+                <li role="menuitem" [class.active]="filter === documentationFilter.Failing">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Failing)">Failing</a>
                 </li>
-                <li role="menuitem" ng-class="{active: root.filter === root.documentationFilter.Manual}">
-                  <a ng-click="root.showOnly(root.documentationFilter.Manual)">Manual</a>
+                <li role="menuitem" [class.active]="filter === documentationFilter.Manual">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Manual)">Manual</a>
                 </li>
               </ul>
             </div>
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="Search text" ng-model="root.searchText">
+            <input type="text" class="form-control" placeholder="Search text" [(ngModel)]="searchText">
           </div>
-          <button
-            type="submit"
-            class="btn btn-primary"
-            ng-disabled="!root.isSearchEnabled"
-            ng-click="root.search()">
+          <button type="submit" class="btn btn-primary" [disabled]="!isSearchEnabled" (click)="search()">
             Search
           </button>
-          <button
-            type="button"
-            class="btn btn-warning"
-            ng-disabled="!root.isClearSearchEnabled"
-            ng-click="root.clearSearch()">
+          <button type="button" class="btn btn-warning" [disabled]="!isClearSearchEnabled" (click)="clearSearch()">
             Clear
           </button>
         </form>
@@ -64,39 +56,39 @@
   </div>
 </div>
 
-<div class="container" ng-hide="root.error">
+<div class="container" [hidden]="error">
   <div class="row">
     <div class="col-lg-4 vertical-pane">
-      <div ng-if="root.ready">
-        <documentation-list></documentation-list>
-      </div>
+      <documentation-list></documentation-list>
     </div>
-    <div class="col-lg-8 vertical-pane" ng-view></div>
+    <div class="col-lg-8 vertical-pane">
+      <router-outlet></router-outlet>
+    </div>
   </div>
 </div>
 
-<div class="alert alert-danger" role="alert" ng-cloak ng-show="root.error">
+<div class="alert alert-danger" role="alert" [hidden]="!error">
   <p>
-    <b>Error Occurred:</b>{{root.error}}
+    <b>Error Occurred:</b>{{error}}
   <p>
 </div>
 
 <div class="navbar navbar-default navbar-fixed-bottom">
   <div class="container">
-    <p ng-cloak class="navbar-text">Living Documentation Application: v<span app-version></span></p>
+    <p class="navbar-text">Living Documentation Application: v{{appVersion}}</p>
     <div class="collapse navbar-collapse navbar-ex1-collapse">
-      <p ng-cloak class="navbar-text navbar-right" ng-if="root.ready">
-        Last Updated On: {{root.lastUpdatedOn | date: 'medium'}}
+      <p class="navbar-text navbar-right" *ngIf="ready">
+        Last Updated On: {{lastUpdatedOn | async | date: 'medium'}}
       </p>
     </div>
   </div>
 </div>
 
-<script type="text/ng-template" id="processing.html">
+<!--<script type="text/ng-template" id="processing.html">
   <div class="modal-body">
     <h4 class="text-center">Loading data...</h4>
     <div class="progress progress-striped active">
       <div class="progress-bar" role="progressbar" style="width: 100%"></div>
     </div>
   </div>
-</script>
+</script>-->

@@ -1,14 +1,13 @@
 import { Component, Input, Inject, OnInit, forwardRef } from 'angular2/core';
+import { ROUTER_DIRECTIVES, Router } from 'angular2/router';
 import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
-
-import { adapter } from '../adapter';
 
 import { IFolder, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { HighlightPipe, SplitWordsFilter } from '../filters';
 
 @Component({
-    directives: [forwardRef(() => Folder)],
+    directives: [ROUTER_DIRECTIVES, forwardRef(() => Folder)],
     pipes: [HighlightPipe, SplitWordsFilter],
     selector: 'folder',
     templateUrl: 'components/documentation_list/folder.tpl.html'
@@ -20,7 +19,8 @@ class Folder implements OnInit {
     childrenFeatures: IFeature[];
 
     constructor(
-        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
+        private router: Router
     ) { }
 
     ngOnInit(): void {
@@ -29,16 +29,15 @@ class Folder implements OnInit {
             (a, b) => a.Feature.Name < b.Feature.Name ? -1 : a.Feature.Name > b.Feature.Name ? 1 : 0);
     }
 
-    getFeatureUrl(feature: IFeature): string {
-        return `#${this.getFeaturePath(feature)}${this.livingDocService.urlSearchPart}`;
+    getFeaturePath(feature: IFeature): any[] {
+        return ['/Feature', this.livingDocService.addQueryParameters({
+            documentationCode: this.documentationCode,
+            featureCode: feature.code
+        })];
     }
 
     isFeatureActive(feature: IFeature): boolean {
-        return this.livingDocService.isUrlActive(this.getFeaturePath(feature));
-    }
-
-    private getFeaturePath(feature: IFeature): string {
-        return `/feature/${this.documentationCode}/${feature.code}`;
+        return this.router.isRouteActive(this.router.generate(this.getFeaturePath(feature)));
     }
 }
 
@@ -47,7 +46,7 @@ class Folder implements OnInit {
     selector: 'documentation-list',
     templateUrl: 'components/documentation_list/documentation-list.tpl.html'
 })
-class DocumentationList {
+export class DocumentationList {
     constructor(
         @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
     ) { }
@@ -58,7 +57,3 @@ class DocumentationList {
         );
     }
 }
-
-angular.module('livingDocumentation.documentationList', ['livingDocumentation.services'])
-    .directive('documentationList', <ng.IDirectiveFactory>adapter.downgradeNg2Component(DocumentationList))
-    .directive('folder', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Folder));

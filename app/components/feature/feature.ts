@@ -1,8 +1,6 @@
 import { Component, Input, Inject, OnInit } from 'angular2/core';
 import { Observable } from 'rxjs/Rx';
 
-import { adapter } from '../adapter';
-
 import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { format } from '../utils';
@@ -67,7 +65,7 @@ class Scenario {
     selector: 'feature',
     templateUrl: 'components/feature/feature.tpl.html'
 })
-class Feature implements OnInit {
+export class Feature implements OnInit {
     @Input() documentationCode: string;
     @Input() featureCode: string;
     feature: Observable<IFeature[]>;
@@ -107,10 +105,3 @@ class Feature implements OnInit {
         }
     }
 }
-
-angular.module('livingDocumentation.feature', ['ngSanitize', 'livingDocumentation.services'])
-    .directive('feature', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Feature))
-    .directive('scenario', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Scenario))
-    .directive('featureTable', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Table))
-    .directive('tags', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Tags))
-    .directive('status', <ng.IDirectiveFactory>adapter.downgradeNg2Component(Status));

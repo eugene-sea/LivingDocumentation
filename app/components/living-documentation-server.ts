@@ -2,8 +2,6 @@ import { Injectable } from 'angular2/core';
 import { Http } from 'angular2/http';
 import { Observable } from 'rxjs/Rx';
 
-import { adapter } from './adapter';
-
 import {
     ILivingDocumentation, IFeature, ILivingDocumentationResourceDefinition, IFolder, IFeatures, IScenario
 } from '../domain-model';
@@ -39,7 +37,7 @@ export interface ILivingDocumentationServer {
 }
 
 @Injectable()
-class LivingDocumentationServer {
+export class LivingDocumentationServer {
     constructor(private http: Http) { }
 
     private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
@@ -221,10 +219,3 @@ class LivingDocumentationServer {
                 arr[2] || {}));
     }
 }
-
-adapter.addProvider(LivingDocumentationServer);
-
-angular.module('livingDocumentation.services.server', [])
-    .factory('livingDocumentationServer', adapter.downgradeNg2Provider(LivingDocumentationServer));
-
-adapter.upgradeNg1Provider('livingDocumentationServer');

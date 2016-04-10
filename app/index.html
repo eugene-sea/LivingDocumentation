@@ -9,22 +9,16 @@
   <title>Living Documentation</title>
 
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" media="screen">
-  <link rel="stylesheet" href="bower_components/angular/angular-csp.css" media="screen">
-  <link rel="stylesheet" href="bower_components/angular-bootstrap/ui-bootstrap-csp.css" media="screen">
   <link rel="stylesheet" href="app.css" media="screen">
 </head>
 <body>
-  <div living-documentation-app></div>
+  <living-documentation-app></living-documentation-app>
 
   <!-- IE required polyfills, in this exact order -->
   <script src="node_components/es6-shim/es6-shim.js"></script>
   <script src="node_components/systemjs/system-polyfills.src.js"></script>
   <script src="node_components/angular2/shims_for_IE.js"></script>
 
-  <script src="bower_components/angular/angular.min.js"></script>
-  <script src="bower_components/angular-route/angular-route.min.js"></script>
-  <script src="bower_components/angular-sanitize/angular-sanitize.min.js"></script>
-  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="bower_components/underscore/underscore-min.js"></script>
 
   <script src="node_components/angular2/angular2-polyfills.js"></script>
@@ -46,12 +40,23 @@
         'moment': { }
       }
     });
+
+    // Pipe issue workaround
+    System.register(
+      "angular2/src/core/change_detection/pipe_lifecycle_reflector",
+      [],
+      true,
+      function(require, exports, module) {
+        exports.implementsOnDestroy = function(pipe) { return pipe ? pipe.constructor.prototype.ngOnDestroy : false; }
+      }
+    );
   </script>
   <script src="node_components/rxjs/Rx.js"></script>
   <script src="node_components/angular2/angular2.dev.js"></script>
-  <script src="node_components/angular2/upgrade.dev.js"></script>
+  <script src="node_components/angular2/router.dev.js"></script>
   <script src="node_components/angular2/http.dev.js"></script>
   <script src="node_components/ng2-bootstrap/ng2-bootstrap.js"></script>
+  <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"></script>
   <script>
     System.import('app/app').catch(console.error.bind(console));
   </script>
