@@ -1,5 +1,6 @@
 import { Component, Inject } from 'angular2/core';
 import { RouteConfig, RouteParams, Router, ROUTER_DIRECTIVES } from 'angular2/router';
+import { FORM_DIRECTIVES, Control } from 'angular2/common';
 import { Observable } from 'rxjs/Rx';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
@@ -26,12 +27,13 @@ class FeatureContainer {
     { path: '/**', redirectTo: ['Dashboard'] }
 ])
 @Component({
-    directives: [ROUTER_DIRECTIVES, DROPDOWN_DIRECTIVES, DocumentationList],
+    directives: [ROUTER_DIRECTIVES, DROPDOWN_DIRECTIVES, FORM_DIRECTIVES, DocumentationList],
     selector: 'living-documentation-app',
     templateUrl: 'components/living_documentation_app/living-documentation-app.tpl.html'
 })
 export class LivingDocumentationApp {
     searchText: string = '';
+    searchControl = new Control();
     lastUpdatedOn: Observable<Date>;
 
     documentationFilter = DocumentationFilter;
@@ -48,10 +50,15 @@ export class LivingDocumentationApp {
                 if (!this.searchText) {
                     this.showOnly(null, true);
                 } else {
-                    this.search();
+                    this.search(this.searchText);
                 }
             }
         });
+
+        this.searchControl.valueChanges
+            .debounceTime(400)
+            .distinctUntilChanged()
+            .subscribe((s: string) => this.search(s));
 
         this.lastUpdatedOn = livingDocService.documentationListObservable
             .map(l => _.find(l, doc => !!doc.lastUpdatedOn))
@@ -65,16 +72,11 @@ export class LivingDocumentationApp {
     get error() { return this.livingDocService.error; }
     get ready() { return this.livingDocService.ready; }
 
-    get isSearchEnabled() { return !!this.searchText.trim(); }
     get isClearSearchEnabled() {
         return !!this.livingDocService.searchText || this.filter != null;
     }
 
     get filter() { return this.livingDocService.filter; }
-
-    search(): void {
-        this.livingDocService.search(this.searchText);
-    }
 
     clearSearch(): void {
         this.livingDocService.search(null);
@@ -90,5 +92,9 @@ export class LivingDocumentationApp {
 
     addQueryParameters(params: any): any {
         return this.livingDocService.addQueryParameters(params);
+    }
+
+    private search(text: string): void {
+        this.livingDocService.search(text);
     }
 }

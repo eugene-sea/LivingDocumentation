@@ -69,7 +69,7 @@ export class LivingDocumentationService implements ILivingDocumentationService {
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
         @Inject('search') private searchService: ISearchService,
         private router: Router
-    ) { }
+    ) { ; }
 
     get searchText(): string {
         return this.router.currentInstruction && this.router.currentInstruction.component.params['search'];
