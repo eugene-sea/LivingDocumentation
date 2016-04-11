@@ -41,32 +41,26 @@ export class LivingDocumentationApp {
         @Inject('version') public appVersion: string,
         router: Router
     ) {
-        livingDocService.onStartProcessing = () => {
-            // TODO:
-        };
-
-        let self = this;
-        livingDocService.onStopProcessing = () => {
-            if (self.isClearSearchEnabled) {
-                if (!self.searchText) {
-                    self.showOnly(null, true);
+        livingDocService.loading.subscribe(isLoading => {
+            if (isLoading) {
+                // TODO:
+            } else if (this.isClearSearchEnabled) {
+                if (!this.searchText) {
+                    this.showOnly(null, true);
                 } else {
-                    self.search();
+                    this.search();
                 }
             }
-        };
+        });
 
-        this.lastUpdatedOn = this.livingDocService.documentationListObservable
+        this.lastUpdatedOn = livingDocService.documentationListObservable
             .map(l => _.find(l, doc => !!doc.lastUpdatedOn))
             .filter(d => d != null)
             .map(d => d.lastUpdatedOn);
 
-        router.subscribe(() => this.searchText = this.livingDocService.searchText || '');
+        router.subscribe(() => this.searchText = livingDocService.searchText || '');
         livingDocService.startInitialization();
     }
-
-    get loading() { return this.livingDocService.loading; }
-    set loading(value) { ; }
 
     get error() { return this.livingDocService.error; }
     get ready() { return this.livingDocService.ready; }

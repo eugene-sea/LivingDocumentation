@@ -15,7 +15,7 @@ export enum DocumentationFilter {
 }
 
 export interface ILivingDocumentationService {
-    loading: boolean;
+    loading: Observable<boolean>;
 
     error: string;
 
@@ -31,10 +31,6 @@ export interface ILivingDocumentationService {
 
     filter: DocumentationFilter;
 
-    onStartProcessing: () => void;
-
-    onStopProcessing: () => void;
-
     startInitialization(): void;
 
     search(searchText: string): void;
@@ -48,7 +44,7 @@ const TIMEOUT = 200;
 
 @Injectable()
 export class LivingDocumentationService implements ILivingDocumentationService {
-    loading: boolean;
+    loading = new BehaviorSubject(true);
 
     error: string;
 
@@ -67,19 +63,13 @@ export class LivingDocumentationService implements ILivingDocumentationService {
 
     searchContext: ISearchContext = null;
 
-    onStartProcessing: () => void;
-
-    onStopProcessing: () => void;
-
     private currentSearchText = '';
 
     constructor(
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
         @Inject('search') private searchService: ISearchService,
         private router: Router
-    ) {
-        this.loading = true;
-    }
+    ) { }
 
     get searchText(): string {
         return this.router.currentInstruction && this.router.currentInstruction.component.params['search'];
@@ -92,10 +82,6 @@ export class LivingDocumentationService implements ILivingDocumentationService {
     }
 
     startInitialization(): void {
-        if (this.onStartProcessing) {
-            this.onStartProcessing();
-        }
-
         this.livingDocumentationServer.getResourceDefinitions()
             .concatMap(resources => Observable.zip(..._.map(resources, r => this.livingDocumentationServer.get(r))))
             .delay(TIMEOUT)
@@ -104,8 +90,7 @@ export class LivingDocumentationService implements ILivingDocumentationService {
                 this.documentationListObservable.next(docs);
                 this.initialize();
             },
-            err => this.onError(err),
-            () => this.onStopProcessing()
+            err => this.onError(err)
             );
     }
 
@@ -144,13 +129,13 @@ export class LivingDocumentationService implements ILivingDocumentationService {
     private onError(err: any) {
         console.error(err);
         this.error = err;
-        this.loading = false;
+        this.loading.next(false);
     }
 
     private initialize() {
-        this.loading = false;
         this.ready = true;
         this.filteredDocumentationList = this.documentationListObservable.value;
+        this.loading.next(false);
     }
 
     private updateQueryParameterAndNavigate(param: string, paramValue: string) {
