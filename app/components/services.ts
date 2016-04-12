@@ -37,7 +37,7 @@ export interface ILivingDocumentationService {
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void;
 
-    addQueryParameters(params: any): any;
+    addQueryParameters(params?: any): any;
 }
 
 const TIMEOUT = 200;
@@ -72,7 +72,8 @@ export class LivingDocumentationService implements ILivingDocumentationService {
     ) { ; }
 
     get searchText(): string {
-        return this.router.currentInstruction && this.router.currentInstruction.component.params['search'];
+        return this.router.currentInstruction &&
+            decodeURIComponent(this.router.currentInstruction.component.params['search'] || '');
     }
 
     get filter(): DocumentationFilter { return this.filterRaw && (<any>DocumentationFilter)[this.filterRaw]; }
@@ -113,10 +114,10 @@ export class LivingDocumentationService implements ILivingDocumentationService {
         }
     }
 
-    addQueryParameters(params: any): any {
+    addQueryParameters(params?: any): any {
         params = params || {};
         if (this.searchText) {
-            params.search = this.searchText;
+            params.search = encodeURIComponent(this.searchText);
         }
 
         if (this.filterRaw) {
@@ -141,7 +142,7 @@ export class LivingDocumentationService implements ILivingDocumentationService {
     private updateQueryParameterAndNavigate(param: string, paramValue: string) {
         const query = this.router.currentInstruction.toUrlQuery();
         const params = new URLSearchParams(query && query.slice(1));
-        params.set(param, paramValue);
+        params.set(param, encodeURIComponent(paramValue));
         this.router.navigateByUrl(`/${this.router.currentInstruction.urlPath}?${params.toString()}`)
             .then(() => this.searchCore());
     }
@@ -201,7 +202,7 @@ export class LivingDocumentationService implements ILivingDocumentationService {
         }
 
         if (!documentationCode || !featureCode) {
-            this.router.navigate(['/Dashboard', this.addQueryParameters({})]);
+            this.router.navigate(['/Dashboard', this.addQueryParameters()]);
         } else {
             this.router.navigate(['/Feature', this.addQueryParameters({
                 documentationCode: documentationCode,
