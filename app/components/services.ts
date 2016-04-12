@@ -43,7 +43,7 @@ export interface ILivingDocumentationService {
 const TIMEOUT = 200;
 
 @Injectable()
-export class LivingDocumentationService implements ILivingDocumentationService {
+export default class LivingDocumentationService implements ILivingDocumentationService {
     loading = new BehaviorSubject(true);
 
     error: string;

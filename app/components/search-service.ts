@@ -197,7 +197,7 @@ function addFeatures(folder: IFolder, features: IFeatures) {
 }
 
 @Injectable()
-export class SearchService implements ISearchService {
+export default class SearchService implements ISearchService {
     search(searchText: string, documentationList: ILivingDocumentation[]):
         { documentationList: ILivingDocumentation[]; searchContext: ISearchContext; } {
         let searchContext = getSearchContext(searchText);

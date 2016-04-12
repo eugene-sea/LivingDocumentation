@@ -6,9 +6,9 @@ import { HTTP_PROVIDERS } from 'angular2/http';
 import 'rxjs/Rx';
 
 import { LivingDocumentationApp } from './components/living_documentation_app/living-documentation-app';
-import { SearchService } from './components/search-service';
-import { LivingDocumentationServer } from './components/living-documentation-server';
-import { LivingDocumentationService } from './components/services';
+import SearchService from './components/search-service';
+import LivingDocumentationServer from './components/living-documentation-server';
+import LivingDocumentationService from './components/services';
 
 bootstrap(LivingDocumentationApp, [
     HTTP_PROVIDERS,

@@ -37,7 +37,7 @@ export interface ILivingDocumentationServer {
 }
 
 @Injectable()
-export class LivingDocumentationServer {
+export default class LivingDocumentationServer {
     constructor(private http: Http) { }
 
     private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
