@@ -1,6 +1,6 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-resource.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+import { Injectable } from 'angular2/core';
+import { Http } from 'angular2/http';
+import { Observable } from 'rxjs/Rx';
 
 import {
     ILivingDocumentation, IFeature, ILivingDocumentationResourceDefinition, IFolder, IFeatures, IScenario
@@ -31,49 +31,14 @@ interface IFeaturesExternalResults {
     [feature: string]: { [scenario: string]: string; };
 }
 
-interface ILivingDocumentationResourceDefinitionResourceClass extends
-    angular.resource.IResourceClass<ng.resource.IResource<ILivingDocumentationResourceDefinition[]>> {
-}
-
-interface IFeaturesSourceResourceClass extends
-    angular.resource.IResourceClass<ng.resource.IResource<IFeaturesSource>> {
-}
-
-interface IFeaturesTestsSourceResourceClass extends
-    angular.resource.IResourceClass<ng.resource.IResource<IFeaturesTestsSource>> {
-}
-
-interface IFeaturesExternalResultsResourceClass extends
-    angular.resource.IResourceClass<ng.resource.IResource<IFeaturesExternalResults>> {
-}
-
 export interface ILivingDocumentationServer {
-    getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]>;
-    get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation>;
+    getResourceDefinitions(): Observable<ILivingDocumentationResourceDefinition[]>;
+    get(resource: ILivingDocumentationResourceDefinition): Observable<ILivingDocumentation>;
 }
 
-class LivingDocumentationServer {
-    private featuresSourceResourceClass: IFeaturesSourceResourceClass;
-    private featuresTestsSourceResourceClass: IFeaturesTestsSourceResourceClass;
-    private featuresExternalResultsResourceClass: IFeaturesExternalResultsResourceClass;
-    private livingDocResDefResourceClass: ILivingDocumentationResourceDefinitionResourceClass;
-
-    constructor($resource: ng.resource.IResourceService, private $q: ng.IQService) {
-        this.featuresSourceResourceClass = $resource<IFeaturesSource, IFeaturesSourceResourceClass>(
-            'data/:resource', null, { get: { method: 'GET' } });
-
-        this.featuresTestsSourceResourceClass = $resource<IFeaturesTestsSource, IFeaturesTestsSourceResourceClass>(
-            'data/:resource', null, { get: { method: 'GET' } });
-
-        this.featuresExternalResultsResourceClass =
-            $resource<IFeaturesExternalResults, IFeaturesExternalResultsResourceClass>(
-                'data/:resource', null, { get: { method: 'GET' } });
-
-        this.livingDocResDefResourceClass =
-            $resource<
-                ILivingDocumentationResourceDefinition[], ILivingDocumentationResourceDefinitionResourceClass>(
-                'data/:definition', null, { get: { isArray: true, method: 'GET' } });
-    }
+@Injectable()
+export default class LivingDocumentationServer {
+    constructor(private http: Http) { }
 
     private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
         let res = _.find(parent.children, c => c.name === childName);
@@ -139,7 +104,7 @@ class LivingDocumentationServer {
             }
 
             if (featuresTestsMap) {
-                LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUri);
+                LivingDocumentationServer.addTests(f, featuresTestsMap[f.RelativeFolder], resource.testUrl);
             }
 
             LivingDocumentationServer.getSubfolder(root, folders).features.push(f);
@@ -230,23 +195,22 @@ class LivingDocumentationServer {
         feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
     }
 
-    getResourceDefinitions(): ng.IPromise<ILivingDocumentationResourceDefinition[]> {
-        return this.livingDocResDefResourceClass.get({ definition: 'configuration.json' }).$promise;
+    getResourceDefinitions(): Observable<ILivingDocumentationResourceDefinition[]> {
+        return this.http.get('data/configuration.json').map(res => res.json());
     }
 
-    get(resource: ILivingDocumentationResourceDefinition): ng.IPromise<ILivingDocumentation> {
-        let promiseFeatures = this.featuresSourceResourceClass.get(
-            { resource: resource.featuresResource }).$promise;
+    get(resource: ILivingDocumentationResourceDefinition): Observable<ILivingDocumentation> {
+        const features = this.http.get(`data/${resource.featuresResource}`).map(res => res.json());
 
-        let promiseTests = !resource.testsResources
-            ? this.$q.when(null)
-            : this.featuresTestsSourceResourceClass.get({ resource: resource.testsResources }).$promise;
+        const tests = !resource.testsResources
+            ? Observable.of(null)
+            : this.http.get(`data/${resource.testsResources}`).map(res => res.json());
 
-        let promiseExternalResults = !resource.externalTestResults
-            ? this.$q.when(null)
-            : this.featuresExternalResultsResourceClass.get({ resource: resource.externalTestResults }).$promise;
+        const externalResults = !resource.externalTestResults
+            ? Observable.of(null)
+            : this.http.get(`data/${resource.externalTestResults}`).map(res => res.json());
 
-        return this.$q.all([promiseFeatures, promiseTests, promiseExternalResults]).then(
+        return Observable.zip(features, tests, externalResults).map(
             (arr: any[]) => LivingDocumentationServer.parseFeatures(
                 resource,
                 arr[0].Features,
@@ -255,6 +219,3 @@ class LivingDocumentationServer {
                 arr[2] || {}));
     }
 }
-
-angular.module('livingDocumentation.services.server', ['ngResource'])
-    .service('livingDocumentationServer', LivingDocumentationServer);

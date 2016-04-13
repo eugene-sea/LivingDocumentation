@@ -5,21 +5,14 @@
         "removeComments": false,
         "preserveConstEnums": true,
         "module": "system",
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "noEmit": true
     },
-    "files": [
-        "domain-model.ts",
-        "components/utils.ts",
-        "components/recursion-helper.ts",
-        "components/search-service.ts",
-        "components/living-documentation-server.ts",
-        "components/services.ts",
-        "components/directives.ts",
-        "components/filters.ts",
-        "components/dashboard/dashboard.ts",
-        "components/documentation_list/documentation-list.ts",
-        "components/feature/feature.ts",
-        "components/living_documentation_app/living-documentation-app.ts",
-        "app.ts"
+    "exclude": [
+        "node_modules",
+        "typings/main",
+        "typings/main.d.ts"
     ]
 }

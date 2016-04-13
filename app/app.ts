@@ -1,41 +1,21 @@
-/// <reference path="../typings/angularjs/angular.d.ts" />
-/// <reference path="../typings/angularjs/angular-route.d.ts" />
+import { provide } from 'angular2/core';
+import { bootstrap } from 'angular2/platform/browser';
+import { LocationStrategy, HashLocationStrategy, ROUTER_PROVIDERS } from 'angular2/router';
+import { HTTP_PROVIDERS } from 'angular2/http';
 
-import { ILivingDocumentationService } from './components/services';
+import 'rxjs/Rx';
 
-import './components/living_documentation_app/living-documentation-app';
-import './components/dashboard/dashboard';
-import './components/documentation_list/documentation-list';
-import './components/feature/feature';
-import './components/directives';
-import './components/filters';
+import { LivingDocumentationApp } from './components/living_documentation_app/living-documentation-app';
+import SearchService from './components/search-service';
+import LivingDocumentationServer from './components/living-documentation-server';
+import LivingDocumentationService from './components/services';
 
-angular.module('livingDocumentation', [
-    'ngRoute',
-    'livingDocumentation.app',
-    'livingDocumentation.controllers.dashboard',
-    'livingDocumentation.feature'
-]).config(['$routeProvider', ($routeProvider: angular.route.IRouteProvider) => {
-    const resolve: { [key: string]: any; } = {
-        livingDocumentationServiceReady: [
-            'livingDocumentationService',
-            (service: ILivingDocumentationService) => service.resolve
-        ]
-    };
-
-    $routeProvider.when('/dashboard', {
-        resolve: resolve,
-        template: '<div dashboard></div>'
-    });
-
-    $routeProvider.when('/feature/:documentationCode/:featureCode', {
-        resolve: resolve,
-        template: ($routeParams: angular.route.IRouteParamsService) =>
-            `<div feature
-                feature-code="${$routeParams['featureCode']}"
-                documentation-code="${$routeParams['documentationCode']}">
-             </div>`
-    });
-
-    $routeProvider.otherwise({ redirectTo: '/dashboard' });
-}]);
+bootstrap(LivingDocumentationApp, [
+    HTTP_PROVIDERS,
+    ROUTER_PROVIDERS,
+    provide(LocationStrategy, { useClass: HashLocationStrategy }),
+    provide('version', { useValue: '0.9' }),
+    provide('search', { useClass: SearchService }),
+    provide('livingDocumentationServer', { useClass: LivingDocumentationServer }),
+    provide('livingDocumentationService', { useClass: LivingDocumentationService })
+]);

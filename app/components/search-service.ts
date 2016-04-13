@@ -1,5 +1,4 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+import { Injectable } from 'angular2/core';
 
 import { ILivingDocumentation, IFolder, IFeatures, IFeature, IScenario, IStep, ITable } from '../domain-model';
 
@@ -197,7 +196,8 @@ function addFeatures(folder: IFolder, features: IFeatures) {
     _.each(_.sortBy(folder.features, f => f.Feature.Name), f => features[f.code] = f);
 }
 
-class SearchService implements ISearchService {
+@Injectable()
+export default class SearchService implements ISearchService {
     search(searchText: string, documentationList: ILivingDocumentation[]):
         { documentationList: ILivingDocumentation[]; searchContext: ISearchContext; } {
         let searchContext = getSearchContext(searchText);
@@ -210,6 +210,3 @@ class SearchService implements ISearchService {
         };
     }
 }
-
-angular.module('livingDocumentation.services.search', [])
-    .service('search', SearchService);

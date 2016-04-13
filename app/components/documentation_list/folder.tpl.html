@@ -1,27 +1,24 @@
-﻿<i ng-if="!ctrl.folder.isRoot" ng-bind-html="ctrl.folder.name | splitWords | highlight"></i>
+﻿<i *ngIf="!folder.isRoot" [innerHTML]="folder.name | splitWords | highlight"></i>
 
-<div ng-class="{'folder-indent': !ctrl.folder.isRoot}">
-  <div ng-repeat="child in ctrl.folder.children | orderBy: 'name'">
-    <div folder="child" documentation-code="ctrl.documentationCode"></div>
+<div [class.folder-indent]="!folder.isRoot">
+  <div *ngFor="#child of childrenFolders">
+    <folder [folder]="child" [documentationCode]="documentationCode"></folder>
   </div>
 </div>
 
-<div 
-  class="folder-item-padding" 
-  ng-class="{'folder-indent': !ctrl.folder.isRoot}" 
-  ng-repeat="feature in ctrl.folder.features | orderBy: 'Feature.Name'"">
-  <a 
+<div class="folder-item-padding" [class.folder-indent]="!folder.isRoot" *ngFor="#feature of childrenFeatures">
+  <a
     class="inactive-feature"
-    href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}{{ctrl.searchPart}}"
-    is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}"
-    ng-bind-html="feature.Feature.Name | highlight">
+    [routerLink]="getFeaturePath(feature)"
+    [class.active]="isFeatureActive(feature)"
+    [innerHTML]="feature.Feature.Name | highlight">
   </a>
   <b>
-    <a 
+    <a
       class="active-feature"
-      href="#/feature/{{ctrl.documentationCode}}/{{feature.code}}{{ctrl.searchPart}}"
-      is-active-last="/{{ctrl.documentationCode}}/{{feature.code}}"
-      ng-bind-html="feature.Feature.Name | highlight">
+      [routerLink]="getFeaturePath(feature)"
+      [class.active]="isFeatureActive(feature)"
+      [innerHTML]="feature.Feature.Name | highlight">
     </a>
   </b>
 </div>

@@ -1,15 +1,17 @@
-﻿<table style="width: 100%">
+﻿<div *ngFor="#feature of feature | async">
+
+<table style="width: 100%">
   <tr>
-    <td><h3 ng-bind-html="ctrl.feature.Feature.Name | highlight"></h3></td>
+    <td><h3 [innerHTML]="feature.Feature.Name | highlight"></h3></td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
       <h3>
-        <div status="ctrl.feature.Feature.Result" is-manual="ctrl.feature.isManual"></div>
+        <status [status]="feature.Feature.Result" [isManual]="feature.isManual"></status>
       </h3>
     </td>
-    <td class="no-stretch" ng-if="ctrl.featureEditUri">&nbsp;</td>
+    <td class="no-stretch" *ngIf="featureEditUrl">&nbsp;</td>
     <td class="no-stretch">
-      <a href="{{ctrl.featureEditUri}}" target="_blank" ng-if="ctrl.featureEditUri">
+      <a [href]="featureEditUrl" target="_blank" *ngIf="featureEditUrl">
         <h3>
           <span class="glyphicon glyphicon-edit"></span>
         </h3>
@@ -17,28 +19,30 @@
     </td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
-      <a ng-click="ctrl.isExpanded = !ctrl.isExpanded">
+      <a (click)="isExpanded = !isExpanded">
         <h3>
-          <span ng-if="ctrl.isExpanded" class="glyphicon glyphicon-collapse-up"></span>
-          <span ng-if="!ctrl.isExpanded" class="glyphicon glyphicon-collapse-down"></span>
+          <span *ngIf="isExpanded" class="glyphicon glyphicon-collapse-up"></span>
+          <span *ngIf="!isExpanded" class="glyphicon glyphicon-collapse-down"></span>
         </h3>
       </a>
     </td>
   </tr>
 </table>
 
-<p><span tags="ctrl.feature.Feature.Tags" documentation="ctrl.documentation"></span></p>
+<p><tags [tags]="feature.Feature.Tags" [documentation]="documentation"></tags></p>
 
-<p><i ng-bind-html="ctrl.feature.Feature.Description | highlight | newline"></i></p>
+<p><i [innerHTML]="feature.Feature.Description | highlight | newline"></i></p>
 
-<div ng-if="ctrl.feature.Feature.Background" class="panel panel-default">
+<div *ngIf="feature.Feature.Background" class="panel panel-default">
   <div class="panel-body">
-    <div scenario="ctrl.feature.Feature.Background" documentation="ctrl.documentation"></div>
+    <scenario [scenario]="feature.Feature.Background" [documentation]="documentation"></scenario>
   </div>
 </div>
 
-<div class="panel panel-default" ng-repeat="scenario in ctrl.feature.Feature.FeatureElements">
+<div class="panel panel-default" *ngFor="#scenario of feature.Feature.FeatureElements">
   <div class="panel-body">
-    <div scenario="scenario" documentation="ctrl.documentation"></div>
+    <scenario [scenario]="scenario" [documentation]="documentation"></scenario>
   </div>
 </div>
+
+<div>

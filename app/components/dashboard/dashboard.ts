@@ -1,37 +1,8 @@
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
+import { Component, Input, OnInit, Inject } from 'angular2/core';
+import { Observable } from 'rxjs/Rx';
 
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
-import { wrapInjectionConstructor } from '../utils';
-
-class DashboardDirective implements ng.IDirective {
-    restrict = 'A';
-    controller = 'Dashboard';
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/dashboard/dashboard.html';
-}
-
-class Dashboard {
-    static $inject: string[] = ['livingDocumentationService'];
-
-    documentationList: ILivingDocumentation[];
-
-    constructor(livingDocumentationService: ILivingDocumentationService) {
-        this.documentationList = livingDocumentationService.documentationList;
-    }
-}
-
-class DocumentationDashboardDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentation: '='
-    };
-    controller = DocumentationDashboard;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/dashboard/documentation-dashboard.html';
-}
 
 interface IStatistics {
     passed: number;
@@ -41,22 +12,26 @@ interface IStatistics {
     total: number;
 }
 
-class DocumentationDashboard {
-    documentation: ILivingDocumentation;
+@Component({
+    selector: 'statistics',
+    templateUrl: 'components/dashboard/statistics.html'
+})
+class Statistics {
+    @Input() name: string;
+    @Input() statistics: IStatistics;
+}
+
+@Component({
+    directives: [Statistics],
+    selector: 'documentation-dashboard',
+    templateUrl: 'components/dashboard/documentation-dashboard.html'
+})
+class DocumentationDashboard implements OnInit {
+    @Input() documentation: ILivingDocumentation;
     iterationFeatures = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     iterationScenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     features = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     scenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
-
-    constructor() {
-        DocumentationDashboard.processFeatures(
-            this.documentation.features,
-            DocumentationDashboard.isIteration,
-            this.iterationFeatures,
-            this.iterationScenarios);
-        DocumentationDashboard.processFeatures(
-            this.documentation.features, _ => true, this.features, this.scenarios);
-    }
 
     private static isIteration(item: { Tags: string[]; }): boolean {
         return _.indexOf(item.Tags, '@iteration') !== -1;
@@ -100,24 +75,29 @@ class DocumentationDashboard {
 
         ++statistics.passed;
     }
+
+    ngOnInit(): void {
+        DocumentationDashboard.processFeatures(
+            this.documentation.features,
+            DocumentationDashboard.isIteration,
+            this.iterationFeatures,
+            this.iterationScenarios);
+        DocumentationDashboard.processFeatures(
+            this.documentation.features, _ => true, this.features, this.scenarios);
+    }
 }
 
-class StatisticsDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        name: '@',
-        statistics: '='
-    };
-    controller = Statistics;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/dashboard/statistics.html';
+@Component({
+    directives: [DocumentationDashboard],
+    selector: 'dashboard',
+    templateUrl: 'components/dashboard/dashboard.html'
+})
+export class Dashboard {
+    documentationList: Observable<ILivingDocumentation[]>;
+
+    constructor(
+        @Inject('livingDocumentationService') livingDocumentationService: ILivingDocumentationService
+    ) {
+        this.documentationList = livingDocumentationService.documentationListObservable;
+    }
 }
-
-class Statistics { }
-
-angular.module('livingDocumentation.controllers.dashboard', [])
-    .controller('Dashboard', Dashboard)
-    .directive('dashboard', wrapInjectionConstructor(DashboardDirective))
-    .directive('documentationDashboard', wrapInjectionConstructor(DocumentationDashboardDirective))
-    .directive('statistics', wrapInjectionConstructor(StatisticsDirective));

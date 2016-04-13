@@ -1,123 +1,107 @@
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../../typings/angularjs/angular-route.d.ts" />
-/// <reference path="../../../typings/underscore/underscore.d.ts" />
+import { Component, Input, Inject, OnInit } from 'angular2/core';
+import { Observable } from 'rxjs/Rx';
 
-import { ILivingDocumentation, IFeature } from '../../domain-model';
+import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
-import { wrapInjectionConstructor, format } from '../utils';
+import { format } from '../utils';
+import { HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../filters';
 
-class FeatureDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentationCode: '@',
-        featureCode: '@'
-    };
-    controller = 'Feature';
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/feature.tpl.html';
+@Component({
+    pipes: [HighlightPipe, WidenPipe, ScenarioOutlinePlaceholderPipe],
+    selector: 'feature-table',
+    templateUrl: 'components/feature/table.tpl.html'
+})
+class Table {
+    @Input() table: ITable;
+    @Input() tests: string[];
 }
 
-class Feature {
-    static $inject: string[] = ['livingDocumentationService'];
+@Component({
+    pipes: [HighlightTagPipe],
+    selector: 'tags',
+    templateUrl: 'components/feature/tags.tpl.html'
+})
+class Tags implements OnInit {
+    @Input() documentation: ILivingDocumentation;
+    @Input() tags: string[];
 
-    featureCode: string;
-    documentationCode: string;
-    documentation: ILivingDocumentation;
-    feature: IFeature;
-    featureEditUri: string;
+    tagsWithIssueUrl: { issueUrl: string; tag: string; }[];
 
-    constructor(livingDocumentationService: ILivingDocumentationService) {
-        this.documentation = _.find(
-            livingDocumentationService.filteredDocumentationList,
-            doc => doc.definition.code === this.documentationCode);
-
-        this.feature = this.documentation.features[this.featureCode];
-        if (this.documentation.definition.featureEditUri) {
-            this.featureEditUri = format(
-                this.documentation.definition.featureEditUri, this.feature.RelativeFolder.replace(/\\/g, '/'));
-        }
+    ngOnInit(): void {
+        this.tagsWithIssueUrl = this.tags.map(t => {
+            return { issueUrl: this.getIssueTrackingUrl(t), tag: t };
+        });
     }
 
-    get isExpanded(): boolean { return this.feature.isExpanded; }
-    set isExpanded(value: boolean) {
-        this.feature.isExpanded = value;
-        _.each(this.feature.Feature.FeatureElements, s => s.isExpanded = value);
-        if (this.feature.Feature.Background) {
-            this.feature.Feature.Background.isExpanded = value;
-        }
-    }
-}
-
-class ScenarioDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentation: '=',
-        scenario: '='
-    };
-    controller = Scenario;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/scenario.tpl.html';
-}
-
-class Scenario { }
-
-class TableDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        table: '=',
-        tests: '='
-    };
-    controller = Table;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/table.tpl.html';
-}
-
-class Table { }
-
-class TagsDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        documentation: '=',
-        tags: '='
-    };
-    controller = Tags;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/tags.tpl.html';
-}
-
-class Tags {
-    documentation: ILivingDocumentation;
-
-    getIssueTrackingUri(tag: string): string {
+    private getIssueTrackingUrl(tag: string): string {
         const match = new RegExp(this.documentation.definition.issueTrackingRegExp, 'i').exec(tag);
-        return match === null ? null : format(this.documentation.definition.issueTrackingUri, ...match);
+        return match === null ? null : format(this.documentation.definition.issueTrackingUrl, ...match);
     }
 }
 
-class StatusDirective implements ng.IDirective {
-    restrict = 'A';
-    scope = {
-        isManual: '=',
-        status: '='
-    };
-    controller = Status;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/feature/status.tpl.html';
+@Component({
+    selector: 'status',
+    templateUrl: 'components/feature/status.tpl.html'
+})
+class Status {
+    @Input() isManual: boolean;
+    @Input() status: IResult;
 }
 
-class Status { }
+@Component({
+    directives: [Status, Tags, Table],
+    pipes: [HighlightPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe],
+    selector: 'scenario',
+    templateUrl: 'components/feature/scenario.tpl.html'
+})
+class Scenario {
+    @Input() documentation: ILivingDocumentation;
+    @Input() scenario: IScenario;
+}
 
-angular.module('livingDocumentation.feature', [
-    'ngSanitize', 'livingDocumentation.services', 'livingDocumentation.filters'
-])
-    .directive('feature', wrapInjectionConstructor(FeatureDirective))
-    .controller('Feature', Feature)
-    .directive('scenario', wrapInjectionConstructor(ScenarioDirective))
-    .directive('table', wrapInjectionConstructor(TableDirective))
-    .directive('tags', wrapInjectionConstructor(TagsDirective))
-    .directive('status', wrapInjectionConstructor(StatusDirective));
+@Component({
+    directives: [Status, Tags, Scenario],
+    pipes: [HighlightPipe, NewLinePipe],
+    selector: 'feature',
+    templateUrl: 'components/feature/feature.tpl.html'
+})
+export class Feature implements OnInit {
+    @Input() documentationCode: string;
+    @Input() featureCode: string;
+    feature: Observable<IFeature[]>;
+    documentation: ILivingDocumentation;
+    featureEditUrl: string;
+
+    private featureInner: IFeature;
+
+    constructor(
+        @Inject('livingDocumentationService') private livingDocumentationService: ILivingDocumentationService
+    ) { }
+
+    ngOnInit(): void {
+        this.feature = this.livingDocumentationService.filteredDocumentationListObservable
+            .map(l => _.find(l, doc => doc.definition.code === this.documentationCode))
+            .filter(d => d != null)
+            .map(d => {
+                this.documentation = d;
+                this.featureInner = this.documentation.features[this.featureCode];
+                if (this.documentation.definition.featureEditUrl) {
+                    this.featureEditUrl = format(
+                        this.documentation.definition.featureEditUrl,
+                        this.featureInner.RelativeFolder.replace(/\\/g, '/')
+                    );
+                }
+
+                return [this.featureInner];
+            });
+    }
+
+    get isExpanded(): boolean { return this.featureInner.isExpanded; }
+    set isExpanded(value: boolean) {
+        this.featureInner.isExpanded = value;
+        _.each(this.featureInner.Feature.FeatureElements, s => s.isExpanded = value);
+        if (this.featureInner.Feature.Background) {
+            this.featureInner.Feature.Background.isExpanded = value;
+        }
+    }
+}

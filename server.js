@@ -1,5 +1,3 @@
-/// <reference path="typings/node/node.d.ts" />
-/// <reference path="typings/express/express.d.ts" />
 "use strict";
 require('source-map-support').install();
 var express = require('express');
@@ -10,7 +8,8 @@ var app = express();
 app.set('port', config.port.toString());
 var logger = require('morgan');
 app.use(logger('dev'));
-app.use(express.static(path.join(__dirname, 'app')));
+app.use(express.static(path.join(__dirname, '.')));
+app.get('/', function (req, res) { return res.redirect('/app/'); });
 app.use(function (err, req, res, next) {
     console.error(err);
     next(err);

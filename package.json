@@ -7,8 +7,8 @@
     "build": "./scripts/build.sh",
     "start": "node server.js",
     "test": "./node_modules/.bin/karma start ./test/karma.conf.js",
-    "update-components": "bower update && tsd update --save --overwrite && npm update",
-    "updates": "bower ls && npm outdated"
+    "update-components": "npm update",
+    "updates": "npm outdated"
   },
   "repository": {
     "type": "git",
@@ -25,19 +25,25 @@
   },
   "homepage": "https://github.com/eugene-sea/LivingDocumentation#readme",
   "devDependencies": {
+    "jasmine-core": "~2.4.1",
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
-    "karma-mocha": "^0.2.0",
-    "karma-systemjs": "^0.13.0",
-    "mocha": "^2.2.5",
-    "should": "^7.0.4",
-    "source-map-support": "^0.3.0",
-    "tslint": "^3.0.0"
+    "karma-jasmine": "~0.3.8",
+    "tslint": "^3.0.0",
+    "typings": "^0.7.11"
   },
   "dependencies": {
+    "angular2": "^2.0.0-beta.13",
+    "es6-shim": "^0.35.0",
     "express": "^4.12.4",
     "morgan": "^1.5.3",
+    "bootstrap": "^3.3.6",
+    "ng2-bootstrap": "^1.0.10",
+    "reflect-metadata": "^0.1.2",
+    "rxjs": "^5.0.0-beta.2",
     "systemjs": "^0.19.24",
-    "typescript": "^1.8.9"
+    "typescript": "^1.8.9",
+    "underscore": "1.8.3",
+    "source-map-support": "^0.4.0"
   }
 }

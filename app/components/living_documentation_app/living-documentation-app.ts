@@ -1,74 +1,81 @@
-/// <reference path="../../../typings/angular-ui-bootstrap/angular-ui-bootstrap.d.ts" />
+import { Component, Inject } from 'angular2/core';
+import { RouteConfig, RouteParams, Router, ROUTER_DIRECTIVES } from 'angular2/router';
+import { FORM_DIRECTIVES, Control } from 'angular2/common';
+import { Observable } from 'rxjs/Rx';
+import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { ILivingDocumentationService, DocumentationFilter } from '../services';
-import { wrapInjectionConstructor } from '../utils';
+import { DocumentationList } from '../documentation_list/documentation-list';
+import { Dashboard } from '../dashboard/dashboard';
+import { Feature } from '../feature/feature';
 
-class LivingDocumentationAppDirective implements ng.IDirective {
-    restrict = 'A';
-    controller = 'LivingDocumentationApp';
-    controllerAs = 'root';
-    bindToController = true;
-    templateUrl = 'components/living_documentation_app/living-documentation-app.tpl.html';
+@Component({
+    directives: [Feature],
+    selector: 'feature-container',
+    template: `
+        <feature [documentationCode]="params.get('documentationCode')" [featureCode]="params.get('featureCode')">
+        </feature>
+    `
+})
+class FeatureContainer {
+    constructor(public params: RouteParams) { ; }
 }
 
-class LivingDocumentationApp {
-    static $inject: string[] = ['livingDocumentationService', '$modal'];
-
-    searchText: string;
+@RouteConfig([
+    { component: Dashboard, name: 'Dashboard', path: '/dashboard' },
+    { component: FeatureContainer, name: 'Feature', path: '/feature/:documentationCode/:featureCode' },
+    { path: '/**', redirectTo: ['Dashboard'] }
+])
+@Component({
+    directives: [ROUTER_DIRECTIVES, DROPDOWN_DIRECTIVES, FORM_DIRECTIVES, DocumentationList],
+    selector: 'living-documentation-app',
+    templateUrl: 'components/living_documentation_app/living-documentation-app.tpl.html'
+})
+export class LivingDocumentationApp {
+    searchText: string = '';
+    searchControl = new Control();
+    lastUpdatedOn: Observable<Date>;
 
     documentationFilter = DocumentationFilter;
 
-    constructor(private livingDocService: ILivingDocumentationService, $modal: ng.ui.bootstrap.IModalService) {
-        let modalInstance: ng.ui.bootstrap.IModalServiceInstance;
-
-        livingDocService.onStartProcessing = () => {
-            if (modalInstance) {
-                return;
-            }
-
-            modalInstance = $modal.open({ backdrop: 'static', keyboard: false, templateUrl: 'processing.html' });
-        };
-
-        let _this = this;
-        livingDocService.onStopProcessing = () => {
-            if (_this.isClearSearchEnabled) {
-                if (!_this.searchText) {
-                    _this.showOnly(null, true);
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
+        @Inject('version') public appVersion: string,
+        router: Router
+    ) {
+        livingDocService.loading.subscribe(isLoading => {
+            if (isLoading) {
+                // TODO:
+            } else if (this.isClearSearchEnabled) {
+                if (!this.searchText) {
+                    this.showOnly(null, true);
                 } else {
-                    _this.search();
+                    this.search(this.searchText);
                 }
             }
+        });
 
-            modalInstance.close();
-            modalInstance = null;
-        };
+        this.searchControl.valueChanges
+            .debounceTime(400)
+            .distinctUntilChanged()
+            .subscribe((s: string) => this.search(s));
 
-        this.searchText = livingDocService.searchText || '';
+        this.lastUpdatedOn = livingDocService.documentationListObservable
+            .map(l => _.find(l, doc => !!doc.lastUpdatedOn))
+            .filter(d => d != null)
+            .map(d => d.lastUpdatedOn);
+
+        router.subscribe(() => this.searchText = livingDocService.searchText || '');
         livingDocService.startInitialization();
     }
 
-    get loading() { return this.livingDocService.loading; }
-    set loading(value) { ; }
-
     get error() { return this.livingDocService.error; }
-    get ready() { return this.livingDocService.ready; }
 
-    get isSearchEnabled() { return !!this.searchText.trim(); }
     get isClearSearchEnabled() {
         return !!this.livingDocService.searchText || this.filter != null;
     }
 
     get filter() { return this.livingDocService.filter; }
-
-    get lastUpdatedOn() {
-        return _.find(this.livingDocService.documentationList, doc => !!doc.lastUpdatedOn).lastUpdatedOn;
-    }
-
-    get searchPart() { return this.livingDocService.urlSearchPart; }
-
-    search(): void {
-        this.livingDocService.search(this.searchText);
-    }
 
     clearSearch(): void {
         this.livingDocService.search(null);
@@ -81,13 +88,12 @@ class LivingDocumentationApp {
     showOnly(filter: DocumentationFilter, initialize?: boolean): void {
         this.livingDocService.showOnly(filter, initialize);
     }
-}
 
-angular.module('livingDocumentation.app', [
-    'ui.bootstrap',
-    'livingDocumentation.services',
-    'livingDocumentation.directives',
-    'livingDocumentation.documentationList'
-])
-    .directive('livingDocumentationApp', wrapInjectionConstructor(LivingDocumentationAppDirective))
-    .controller('LivingDocumentationApp', LivingDocumentationApp);
+    addQueryParameters(params: any): any {
+        return this.livingDocService.addQueryParameters(params);
+    }
+
+    private search(text: string): void {
+        this.livingDocService.search(text);
+    }
+}

@@ -6,10 +6,10 @@
         "sortOrder": 1,
         "featuresResource": "test-data.json",
         "issueTrackingRegExp": "@(JMS-\\d+)",
-        "issueTrackingUri": "http://example.com/Issues/?Issue={1}",
-        "featureEditUri": "http://example.com/Features/edit/{0}",
+        "issueTrackingUrl": "http://example.com/Issues/?Issue={1}",
+        "featureEditUrl": "http://example.com/Features/edit/{0}",
         "testsResources": "test-data-tests.json",
-        "testUri": "http://example.com/Tests/?Test=",
+        "testUrl": "http://example.com/Tests/?Test=",
         "externalTestResults": "external-results.json"
     }
 ]

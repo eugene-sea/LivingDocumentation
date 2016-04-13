@@ -1,12 +1,11 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
-/// <reference path="../../typings/angularjs/angular-route.d.ts" />
-/// <reference path="../../typings/underscore/underscore.d.ts" />
+import { Injectable, Inject } from 'angular2/core';
+import { Router } from 'angular2/router';
+import { URLSearchParams } from 'angular2/http';
+import { Observable, BehaviorSubject } from 'rxjs/Rx';
 
 import { ILivingDocumentation } from '../domain-model';
 import { ILivingDocumentationServer } from './living-documentation-server';
-import './living-documentation-server';
 import { ISearchService, ISearchContext } from './search-service';
-import './search-service';
 
 export enum DocumentationFilter {
     InProgress,
@@ -16,146 +15,131 @@ export enum DocumentationFilter {
 }
 
 export interface ILivingDocumentationService {
-    loading: boolean;
+    loading: Observable<boolean>;
 
     error: string;
 
-    ready: boolean;
+    documentationListObservable: Observable<ILivingDocumentation[]>;
 
-    resolve: ng.IPromise<ILivingDocumentationService>;
-
-    documentationList: ILivingDocumentation[];
-
-    filteredDocumentationList: ILivingDocumentation[];
+    filteredDocumentationListObservable: Observable<ILivingDocumentation[]>;
 
     searchContext: ISearchContext;
 
     searchText: string;
 
-    urlSearchPart: string;
-
     filter: DocumentationFilter;
-
-    onStartProcessing: () => void;
-
-    onStopProcessing: () => void;
 
     startInitialization(): void;
 
     search(searchText: string): void;
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void;
+
+    addQueryParameters(params?: any): any;
 }
 
 const TIMEOUT = 200;
 
-class LivingDocumentationService implements ILivingDocumentationService {
-    static $inject: string[] = [
-        'livingDocumentationServer', '$q', '$timeout', 'search', '$location', '$route'
-    ];
-
-    loading: boolean;
+@Injectable()
+export default class LivingDocumentationService implements ILivingDocumentationService {
+    loading = new BehaviorSubject(true);
 
     error: string;
 
-    ready: boolean;
+    documentationListObservable = new BehaviorSubject(<ILivingDocumentation[]>[]);
 
-    resolve: ng.IPromise<ILivingDocumentationService>;
+    filteredDocumentationListObservable = new BehaviorSubject(<ILivingDocumentation[]>[]);
+    private get filteredDocumentationList(): ILivingDocumentation[] {
+        return this.filteredDocumentationListObservable.value;
+    }
 
-    documentationList: ILivingDocumentation[] = [];
-
-    filteredDocumentationList: ILivingDocumentation[] = [];
+    private set filteredDocumentationList(value: ILivingDocumentation[]) {
+        this.filteredDocumentationListObservable.next(value);
+    }
 
     searchContext: ISearchContext = null;
 
-    onStartProcessing: () => void;
-
-    onStopProcessing: () => void;
-
-    private deferred: ng.IDeferred<ILivingDocumentationService>;
     private currentSearchText = '';
 
     constructor(
-        private livingDocumentationServer: ILivingDocumentationServer,
-        private $q: ng.IQService,
-        private $timeout: ng.ITimeoutService,
-        private searchService: ISearchService,
-        private $location: ng.ILocationService,
-        private $route: angular.route.IRouteService) {
-        this.loading = true;
-        this.deferred = $q.defer<ILivingDocumentationService>();
-        this.resolve = this.deferred.promise;
+        @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
+        @Inject('search') private searchService: ISearchService,
+        private router: Router
+    ) { ; }
+
+    get searchText(): string {
+        return this.router.currentInstruction &&
+            decodeURIComponent(this.router.currentInstruction.component.params['search'] || '');
     }
 
-    get searchText(): string { return this.$location.search().search; }
+    get filter(): DocumentationFilter { return this.filterRaw && (<any>DocumentationFilter)[this.filterRaw]; }
 
-    get urlSearchPart() {
-        return (!this.searchText ? '' : `?search=${encodeURIComponent(this.searchText || '')}`) +
-            (this.filter == null ? '' : `${this.searchText ? '&' : '?'}showOnly=${this.filterRaw}`);
+    private get filterRaw(): string {
+        return this.router.currentInstruction && this.router.currentInstruction.component.params['showOnly'];
     }
-
-    get filter() { return !this.filterRaw ? null : (<any>DocumentationFilter)[this.filterRaw]; }
-
-    private get filterRaw(): string { return this.$location.search().showOnly; }
 
     startInitialization(): void {
-        if (this.onStartProcessing) {
-            this.onStartProcessing();
-        }
-
-        this.deferred.promise.finally(() => this.onStopProcessing()).catch(err => this.onError(err));
-
         this.livingDocumentationServer.getResourceDefinitions()
-            .then(resources => this.$q.all(_.map(resources, r => this.livingDocumentationServer.get(r))))
-            .then(
+            .concatMap(resources => Observable.zip(..._.map(resources, r => this.livingDocumentationServer.get(r))))
+            .delay(TIMEOUT)
+            .subscribe(
             (docs: ILivingDocumentation[]) => {
-                this.documentationList = docs;
-                this.$timeout(
-                    () => {
-                        this.deferred.resolve(this);
-                        this.initialize();
-                    },
-                    TIMEOUT);
+                this.documentationListObservable.next(docs);
+                this.initialize();
             },
-            err => this.$timeout(
-                () => {
-                    this.deferred.reject(err);
-                    this.onError(err);
-                },
-                TIMEOUT));
+            err => this.onError(err)
+            );
     }
 
     search(searchText: string): void {
-        this.$location.search('search', searchText);
-
         if (!searchText) {
-            this.$location.search('showOnly', null);
             [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
-                [this.documentationList, null, null];
+                [this.documentationListObservable.value, null, null];
+            this.router.navigateByUrl(this.router.currentInstruction.urlPath);
             return;
         }
 
-        this.searchCore();
+        this.updateQueryParameterAndNavigate('search', searchText);
     }
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void {
-        if (!initialize) {
-            this.$location.search('showOnly', DocumentationFilter[filter]);
+        if (initialize) {
+            this.searchCore();
+        } else {
+            this.updateQueryParameterAndNavigate('showOnly', DocumentationFilter[filter]);
+        }
+    }
+
+    addQueryParameters(params?: any): any {
+        params = params || {};
+        if (this.searchText) {
+            params.search = encodeURIComponent(this.searchText);
         }
 
-        this.searchCore();
+        if (this.filterRaw) {
+            params.showOnly = this.filterRaw;
+        }
+
+        return params;
     }
 
     private onError(err: any) {
         console.error(err);
         this.error = err;
-        this.loading = false;
+        this.loading.next(false);
     }
 
     private initialize() {
-        this.loading = false;
-        this.ready = true;
-        this.filteredDocumentationList = this.documentationList;
+        this.filteredDocumentationList = this.documentationListObservable.value;
+        this.loading.next(false);
+    }
+
+    private updateQueryParameterAndNavigate(param: string, paramValue: string) {
+        const query = this.router.currentInstruction.toUrlQuery();
+        const params = new URLSearchParams(query && query.slice(1));
+        params.set(param, encodeURIComponent(paramValue));
+        this.router.navigateByUrl(`/${this.router.currentInstruction.urlPath}?${params.toString()}`)
+            .then(() => this.searchCore());
     }
 
     private searchCore() {
@@ -181,18 +165,15 @@ class LivingDocumentationService implements ILivingDocumentationService {
         searchText += this.searchText || '';
 
         if (searchText !== this.currentSearchText) {
-            let res = this.searchService.search(searchText, this.documentationList);
+            const res = this.searchService.search(searchText, this.documentationListObservable.value);
             [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
                 [res.documentationList, res.searchContext, searchText];
         }
 
-        let [documentationCode, featureCode] =
-            !this.$route.current
-                ? [null, null]
-                : [
-                    <string>this.$route.current.params['documentationCode'],
-                    <string>this.$route.current.params['featureCode']
-                ];
+        let [documentationCode, featureCode] = [
+            this.router.currentInstruction.component.params['documentationCode'],
+            this.router.currentInstruction.component.params['featureCode']
+        ];
 
         if (documentationCode && featureCode) {
             let documentation = _.find(
@@ -216,15 +197,12 @@ class LivingDocumentationService implements ILivingDocumentationService {
         }
 
         if (!documentationCode || !featureCode) {
-            this.$location.path('/dashboard');
+            this.router.navigate(['/Dashboard', this.addQueryParameters()]);
         } else {
-            this.$location.path(`/feature/${documentationCode}/${featureCode}`);
+            this.router.navigate(['/Feature', this.addQueryParameters({
+                documentationCode: documentationCode,
+                featureCode: featureCode
+            })]);
         }
     }
 }
-
-angular.module('livingDocumentation.services', [
-    'livingDocumentation.services.server', 'livingDocumentation.services.search'
-])
-    .value('version', '0.9')
-    .service('livingDocumentationService', LivingDocumentationService);

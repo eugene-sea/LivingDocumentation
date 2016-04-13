@@ -8,32 +8,28 @@ module.exports = function (config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['systemjs', 'mocha'],
+    frameworks: ['jasmine'],
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/should/should.js',
-      'app/bower_components/angular/angular.min.js',
-      'app/bower_components/underscore/underscore-min.js',
-      'app/**/*.ts',
-      'test/*.ts'
+      'app/node_components/es6-shim/es6-shim.js',
+      'app/node_components/systemjs/system-polyfills.src.js',
+      'app/node_components/angular2/shims_for_IE.js',
+      'app/node_components/angular2/angular2-polyfills.js',
+      'app/node_components/systemjs/system.src.js',
+      'test/system-config.js',
+      'app/node_components/underscore/underscore.js',
+      'app/node_components/rxjs/Rx.js',
+      'app/node_components/angular2/angular2.dev.js',
+      'app/node_components/angular2/router.dev.js',
+      'app/node_components/angular2/http.dev.js',
+      'app/node_components/ng2-bootstrap/ng2-bootstrap.js',
+      'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en',
+      'test/test.js',
+      { pattern: 'app/**/*.ts', included: false },
+      { pattern: 'app/node_components/typescript/typescript.js', included: false },
+      { pattern: 'test/*.ts', included: false }
     ],
-
-    systemjs: {
-      config: {
-        paths: {
-          systemjs: 'node_modules/systemjs/dist/system.js',
-          typescript: 'node_modules/typescript/lib/typescript.js'
-        },
-        transpiler: 'typescript',
-        packages: {
-          'node_modules': { },
-          'app/bower_components': { },
-          'app': { defaultExtension: 'ts' },
-          'test': { defaultExtension: 'ts' }
-        }
-      }
-    },
 
     // list of files to exclude
     exclude: [
@@ -48,6 +44,11 @@ module.exports = function (config) {
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ['dots'],
+
+    proxies: {
+      "/app/": "/base/app/",
+      "/test/": "/base/test/",
+    },
 
     // web server port
     port: 9876,

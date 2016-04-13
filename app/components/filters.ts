@@ -1,46 +1,50 @@
-/// <reference path="../../typings/angularjs/angular.d.ts" />
+import { Pipe, PipeTransform, Inject } from 'angular2/core';
 
 import { ILivingDocumentationService } from './services';
 import { splitWords } from './search-service';
-import { IFilter, wrapFilterInjectionConstructor } from './utils';
 
-class NewLineFilter implements IFilter {
-    filter(str: string): string {
+@Pipe({ name: 'newline' })
+export class NewLinePipe implements PipeTransform {
+    transform(str: string): string {
         return !str ? str : str.replace(/\r\n/mg, '<br />');
     }
 }
 
-class SplitWordsFilter implements IFilter {
-    filter(str: string): string {
+@Pipe({ name: 'splitWords' })
+export class SplitWordsFilter implements PipeTransform {
+    transform(str: string): string {
         return splitWords(str);
     }
 }
 
-class ScenarioOutlinePlaceholderFilter implements IFilter {
-    filter(str: string): string {
+@Pipe({ name: 'scenarioOutlinePlaceholder' })
+export class ScenarioOutlinePlaceholderPipe implements PipeTransform {
+    transform(str: string): string {
         return !str ? str : str.replace(
             /\&lt;([^<>]+?)\&gt;/g,
             (_, c) => `<span class="text-warning">&lt;${c.replace(/ /g, '&nbsp;')}&gt;</span>`);
     }
 }
 
-class HighlightFilter implements IFilter {
-    static $inject = ['livingDocumentationService'];
+@Pipe({ name: 'highlight' })
+export class HighlightPipe implements PipeTransform {
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
+    ) { }
 
-    constructor(private livingDocService: ILivingDocumentationService) { }
-
-    filter(str: string): string {
+    transform(str: string): string {
         return !this.livingDocService.searchContext
             ? escapeHTML(str) : highlightAndEscape(this.livingDocService.searchContext.searchRegExp, str);
     }
 }
 
-class HighlightTagFilter implements IFilter {
-    static $inject = ['livingDocumentationService'];
+@Pipe({ name: 'highlightTag' })
+export class HighlightTagPipe implements PipeTransform {
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
+    ) { }
 
-    constructor(private livingDocService: ILivingDocumentationService) { }
-
-    filter(str: string): string {
+    transform(str: string): string {
         return !this.livingDocService.searchContext || !_.any(this.livingDocService.searchContext.tags)
             ? escapeHTML(str)
             : highlightAndEscape(
@@ -48,8 +52,9 @@ class HighlightTagFilter implements IFilter {
     }
 }
 
-class WidenFilter implements IFilter {
-    filter(str: string): string {
+@Pipe({ name: 'widen' })
+export class WidenPipe implements PipeTransform {
+    transform(str: string): string {
         return widen(str);
     }
 }
@@ -99,11 +104,3 @@ export function widen(str: string): string {
     let i = 1;
     return str.replace(/ /g, () => i++ % 3 === 0 ? ' ' : '&nbsp;');
 }
-
-angular.module('livingDocumentation.filters', ['livingDocumentation.services'])
-    .filter('newline', wrapFilterInjectionConstructor(NewLineFilter))
-    .filter('splitWords', wrapFilterInjectionConstructor(SplitWordsFilter))
-    .filter('scenarioOutlinePlaceholder', wrapFilterInjectionConstructor(ScenarioOutlinePlaceholderFilter))
-    .filter('highlight', wrapFilterInjectionConstructor(HighlightFilter))
-    .filter('highlightTag', wrapFilterInjectionConstructor(HighlightTagFilter))
-    .filter('widen', wrapFilterInjectionConstructor(WidenFilter));

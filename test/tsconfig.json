@@ -5,9 +5,11 @@
         "removeComments": false,
         "preserveConstEnums": true,
         "module": "system",
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
         "noEmit": true
     },
-    "files": [
-        "filters-spec.ts"
+    "exclue": [
     ]
 }

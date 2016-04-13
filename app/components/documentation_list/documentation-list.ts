@@ -1,56 +1,59 @@
-/// <reference path="../../../typings/angularjs/angular.d.ts" />
+import { Component, Input, Inject, OnInit, forwardRef } from 'angular2/core';
+import { ROUTER_DIRECTIVES, Router } from 'angular2/router';
+import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
+import { IFolder, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
-import { RecursionHelper } from '../recursion-helper';
-import '../recursion-helper';
-import { wrapInjectionConstructor } from '../utils';
+import { HighlightPipe, SplitWordsFilter } from '../filters';
 
-class DocumentationListDirective implements ng.IDirective {
-    restrict = 'A';
-    controller = 'DocumentationList';
-    controllerAs = 'root';
-    bindToController = true;
-    templateUrl = 'components/documentation_list/documentation-list.tpl.html';
+@Component({
+    directives: [ROUTER_DIRECTIVES, forwardRef(() => Folder)],
+    pipes: [HighlightPipe, SplitWordsFilter],
+    selector: 'folder',
+    templateUrl: 'components/documentation_list/folder.tpl.html'
+})
+class Folder implements OnInit {
+    @Input() documentationCode: string;
+    @Input() folder: IFolder;
+    childrenFolders: IFolder[];
+    childrenFeatures: IFeature[];
+
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
+        private router: Router
+    ) { }
+
+    ngOnInit(): void {
+        this.childrenFolders = this.folder.children.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
+        this.childrenFeatures = this.folder.features.sort(
+            (a, b) => a.Feature.Name < b.Feature.Name ? -1 : a.Feature.Name > b.Feature.Name ? 1 : 0);
+    }
+
+    getFeaturePath(feature: IFeature): any[] {
+        return ['/Feature', this.livingDocService.addQueryParameters({
+            documentationCode: this.documentationCode,
+            featureCode: feature.code
+        })];
+    }
+
+    isFeatureActive(feature: IFeature): boolean {
+        return this.router.isRouteActive(this.router.generate(this.getFeaturePath(feature)));
+    }
 }
 
-class DocumentationList {
-    static $inject = ['livingDocumentationService'];
+@Component({
+    directives: [ACCORDION_DIRECTIVES, Folder],
+    selector: 'documentation-list',
+    templateUrl: 'components/documentation_list/documentation-list.tpl.html'
+})
+export class DocumentationList {
+    constructor(
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
+    ) { }
 
-    constructor(private livingDocService: ILivingDocumentationService) { }
-
-    get documentationList() { return this.livingDocService.filteredDocumentationList; }
+    get documentationList() {
+        return this.livingDocService.filteredDocumentationListObservable.map(
+            l => l.sort((a, b) => a.definition.sortOrder - b.definition.sortOrder)
+        );
+    }
 }
-
-class FolderDirective implements ng.IDirective {
-    static $inject = ['recursionHelper'];
-
-    constructor(private recursionHelper: RecursionHelper, private $location: ng.ILocationService) { }
-
-    restrict = 'A';
-    scope = {
-        documentationCode: '=',
-        folder: '='
-    };
-    controller = Folder;
-    controllerAs = 'ctrl';
-    bindToController = true;
-    templateUrl = 'components/documentation_list/folder.tpl.html';
-    compile = (element: ng.IAugmentedJQuery) => this.recursionHelper.compile(element);
-}
-
-class Folder {
-    static $inject = ['livingDocumentationService'];
-
-    constructor(private livingDocService: ILivingDocumentationService) { }
-
-    get searchPart() { return this.livingDocService.urlSearchPart; }
-}
-
-angular.module('livingDocumentation.documentationList', [
-    'livingDocumentation.services',
-    'livingDocumentation.services.recursionHelper',
-    'livingDocumentation.filters'
-])
-    .directive('documentationList', wrapInjectionConstructor(DocumentationListDirective))
-    .controller('DocumentationList', DocumentationList)
-    .directive('folder', wrapInjectionConstructor(FolderDirective));
