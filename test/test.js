@@ -1,22 +1,10 @@
-var System = require('systemjs');
-require('source-map-support').install();
+Error.stackTraceLimit = Infinity;
 
-System.config({
-    map: {
-        typescript: './node_modules/typescript/lib/typescript.js',
-        should: './node_modules/should/should.js'
-    },
-    transpiler: 'typescript',
-    typescriptOptions: {
-        emitDecoratorMetadata: true,
-        experimentalDecorators: true,
-        sourceMap: true,
-        inlineSourceMap: false
-    },
-    packages: {
-        'app': { defaultExtension: 'ts' },
-        'test': { defaultExtension: 'ts' }
-    }
-});
+__karma__.loaded = function() { };
 
-System.import('test/main').then(function() { run(); }, console.error.bind(console));
+System.import('test/main')
+    .then(function() {
+        __karma__.start();
+    }, function(error) {
+        __karma__.error(error.name + ": " + error.message);
+    });

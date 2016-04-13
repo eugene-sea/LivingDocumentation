@@ -6,7 +6,7 @@ describe('filters', () => {
     describe('#widen()', () => {
         it('Non-breaking spaces should be inserted correctly', () => {
             const result = widen('Non-breaking spaces should be inserted correctly');
-            result.should.equal('Non-breaking&nbsp;spaces&nbsp;should be&nbsp;inserted&nbsp;correctly');
+            expect(result).toBe('Non-breaking&nbsp;spaces&nbsp;should be&nbsp;inserted&nbsp;correctly');
         });
     });
 });

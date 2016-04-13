@@ -6,7 +6,7 @@
   "scripts": {
     "build": "./scripts/build.sh",
     "start": "node server.js",
-    "test": "./node_modules/.bin/mocha --reporter spec --delay test/test.js",
+    "test": "./node_modules/.bin/karma start ./test/karma.conf.js",
     "update-components": "npm update",
     "updates": "npm outdated"
   },
@@ -25,9 +25,10 @@
   },
   "homepage": "https://github.com/eugene-sea/LivingDocumentation#readme",
   "devDependencies": {
-    "mocha": "^2.2.5",
-    "should": "^7.0.4",
-    "source-map-support": "^0.4.0",
+    "jasmine-core": "~2.4.1",
+    "karma": "^0.13.9",
+    "karma-chrome-launcher": "^0.2.0",
+    "karma-jasmine": "~0.3.8",
     "tslint": "^3.0.0",
     "typings": "^0.7.11"
   },
@@ -42,6 +43,7 @@
     "rxjs": "^5.0.0-beta.2",
     "systemjs": "^0.19.24",
     "typescript": "^1.8.9",
-    "underscore": "1.8.3"
+    "underscore": "1.8.3",
+    "source-map-support": "^0.4.0"
   }
 }
