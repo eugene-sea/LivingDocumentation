@@ -19,8 +19,6 @@ export interface ILivingDocumentationService {
 
     error: string;
 
-    ready: boolean;
-
     documentationListObservable: Observable<ILivingDocumentation[]>;
 
     filteredDocumentationListObservable: Observable<ILivingDocumentation[]>;
@@ -47,8 +45,6 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     loading = new BehaviorSubject(true);
 
     error: string;
-
-    ready: boolean;
 
     documentationListObservable = new BehaviorSubject(<ILivingDocumentation[]>[]);
 
@@ -134,7 +130,6 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     }
 
     private initialize() {
-        this.ready = true;
         this.filteredDocumentationList = this.documentationListObservable.value;
         this.loading.next(false);
     }

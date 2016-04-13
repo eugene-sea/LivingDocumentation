@@ -70,7 +70,6 @@ export class LivingDocumentationApp {
     }
 
     get error() { return this.livingDocService.error; }
-    get ready() { return this.livingDocService.ready; }
 
     get isClearSearchEnabled() {
         return !!this.livingDocService.searchText || this.filter != null;

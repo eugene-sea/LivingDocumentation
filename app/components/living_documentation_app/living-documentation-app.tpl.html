@@ -79,7 +79,7 @@
   <div class="container">
     <p class="navbar-text">Living Documentation Application: v{{appVersion}}</p>
     <div class="collapse navbar-collapse navbar-ex1-collapse">
-      <p class="navbar-text navbar-right" *ngIf="ready">
+      <p class="navbar-text navbar-right" *ngIf="lastUpdatedOn | async">
         Last Updated On: {{lastUpdatedOn | async | date: 'medium'}}
       </p>
     </div>
