@@ -35,7 +35,7 @@ export interface ILivingDocumentationService {
 
     clearSearch(): void;
 
-    showOnly(filter: DocumentationFilter, initialize?: boolean): void;
+    showOnly(filter: DocumentationFilter): void;
 
     addQueryParameters(params?: any): any;
 }
@@ -104,11 +104,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     }
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void {
-        if (initialize) {
-            this.searchCore();
-        } else {
-            this.updateQueryParameterAndNavigate('showOnly', DocumentationFilter[filter]);
-        }
+        this.updateQueryParameterAndNavigate('showOnly', DocumentationFilter[filter]);
     }
 
     addQueryParameters(params?: any): any {

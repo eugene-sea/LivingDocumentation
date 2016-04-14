@@ -48,7 +48,7 @@ export class LivingDocumentationApp {
                 // TODO:
             } else if (this.isClearSearchEnabled) {
                 if (!this.searchText) {
-                    this.showOnly(null, true);
+                    this.showOnly(this.filter);
                 } else {
                     this.search(this.searchText);
                 }
@@ -85,8 +85,8 @@ export class LivingDocumentationApp {
         this.livingDocService.showOnly(null);
     }
 
-    showOnly(filter: DocumentationFilter, initialize?: boolean): void {
-        this.livingDocService.showOnly(filter, initialize);
+    showOnly(filter: DocumentationFilter): void {
+        this.livingDocService.showOnly(filter);
     }
 
     addQueryParameters(params: any): any {
