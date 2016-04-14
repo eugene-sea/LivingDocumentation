@@ -4,7 +4,6 @@
       "RelativeFolder": "WitnessManagement\\WitnessStartingPageNumber.feature",
       "Feature": {
         "Name": "Witness continutation",
-        "Description": "",
         "FeatureElements": [
           {
             "Name": "New witness on a case",

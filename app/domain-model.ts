@@ -40,7 +40,7 @@ export interface IFeature {
     RelativeFolder: string;
     Feature: {
         Name: string;
-        Description: string;
+        Description?: string;
         Tags: string[];
         Background?: IScenario;
         FeatureElements: IScenario[];

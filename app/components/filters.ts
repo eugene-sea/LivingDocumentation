@@ -89,7 +89,7 @@ function highlightAndEscape(regEx: RegExp, str: string): string {
 
 function escapeHTML(str: string) {
     if (!str) {
-        return str;
+        return '';
     }
 
     return str.
