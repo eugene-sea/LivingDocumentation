@@ -137,7 +137,12 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     private updateQueryParameterAndNavigate(param: string, paramValue: string) {
         const query = this.router.currentInstruction.toUrlQuery();
         const params = new URLSearchParams(query && query.slice(1));
-        params.set(param, encodeURIComponent(paramValue));
+        if (paramValue) {
+            params.set(param, encodeURIComponent(paramValue));
+        } else {
+            params.delete(param);
+        }
+
         this.router.navigateByUrl(`/${this.router.currentInstruction.urlPath}?${params.toString()}`)
             .then(() => this.searchCore());
     }
