@@ -50,7 +50,7 @@ export class LivingDocumentationApp {
                 if (!this.searchText) {
                     this.showOnly(this.filter);
                 } else {
-                    this.search(this.searchText);
+                    this.searchCore(this.searchText);
                 }
             }
         });
@@ -58,7 +58,7 @@ export class LivingDocumentationApp {
         this.searchControl.valueChanges
             .debounceTime(400)
             .distinctUntilChanged()
-            .subscribe((s: string) => s ? this.search(s) : this.clearSearch());
+            .subscribe((s: string) => s ? this.searchCore(s) : this.clearSearch());
 
         this.lastUpdatedOn = livingDocService.documentationListObservable
             .map(l => _.find(l, doc => !!doc.lastUpdatedOn))
@@ -81,6 +81,10 @@ export class LivingDocumentationApp {
 
     get filter() { return this.livingDocService.filter; }
 
+    search() {
+        this.searchCore(this.searchText);
+    }
+
     clearSearch(): void {
         this.livingDocService.clearSearch();
     }
@@ -97,7 +101,7 @@ export class LivingDocumentationApp {
         return this.livingDocService.addQueryParameters(params);
     }
 
-    private search(text: string): void {
+    private searchCore(text: string): void {
         this.livingDocService.search(text);
     }
 }
