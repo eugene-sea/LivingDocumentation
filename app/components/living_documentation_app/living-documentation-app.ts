@@ -78,7 +78,7 @@ export class LivingDocumentationApp {
     get filter() { return this.livingDocService.filter; }
 
     clearSearch(): void {
-        this.livingDocService.search(null);
+        this.livingDocService.clearSearch();
     }
 
     clearFilter(): void {

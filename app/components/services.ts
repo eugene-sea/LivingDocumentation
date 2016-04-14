@@ -33,6 +33,8 @@ export interface ILivingDocumentationService {
 
     search(searchText: string): void;
 
+    clearSearch(): void;
+
     showOnly(filter: DocumentationFilter, initialize?: boolean): void;
 
     addQueryParameters(params?: any): any;
@@ -92,14 +94,13 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     }
 
     search(searchText: string): void {
-        if (!searchText) {
-            [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
-                [this.documentationListObservable.value, null, null];
-            this.router.navigateByUrl(this.router.currentInstruction.urlPath);
-            return;
-        }
-
         this.updateQueryParameterAndNavigate('search', searchText);
+    }
+
+    clearSearch(): void {
+        [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
+            [this.documentationListObservable.value, null, null];
+        this.router.navigateByUrl(this.router.currentInstruction.urlPath);
     }
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void {
