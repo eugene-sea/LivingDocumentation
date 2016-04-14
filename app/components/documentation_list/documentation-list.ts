@@ -1,4 +1,4 @@
-import { Component, Input, Inject, OnInit, forwardRef } from 'angular2/core';
+import { Component, Input, Inject, OnInit, forwardRef, ChangeDetectionStrategy } from 'angular2/core';
 import { ROUTER_DIRECTIVES, Router } from 'angular2/router';
 import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
@@ -42,6 +42,7 @@ class Folder implements OnInit {
 }
 
 @Component({
+    changeDetection: ChangeDetectionStrategy.OnPush,
     directives: [ACCORDION_DIRECTIVES, Folder],
     selector: 'documentation-list',
     templateUrl: 'components/documentation_list/documentation-list.tpl.html'

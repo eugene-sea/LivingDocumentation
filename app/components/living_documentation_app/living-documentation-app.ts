@@ -58,7 +58,7 @@ export class LivingDocumentationApp {
         this.searchControl.valueChanges
             .debounceTime(400)
             .distinctUntilChanged()
-            .subscribe((s: string) => this.search(s));
+            .subscribe((s: string) => s ? this.search(s) : this.clearSearch());
 
         this.lastUpdatedOn = livingDocService.documentationListObservable
             .map(l => _.find(l, doc => !!doc.lastUpdatedOn))
