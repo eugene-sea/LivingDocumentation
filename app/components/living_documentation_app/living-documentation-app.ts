@@ -5,7 +5,7 @@ import { Observable, Subscription } from 'rxjs/Rx';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { ILivingDocumentationService, DocumentationFilter } from '../services';
-import { DocumentationList } from '../documentation_list/documentation-list';
+import { DocumentationList } from '../documentation-list/documentation-list';
 import { Dashboard } from '../dashboard/dashboard';
 import { Feature } from '../feature/feature';
 
