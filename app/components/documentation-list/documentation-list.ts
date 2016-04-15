@@ -3,7 +3,7 @@ import { ROUTER_DIRECTIVES, Router } from 'angular2/router';
 import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { IFolder, IFeature } from '../../domain-model';
-import { ILivingDocumentationService } from '../services';
+import { ILivingDocumentationService } from '../living-documentation-service';
 import { HighlightPipe, SplitWordsFilter } from '../pipes';
 
 @Component({

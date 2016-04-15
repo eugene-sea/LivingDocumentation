@@ -2,7 +2,7 @@ import { Component, Input, Inject, OnInit } from 'angular2/core';
 import { Observable } from 'rxjs/Rx';
 
 import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
-import { ILivingDocumentationService } from '../services';
+import { ILivingDocumentationService } from '../living-documentation-service';
 import { format } from '../utils';
 import { HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../pipes';
 

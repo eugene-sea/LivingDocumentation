@@ -2,7 +2,7 @@ import { Component, Input, OnInit, Inject } from 'angular2/core';
 import { Observable } from 'rxjs/Rx';
 
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
-import { ILivingDocumentationService } from '../services';
+import { ILivingDocumentationService } from '../living-documentation-service';
 
 interface IStatistics {
     passed: number;

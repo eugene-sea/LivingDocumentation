@@ -4,7 +4,7 @@ import { FORM_DIRECTIVES, Control } from 'angular2/common';
 import { Observable, Subscription } from 'rxjs/Rx';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
-import { ILivingDocumentationService, DocumentationFilter } from '../services';
+import { ILivingDocumentationService, DocumentationFilter } from '../living-documentation-service';
 import { DocumentationList } from '../documentation-list/documentation-list';
 import { Dashboard } from '../dashboard/dashboard';
 import { Feature } from '../feature/feature';

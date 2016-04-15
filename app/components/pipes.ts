@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform, Inject } from 'angular2/core';
 
-import { ILivingDocumentationService } from './services';
+import { ILivingDocumentationService } from './living-documentation-service';
 import { splitWords } from './search-service';
 
 @Pipe({ name: 'newline' })
