@@ -40,8 +40,6 @@ export interface ILivingDocumentationService {
     addQueryParameters(params?: any): any;
 }
 
-const TIMEOUT = 200;
-
 @Injectable()
 export default class LivingDocumentationService implements ILivingDocumentationService {
     loading = new BehaviorSubject(true);
@@ -83,7 +81,6 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     startInitialization(): void {
         this.livingDocumentationServer.getResourceDefinitions()
             .concatMap(resources => Observable.zip(..._.map(resources, r => this.livingDocumentationServer.get(r))))
-            .delay(TIMEOUT)
             .subscribe(
             (docs: ILivingDocumentation[]) => {
                 this.documentationListObservable.next(docs);
