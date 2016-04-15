@@ -1,8 +1,8 @@
 /// <reference path="../app/typings/browser.d.ts" />
 
-import { widen, HighlightPipe } from '../app/components/filters';
+import { widen, HighlightPipe } from '../app/components/pipes';
 
-describe('filters', () => {
+describe('pipes', () => {
     describe('#widen()', () => {
         it('Non-breaking spaces should be inserted correctly', () => {
             const result = widen('Non-breaking spaces should be inserted correctly');

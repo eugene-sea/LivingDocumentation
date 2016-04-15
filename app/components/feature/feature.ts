@@ -4,7 +4,7 @@ import { Observable } from 'rxjs/Rx';
 import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../services';
 import { format } from '../utils';
-import { HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../filters';
+import { HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe } from '../pipes';
 
 @Component({
     pipes: [HighlightPipe, WidenPipe, ScenarioOutlinePlaceholderPipe],

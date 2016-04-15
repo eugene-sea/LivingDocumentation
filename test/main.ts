@@ -1,1 +1,1 @@
-import './filters-spec';
+import './pipes-spec';
