@@ -10,7 +10,7 @@ import { HighlightPipe, SplitWordsFilter } from '../pipes';
     directives: [ROUTER_DIRECTIVES, forwardRef(() => Folder)],
     pipes: [HighlightPipe, SplitWordsFilter],
     selector: 'folder',
-    templateUrl: 'components/documentation-list/folder.tpl.html'
+    templateUrl: 'components/documentation-list/folder.html'
 })
 class Folder implements OnInit {
     @Input() documentationCode: string;
@@ -44,7 +44,7 @@ class Folder implements OnInit {
 @Component({
     directives: [ACCORDION_DIRECTIVES, Folder],
     selector: 'documentation-list',
-    templateUrl: 'components/documentation-list/documentation-list.tpl.html'
+    templateUrl: 'components/documentation-list/documentation-list.html'
 })
 export class DocumentationList {
     constructor(

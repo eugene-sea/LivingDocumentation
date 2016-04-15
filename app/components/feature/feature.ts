@@ -9,7 +9,7 @@ import { HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholde
 @Component({
     pipes: [HighlightPipe, WidenPipe, ScenarioOutlinePlaceholderPipe],
     selector: 'feature-table',
-    templateUrl: 'components/feature/table.tpl.html'
+    templateUrl: 'components/feature/table.html'
 })
 class Table {
     @Input() table: ITable;
@@ -19,7 +19,7 @@ class Table {
 @Component({
     pipes: [HighlightTagPipe],
     selector: 'tags',
-    templateUrl: 'components/feature/tags.tpl.html'
+    templateUrl: 'components/feature/tags.html'
 })
 class Tags implements OnInit {
     @Input() documentation: ILivingDocumentation;
@@ -41,7 +41,7 @@ class Tags implements OnInit {
 
 @Component({
     selector: 'status',
-    templateUrl: 'components/feature/status.tpl.html'
+    templateUrl: 'components/feature/status.html'
 })
 class Status {
     @Input() isManual: boolean;
@@ -52,7 +52,7 @@ class Status {
     directives: [Status, Tags, Table],
     pipes: [HighlightPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe],
     selector: 'scenario',
-    templateUrl: 'components/feature/scenario.tpl.html'
+    templateUrl: 'components/feature/scenario.html'
 })
 class Scenario {
     @Input() documentation: ILivingDocumentation;
@@ -63,7 +63,7 @@ class Scenario {
     directives: [Status, Tags, Scenario],
     pipes: [HighlightPipe, NewLinePipe],
     selector: 'feature',
-    templateUrl: 'components/feature/feature.tpl.html'
+    templateUrl: 'components/feature/feature.html'
 })
 export class Feature implements OnInit {
     @Input() documentationCode: string;

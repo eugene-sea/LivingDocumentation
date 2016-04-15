@@ -29,7 +29,7 @@ class FeatureContainer {
 @Component({
     directives: [ROUTER_DIRECTIVES, DROPDOWN_DIRECTIVES, FORM_DIRECTIVES, DocumentationList],
     selector: 'living-documentation-app',
-    templateUrl: 'components/living-documentation-app/living-documentation-app.tpl.html'
+    templateUrl: 'components/living-documentation-app/living-documentation-app.html'
 })
 export class LivingDocumentationApp {
     searchText: string = '';
