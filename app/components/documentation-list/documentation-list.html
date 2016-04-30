@@ -2,7 +2,7 @@
   <accordion-group
     heading="{{doc.root.name}}"
     [isOpen]="i === 0"
-    *ngFor="#doc of documentationList | async; #i = index">
+    *ngFor="let doc of documentationList | async; let i = index">
     <folder [folder]="doc.root" [documentationCode]="doc.definition.code"></folder>
   </accordion-group>
 </accordion>

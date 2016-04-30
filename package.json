@@ -29,8 +29,8 @@
     "karma": "^0.13.9",
     "karma-chrome-launcher": "^0.2.0",
     "karma-jasmine": "~0.3.8",
-    "tslint": "^3.0.0",
-    "typings": "^0.7.11"
+    "tslint": "^3.8.0",
+    "typings": "^0.8.0"
   },
   "dependencies": {
     "angular2": "^2.0.0-beta.13",

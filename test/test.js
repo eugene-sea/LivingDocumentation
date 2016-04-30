@@ -1,10 +1,10 @@
 Error.stackTraceLimit = Infinity;
 
-__karma__.loaded = function() { };
+__karma__.loaded = function () { };
 
 System.import('test/main')
-    .then(function() {
+    .then(function () {
         __karma__.start();
-    }, function(error) {
+    }, function (error) {
         __karma__.error(error.name + ": " + error.message);
     });

@@ -1,4 +1,4 @@
-﻿<div *ngFor="#feature of feature | async">
+﻿<div *ngFor="let feature of feature | async">
 
 <table style="width: 100%">
   <tr>
@@ -39,7 +39,7 @@
   </div>
 </div>
 
-<div class="panel panel-default" *ngFor="#scenario of feature.Feature.FeatureElements">
+<div class="panel panel-default" *ngFor="let scenario of feature.Feature.FeatureElements">
   <div class="panel-body">
     <scenario [scenario]="scenario" [documentation]="documentation"></scenario>
   </div>

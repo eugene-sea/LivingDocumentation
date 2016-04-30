@@ -29,7 +29,7 @@
 
   <p><i [innerHTML]="scenario.Description | highlight | newline"></i></p>
 
-  <div *ngFor="#step of scenario.Steps" style="margin-bottom: 10px">
+  <div *ngFor="let step of scenario.Steps" style="margin-bottom: 10px">
     <b>{{step.Keyword}}</b> <span [innerHTML]="step.Name | highlight | scenarioOutlinePlaceholder"></span>
     <div *ngIf="step.TableArgument">
       <feature-table [table]="step.TableArgument"></feature-table>

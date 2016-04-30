@@ -39,7 +39,7 @@ mkdir -p ./app/node_components/ng2-bootstrap
 cp ./node_modules/ng2-bootstrap/bundles/ng2-bootstrap.js ./app/node_components/ng2-bootstrap/
 
 mkdir -p ./app/node_components/moment
-cp ./node_modules/ng2-bootstrap/node_modules/moment/moment.js ./app/node_components/moment/
+cp ./node_modules/moment/moment.js ./app/node_components/moment/
 
 mkdir -p ./app/node_components/underscore
 cp ./node_modules/underscore/underscore.js ./app/node_components/underscore/

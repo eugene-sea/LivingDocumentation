@@ -18,7 +18,7 @@ import { Feature } from '../feature/feature';
     `
 })
 class FeatureContainer {
-    constructor(public params: RouteParams) { ; }
+    constructor(public params: RouteParams) { }
 }
 
 @RouteConfig([

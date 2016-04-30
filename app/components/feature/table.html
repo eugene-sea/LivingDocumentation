@@ -4,7 +4,7 @@
       <thead>
         <tr>
           <th
-            *ngFor="#col of table.HeaderRow; #i = index; #last = last"
+            *ngFor="let col of table.HeaderRow; let i = index; let last = last"
             [class.no-left-border]="!i"
             [class.no-right-border]="last && !tests"
             [innerHTML]="col | highlight">
@@ -14,9 +14,9 @@
       </thead>
 
       <tbody>
-        <tr *ngFor="#row of table.DataRows; #rowIndex = index; #lastRow = last">
+        <tr *ngFor="let row of table.DataRows; let rowIndex = index; let lastRow = last">
           <td
-            *ngFor="#col of row; #i = index; #last = last"
+            *ngFor="let col of row; let i = index; let last = last"
             [class.no-left-border]="!i"
             [class.no-right-border]="last && !tests"
             [class.no-bottom-border]="lastRow"

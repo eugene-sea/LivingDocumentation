@@ -65,7 +65,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
         @Inject('search') private searchService: ISearchService,
         private router: Router
-    ) { ; }
+    ) { }
 
     get searchText(): string {
         return this.router.currentInstruction &&
