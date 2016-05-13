@@ -13,21 +13,18 @@ module.exports = function (config) {
     // list of files / patterns to load in the browser
     files: [
       'app/node_components/es6-shim/es6-shim.js',
-      'app/node_components/systemjs/system-polyfills.src.js',
-      'app/node_components/angular2/shims_for_IE.js',
-      'app/node_components/angular2/angular2-polyfills.js',
+      'app/node_components/zone.js/zone.js',
+      'app/node_components/reflect-metadata/Reflect.js',
       'app/node_components/systemjs/system.src.js',
       'test/system-config.js',
       'app/node_components/underscore/underscore.js',
       'app/node_components/rxjs/Rx.js',
-      'app/node_components/angular2/angular2.dev.js',
-      'app/node_components/angular2/router.dev.js',
-      'app/node_components/angular2/http.dev.js',
       'app/node_components/ng2-bootstrap/ng2-bootstrap.js',
       'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en',
       'test/test.js',
       { pattern: 'app/**/*.ts', included: false },
       { pattern: 'app/node_components/typescript/typescript.js', included: false },
+      { pattern: 'app/node_components/@angular/**/*.js', included: false },
       { pattern: 'test/*.ts', included: false }
     ],
 
@@ -46,6 +43,7 @@ module.exports = function (config) {
     reporters: ['dots'],
 
     proxies: {
+      "/@angular/": "/base/app/node_components/@angular/",
       "/app/": "/base/app/",
       "/test/": "/base/test/",
     },

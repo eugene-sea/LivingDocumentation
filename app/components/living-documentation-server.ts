@@ -1,5 +1,5 @@
-import { Injectable } from 'angular2/core';
-import { Http } from 'angular2/http';
+import { Injectable } from '@angular/core';
+import { Http } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 
 import {
@@ -38,8 +38,6 @@ export interface ILivingDocumentationServer {
 
 @Injectable()
 export default class LivingDocumentationServer {
-    constructor(private http: Http) { }
-
     private static findSubfolderOrCreate(parent: IFolder, childName: string): IFolder {
         let res = _.find(parent.children, c => c.name === childName);
         if (!res) {
@@ -194,6 +192,8 @@ export default class LivingDocumentationServer {
 
         feature.Feature.Result = { WasExecuted: true, WasSuccessful: true };
     }
+
+    constructor(private http: Http) { }
 
     getResourceDefinitions(): Observable<ILivingDocumentationResourceDefinition[]> {
         return this.http.get('data/configuration.json').map(res => res.json());

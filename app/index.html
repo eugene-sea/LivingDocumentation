@@ -16,19 +16,22 @@
 
   <!-- IE required polyfills, in this exact order -->
   <script src="node_components/es6-shim/es6-shim.js"></script>
-  <script src="node_components/systemjs/system-polyfills.src.js"></script>
-  <script src="node_components/angular2/shims_for_IE.js"></script>
+  <script src="node_components/zone.js/zone.js"></script>
+  <script src="node_components/reflect-metadata/Reflect.js"></script>
 
   <script src="node_components/underscore/underscore.js"></script>
 
-  <script src="node_components/angular2/angular2-polyfills.js"></script>
   <script src="node_components/systemjs/system.src.js"></script>
   <script src="node_components/typescript/typescript.js"></script>
   <script>
+    var pkgPath = 'app/node_components/';
     System.config({
       baseURL: '../',
+      map: {
+        '@angular': pkgPath + '@angular'
+      },
       paths: {
-          'moment': 'app/node_components/moment/moment.js'
+        'moment': pkgPath + 'moment/moment.js'
       },
       transpiler: 'typescript',
       typescriptOptions: {
@@ -36,25 +39,20 @@
         experimentalDecorators: true
       },
       packages: {
+        '@angular/common': { main: 'common.umd.js' },
+        '@angular/compiler': { main: 'compiler.umd.js' },
+        '@angular/core': { main: 'core.umd.js' },
+        '@angular/http': { main: 'http.umd.js' },
+        '@angular/platform-browser': { main: 'platform-browser.umd.js' },
+        '@angular/platform-browser-dynamic': { main: 'platform-browser-dynamic.umd.js' },
+        '@angular/router-deprecated': { main: 'router-deprecated.umd.js' },
+        '@angular/core/src/facade/lang': { main: 'lang.js' },
         'app': { defaultExtension: 'ts' },
         'moment': { }
       }
     });
-
-    // Pipe issue workaround
-    System.register(
-      "angular2/src/core/change_detection/pipe_lifecycle_reflector",
-      [],
-      true,
-      function(require, exports, module) {
-        exports.implementsOnDestroy = function(pipe) { return pipe ? pipe.constructor.prototype.ngOnDestroy : false; }
-      }
-    );
   </script>
   <script src="node_components/rxjs/Rx.js"></script>
-  <script src="node_components/angular2/angular2.dev.js"></script>
-  <script src="node_components/angular2/router.dev.js"></script>
-  <script src="node_components/angular2/http.dev.js"></script>
   <script src="node_components/ng2-bootstrap/ng2-bootstrap.js"></script>
   <script src="https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en"></script>
   <script>

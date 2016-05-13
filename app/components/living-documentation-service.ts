@@ -1,6 +1,6 @@
-import { Injectable, Inject } from 'angular2/core';
-import { Router } from 'angular2/router';
-import { URLSearchParams } from 'angular2/http';
+import { Injectable, Inject } from '@angular/core';
+import { Router } from '@angular/router-deprecated';
+import { URLSearchParams } from '@angular/http';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
 
 import { ILivingDocumentation } from '../domain-model';
@@ -95,8 +95,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     }
 
     clearSearch(): void {
-        [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
-            [this.documentationListObservable.value, null, null];
+        this.clearSearchCore();
         this.router.navigateByUrl(this.router.currentInstruction.urlPath);
     }
 
@@ -137,8 +136,14 @@ export default class LivingDocumentationService implements ILivingDocumentationS
             params.delete(param);
         }
 
-        this.router.navigateByUrl(`/${this.router.currentInstruction.urlPath}?${params.toString()}`)
+        const paramsStr = params.toString();
+        this.router.navigateByUrl(`/${this.router.currentInstruction.urlPath}${!paramsStr ? '' : '?' + paramsStr}`)
             .then(() => this.searchCore());
+    }
+
+    private clearSearchCore() {
+        [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
+            [this.documentationListObservable.value, null, null];
     }
 
     private searchCore() {
@@ -163,7 +168,9 @@ export default class LivingDocumentationService implements ILivingDocumentationS
 
         searchText += this.searchText || '';
 
-        if (searchText !== this.currentSearchText) {
+        if (!searchText) {
+            this.clearSearchCore();
+        } else if (searchText !== this.currentSearchText) {
             const res = this.searchService.search(searchText, this.documentationListObservable.value);
             [this.filteredDocumentationList, this.searchContext, this.currentSearchText] =
                 [res.documentationList, res.searchContext, searchText];

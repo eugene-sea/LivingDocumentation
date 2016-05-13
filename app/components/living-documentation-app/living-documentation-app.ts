@@ -1,6 +1,6 @@
-import { Component, Inject } from 'angular2/core';
-import { RouteConfig, RouteParams, Router, ROUTER_DIRECTIVES } from 'angular2/router';
-import { FORM_DIRECTIVES, Control } from 'angular2/common';
+import { Component, Inject } from '@angular/core';
+import { RouteConfig, RouteParams, Router, ROUTER_DIRECTIVES } from '@angular/router-deprecated';
+import { FORM_DIRECTIVES, Control } from '@angular/common';
 import { Observable, Subscription } from 'rxjs/Rx';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
@@ -58,7 +58,7 @@ export class LivingDocumentationApp {
         this.searchControl.valueChanges
             .debounceTime(400)
             .distinctUntilChanged()
-            .subscribe((s: string) => s ? this.searchCore(s) : this.clearSearch());
+            .subscribe((s: string) => this.searchCore(s));
 
         this.lastUpdatedOn = livingDocService.documentationListObservable
             .map(l => _.find(l, doc => !!doc.lastUpdatedOn))

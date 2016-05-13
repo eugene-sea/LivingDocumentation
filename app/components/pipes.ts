@@ -1,4 +1,4 @@
-import { Pipe, PipeTransform, Inject } from 'angular2/core';
+import { Pipe, PipeTransform, Inject } from '@angular/core';
 
 import { ILivingDocumentationService } from './living-documentation-service';
 import { splitWords } from './search-service';

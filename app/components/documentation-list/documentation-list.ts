@@ -1,5 +1,5 @@
-import { Component, Input, Inject, OnInit, forwardRef } from 'angular2/core';
-import { ROUTER_DIRECTIVES, Router } from 'angular2/router';
+import { Component, Input, Inject, OnInit, forwardRef } from '@angular/core';
+import { ROUTER_DIRECTIVES, Router } from '@angular/router-deprecated';
 import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { IFolder, IFeature } from '../../domain-model';

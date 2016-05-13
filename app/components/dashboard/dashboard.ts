@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Inject } from 'angular2/core';
+import { Component, Input, OnInit, Inject } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';

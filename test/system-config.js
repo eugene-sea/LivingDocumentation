@@ -1,10 +1,12 @@
+var pkgPath = 'app/node_components/';
 System.config({
     baseURL: '../',
     paths: {
-        'moment': 'app/node_components/moment/moment.js'
+        '@angular': pkgPath + '@angular',
+        'moment': pkgPath + 'moment/moment.js'
     },
     map: {
-        typescript: 'app/node_components/typescript/typescript.js',
+        typescript: pkgPath + 'typescript/typescript.js',
     },
     transpiler: 'typescript',
     typescriptOptions: {
@@ -12,6 +14,14 @@ System.config({
         experimentalDecorators: true,
     },
     packages: {
+        '@angular/common': { main: 'common.umd.js' },
+        '@angular/compiler': { main: 'compiler.umd.js' },
+        '@angular/core': { main: 'core.umd.js' },
+        '@angular/http': { main: 'http.umd.js' },
+        '@angular/platform-browser': { main: 'platform-browser.umd.js' },
+        '@angular/platform-browser-dynamic': { main: 'platform-browser-dynamic.umd.js' },
+        '@angular/router-deprecated': { main: 'router-deprecated.umd.js' },
+        '@angular/core/src/facade/lang': { main: 'lang.js' },
         'app': { defaultExtension: 'ts' },
         'app/node_components': { },
         'test': { defaultExtension: 'ts' },
