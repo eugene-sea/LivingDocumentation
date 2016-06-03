@@ -96,6 +96,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
 
     clearSearch(): void {
         this.clearSearchCore();
+        console.log('Clear search:', this.router.currentInstruction.urlPath);
         this.router.navigateByUrl(this.router.currentInstruction.urlPath);
     }
 
@@ -137,8 +138,9 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         }
 
         const paramsStr = params.toString();
-        this.router.navigateByUrl(`/${this.router.currentInstruction.urlPath}${!paramsStr ? '' : '?' + paramsStr}`)
-            .then(() => this.searchCore());
+        const url = `/${this.router.currentInstruction.urlPath}${!paramsStr ? '' : '?' + paramsStr}`;
+        console.log('Update query parameter:', url);
+        this.router.navigateByUrl(url).then(() => this.searchCore());
     }
 
     private clearSearchCore() {
@@ -194,7 +196,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
             }
         }
 
-        if (!documentationCode || !featureCode) {
+        if (searchText && (!documentationCode || !featureCode)) {
             let documentation = _.find(this.filteredDocumentationList, d => _.any(d.features));
             if (documentation) {
                 [documentationCode, featureCode] =
@@ -203,8 +205,10 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         }
 
         if (!documentationCode || !featureCode) {
+            console.log('Navigate to dashboard', this.addQueryParameters());
             this.router.navigate(['/Dashboard', this.addQueryParameters()]);
         } else {
+            console.log('Navigate to feature', documentationCode, featureCode, this.addQueryParameters());
             this.router.navigate(['/Feature', this.addQueryParameters({
                 documentationCode: documentationCode,
                 featureCode: featureCode
