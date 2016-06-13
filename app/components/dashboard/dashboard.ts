@@ -4,6 +4,8 @@ import { Observable } from 'rxjs/Rx';
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
 
+import { TagList } from '../tag-list/tag-list';
+
 interface IStatistics {
     passed: number;
     pending: number;
@@ -88,8 +90,7 @@ class DocumentationDashboard implements OnInit {
 }
 
 @Component({
-    directives: [DocumentationDashboard],
-    selector: 'dashboard',
+    directives: [DocumentationDashboard, TagList],
     templateUrl: 'components/dashboard/dashboard.html'
 })
 export class Dashboard {
@@ -99,5 +100,22 @@ export class Dashboard {
         @Inject('livingDocumentationService') livingDocumentationService: ILivingDocumentationService
     ) {
         this.documentationList = livingDocumentationService.documentationListObservable;
+    }
+
+    getTags(documentation: ILivingDocumentation): string[] {
+        return _.keys(
+            _.map(
+                documentation.features,
+                f => [].concat.apply([],
+                    f.Feature.Tags,
+                    f.Feature.Background ? f.Feature.Background.Tags : [],
+                    f.Feature.FeatureElements.map(fe => fe.Tags)
+                )
+            )
+            .reduce(
+                (dic, tags) => { _.each(tags, tag => dic[tag] = tag); return dic; }),
+                {}
+            )
+        );
     }
 }
