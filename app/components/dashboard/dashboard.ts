@@ -4,6 +4,8 @@ import { Observable } from 'rxjs/Rx';
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
 
+import { TagList } from '../tag-list/tag-list';
+
 interface IStatistics {
     passed: number;
     pending: number;
@@ -88,7 +90,7 @@ class DocumentationDashboard implements OnInit {
 }
 
 @Component({
-    directives: [DocumentationDashboard],
+    directives: [DocumentationDashboard, TagList],
     selector: 'dashboard',
     templateUrl: 'components/dashboard/dashboard.html'
 })
