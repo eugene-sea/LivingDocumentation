@@ -3,6 +3,6 @@
 <div class="panel panel-default" *ngFor="let documentation of documentationList | async">
   <div class="panel-body">
     <documentation-dashboard [documentation]="documentation"></documentation-dashboard>
-    <tag-list [tags]='getTags(documentation)'>Tags are being loaded...</tag-list>
+    <tag-list [documentation]="documentation"></tag-list>
   </div>
 </div>

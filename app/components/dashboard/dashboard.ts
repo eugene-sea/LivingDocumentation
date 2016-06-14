@@ -91,6 +91,7 @@ class DocumentationDashboard implements OnInit {
 
 @Component({
     directives: [DocumentationDashboard, TagList],
+    selector: 'dashboard',
     templateUrl: 'components/dashboard/dashboard.html'
 })
 export class Dashboard {
@@ -100,22 +101,5 @@ export class Dashboard {
         @Inject('livingDocumentationService') livingDocumentationService: ILivingDocumentationService
     ) {
         this.documentationList = livingDocumentationService.documentationListObservable;
-    }
-
-    getTags(documentation: ILivingDocumentation): string[] {
-        return _.keys(
-            _.map(
-                documentation.features,
-                f => [].concat.apply([],
-                    f.Feature.Tags,
-                    f.Feature.Background ? f.Feature.Background.Tags : [],
-                    f.Feature.FeatureElements.map(fe => fe.Tags)
-                )
-            )
-            .reduce(
-                (dic, tags) => { _.each(tags, tag => dic[tag] = tag); return dic; }),
-                {}
-            )
-        );
     }
 }
