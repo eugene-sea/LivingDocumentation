@@ -204,15 +204,16 @@ export default class LivingDocumentationService implements ILivingDocumentationS
             }
         }
 
-        if (!documentationCode || !featureCode) {
-            console.log('Navigate to dashboard', this.addQueryParameters());
-            this.router.navigate(['/Dashboard', this.addQueryParameters()]);
-        } else {
-            console.log('Navigate to feature', documentationCode, featureCode, this.addQueryParameters());
-            this.router.navigate(['/Feature', this.addQueryParameters({
+        let linkParams = !documentationCode || !featureCode
+            ? ['/Dashboard', this.addQueryParameters()]
+            : ['/Feature', this.addQueryParameters({
                 documentationCode: documentationCode,
                 featureCode: featureCode
-            })]);
+            })];
+
+        if (!this.router.isRouteActive(this.router.generate(linkParams))) {
+            console.log(linkParams);
+            this.router.navigate(linkParams);
         }
     }
 }
