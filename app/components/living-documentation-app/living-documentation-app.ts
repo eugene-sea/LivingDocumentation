@@ -1,7 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { RouteConfig, RouteParams, Router, ROUTER_DIRECTIVES } from '@angular/router-deprecated';
 import { FORM_DIRECTIVES, Control } from '@angular/common';
-import { Observable, Subscription } from 'rxjs/Rx';
+import { Observable } from 'rxjs/Rx';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { ILivingDocumentationService, DocumentationFilter } from '../living-documentation-service';
@@ -65,11 +65,7 @@ export class LivingDocumentationApp {
             .filter(d => d != null)
             .map(d => d.lastUpdatedOn);
 
-        let subsription: Subscription;
-        subsription = <any>router.subscribe(() => {
-            this.searchText = livingDocService.searchText || '';
-            subsription.unsubscribe();
-        });
+        router.subscribe(() => this.searchText = livingDocService.searchText || '');
         livingDocService.startInitialization();
     }
 
