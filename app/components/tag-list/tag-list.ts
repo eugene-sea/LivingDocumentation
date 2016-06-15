@@ -1,8 +1,8 @@
 import { Component, Input, Inject } from '@angular/core';
-import { ROUTER_DIRECTIVES, Router } from '@angular/router-deprecated';
+import { ROUTER_DIRECTIVES } from '@angular/router-deprecated';
 
 import { ILivingDocumentationService } from '../living-documentation-service';
-import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
+import { ILivingDocumentation } from '../../domain-model';
 
 @Component({
     directives: [ROUTER_DIRECTIVES],
@@ -11,6 +11,7 @@ import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 })
 export class TagList {
     @Input() documentation: ILivingDocumentation;
+
     constructor(
         @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
     ) { }
@@ -19,20 +20,23 @@ export class TagList {
         return ['/Dashboard', { search: encodeURIComponent(tag) }];
     }
 
-    // the goSearch handler is provided because search won't be correctly initiated by a router link. 
+    // The goSearch handler is provided because search won't be correctly initiated by a router link.
     goSearch(tag: string): void {
         this.livingDocService.search(tag);
     }
 
     get tags(): string[] {
-        return _.sortBy(_.uniq(
-            _.flatten(_.map(
-                this.documentation.features,
-                f => f.Feature.Tags.concat(
-                    f.Feature.Background ? f.Feature.Background.Tags : [],
-                    _.flatten(f.Feature.FeatureElements.map(fe => fe.Tags))
-                )
-            ))
-        ), _.identity);
+        return _.sortBy(
+            _.uniq(
+                _.flatten(_.map(
+                    this.documentation.features,
+                    f => f.Feature.Tags.concat(
+                        f.Feature.Background ? f.Feature.Background.Tags : [],
+                        _.flatten(f.Feature.FeatureElements.map(fe => fe.Tags))
+                    )
+                ))
+            ),
+            _.identity
+        );
     }
 }
