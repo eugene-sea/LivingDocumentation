@@ -65,7 +65,9 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
         @Inject('search') private searchService: ISearchService,
         private router: Router
-    ) { }
+    ) {
+        router.subscribe(() => this.searchCore());
+    }
 
     get searchText(): string {
         return this.router.currentInstruction &&
@@ -128,19 +130,27 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         this.loading.next(false);
     }
 
-    private updateQueryParameterAndNavigate(param: string, paramValue: string) {
+    private getCurrentURLSearchParams(): URLSearchParams {
         const query = this.router.currentInstruction.toUrlQuery();
-        const params = new URLSearchParams(query && query.slice(1));
-        if (paramValue) {
-            params.set(param, encodeURIComponent(paramValue));
-        } else {
+        return new URLSearchParams(query && query.slice(1));
+    }
+
+    private updateQueryParameterAndNavigate(param: string, paramValue: string) {
+        const params = this.getCurrentURLSearchParams();
+        if (!paramValue) {
             params.delete(param);
+        } else {
+            params.set(param, encodeURIComponent(paramValue));
+        }
+
+        if (params.toString()) {
+            params.set('renavigate', 'true');
         }
 
         const paramsStr = params.toString();
         const url = `/${this.router.currentInstruction.urlPath}${!paramsStr ? '' : '?' + paramsStr}`;
         console.log('Update query parameter:', url);
-        this.router.navigateByUrl(url).then(() => this.searchCore());
+        this.router.navigateByUrl(url);
     }
 
     private clearSearchCore() {
@@ -178,6 +188,11 @@ export default class LivingDocumentationService implements ILivingDocumentationS
                 [res.documentationList, res.searchContext, searchText];
         }
 
+        const params = this.getCurrentURLSearchParams();
+        if (!params.get('renavigate')) {
+            return;
+        }
+
         let [documentationCode, featureCode] = [
             this.router.currentInstruction.component.params['documentationCode'],
             this.router.currentInstruction.component.params['featureCode']
@@ -211,9 +226,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
                 featureCode: featureCode
             })];
 
-        if (!this.router.isRouteActive(this.router.generate(linkParams))) {
-            console.log(linkParams);
-            this.router.navigate(linkParams);
-        }
+        console.log(linkParams);
+        this.router.navigate(linkParams);
     }
 }

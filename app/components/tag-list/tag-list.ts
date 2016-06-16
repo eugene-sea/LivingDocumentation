@@ -17,12 +17,7 @@ export class TagList {
     ) { }
 
     makeLink(tag: string): any[] {
-        return ['/Dashboard', { search: encodeURIComponent(tag) }];
-    }
-
-    // The goSearch handler is provided because search won't be correctly initiated by a router link.
-    goSearch(tag: string): void {
-        this.livingDocService.search(tag);
+        return ['/Dashboard', { renavigate: true, search: encodeURIComponent(tag) }];
     }
 
     get tags(): string[] {

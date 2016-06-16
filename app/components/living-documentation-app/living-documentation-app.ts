@@ -43,22 +43,12 @@ export class LivingDocumentationApp {
         @Inject('version') public appVersion: string,
         router: Router
     ) {
-        livingDocService.loading.subscribe(isLoading => {
-            if (isLoading) {
-                // TODO:
-            } else if (this.isClearSearchEnabled) {
-                if (!this.searchText) {
-                    this.showOnly(this.filter);
-                } else {
-                    this.searchCore(this.searchText);
-                }
-            }
-        });
+        livingDocService.loading.subscribe(isLoading => { /* TODO: */ });
 
         this.searchControl.valueChanges
             .debounceTime(400)
             .distinctUntilChanged()
-            .subscribe((s: string) => this.searchCore(s));
+            .subscribe((s: string) => s !== livingDocService.searchText && this.searchCore(s));
 
         this.lastUpdatedOn = livingDocService.documentationListObservable
             .map(l => _.find(l, doc => !!doc.lastUpdatedOn))

@@ -85,7 +85,7 @@ export class Feature implements OnInit {
             .map(d => {
                 this.documentation = d;
                 this.featureInner = this.documentation.features[this.featureCode];
-                if (this.documentation.definition.featureEditUrl) {
+                if (this.featureInner && this.documentation.definition.featureEditUrl) {
                     this.featureEditUrl = format(
                         this.documentation.definition.featureEditUrl,
                         this.featureInner.RelativeFolder.replace(/\\/g, '/')
@@ -96,7 +96,7 @@ export class Feature implements OnInit {
             });
     }
 
-    get isExpanded(): boolean { return this.featureInner.isExpanded; }
+    get isExpanded(): boolean { return this.featureInner && this.featureInner.isExpanded; }
     set isExpanded(value: boolean) {
         this.featureInner.isExpanded = value;
         _.each(this.featureInner.Feature.FeatureElements, s => s.isExpanded = value);
