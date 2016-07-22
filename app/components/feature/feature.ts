@@ -57,6 +57,7 @@ class Status {
 class Scenario {
     @Input() documentation: ILivingDocumentation;
     @Input() scenario: IScenario;
+    @Input() isBackground = false;
 }
 
 @Component({

@@ -1,12 +1,12 @@
 ﻿<table>
   <tr>
-    <td><h4 [innerHTML]="scenario.Name || 'Background' | highlight"></h4></td>
+    <td><h4 [innerHTML]="isBackground ? 'Background' : scenario.Name | highlight"></h4></td>
     <td class="no-stretch" *ngIf="scenario.tests && scenario.tests.length === 1">
       <a class="text-right" [href]="scenario.tests[0]" target="_blank">Run test</a>
     </td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
-      <h4>
+      <h4 [hidden]="isBackground">
         <status [status]="scenario.Result" [isManual]="scenario.isManual"></status>
       </h4>
     </td>
