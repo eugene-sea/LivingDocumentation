@@ -140,7 +140,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         if (!paramValue) {
             params.delete(param);
         } else {
-            params.set(param, encodeURIComponent(paramValue));
+            params.set(param, paramValue);
         }
 
         if (params.toString()) {
