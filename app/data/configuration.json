@@ -1,0 +1,15 @@
+[
+    {
+        "code": "test",
+        "name": "Test Knowledge Base",
+        "description": "",
+        "sortOrder": 1,
+        "featuresResource": "test-data.json",
+        "issueTrackingRegExp": "@(JMS-\\d+)",
+        "issueTrackingUrl": "http://example.com/Issues/?Issue={1}",
+        "featureEditUrl": "http://example.com/Features/edit/{0}",
+        "testsResources": "test-data-tests.json",
+        "testUrl": "http://example.com/Tests/?Test=",
+        "externalTestResults": "external-results.json"
+    }
+]

@@ -1,0 +1,23 @@
+<abbr title="Item requires manual testing">
+  <span *ngIf="isManual" class="glyphicon glyphicon-user text-info"></span>
+</abbr>
+
+<abbr title="Item is passing">
+  <span
+    *ngIf="!isManual && status.WasExecuted && status.WasSuccessful"
+    class="glyphicon glyphicon-ok-sign text-success">
+  </span>
+</abbr>
+
+<abbr title="Item is pending">
+  <span
+    *ngIf="!isManual && !status.WasExecuted" class="glyphicon glyphicon-question-sign text-warning">
+  </span>
+</abbr>
+
+<abbr title="Item is failing">
+  <span
+    *ngIf="!isManual && status.WasExecuted && !status.WasSuccessful"
+    class="glyphicon glyphicon-exclamation-sign text-danger">
+  </span>
+</abbr>

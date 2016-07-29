@@ -1,0 +1,48 @@
+﻿<div *ngFor="let feature of feature | async">
+
+<table style="width: 100%">
+  <tr>
+    <td><h3 [innerHTML]="feature.Feature.Name | highlight | safe"></h3></td>
+    <td class="no-stretch">&nbsp;</td>
+    <td class="no-stretch">
+      <h3>
+        <status [status]="feature.Feature.Result" [isManual]="feature.isManual"></status>
+      </h3>
+    </td>
+    <td class="no-stretch" *ngIf="featureEditUrl">&nbsp;</td>
+    <td class="no-stretch">
+      <a [href]="featureEditUrl" target="_blank" *ngIf="featureEditUrl">
+        <h3>
+          <span class="glyphicon glyphicon-edit"></span>
+        </h3>
+      </a>
+    </td>
+    <td class="no-stretch">&nbsp;</td>
+    <td class="no-stretch">
+      <a (click)="isExpanded = !isExpanded">
+        <h3>
+          <span *ngIf="isExpanded" class="glyphicon glyphicon-collapse-up"></span>
+          <span *ngIf="!isExpanded" class="glyphicon glyphicon-collapse-down"></span>
+        </h3>
+      </a>
+    </td>
+  </tr>
+</table>
+
+<p><tags [tags]="feature.Feature.Tags" [documentation]="documentation"></tags></p>
+
+<p><i [innerHTML]="feature.Feature.Description | highlight | newline | safe"></i></p>
+
+<div *ngIf="feature.Feature.Background" class="panel panel-default">
+  <div class="panel-body">
+    <scenario [scenario]="feature.Feature.Background" [documentation]="documentation" isBackground="true"></scenario>
+  </div>
+</div>
+
+<div class="panel panel-default" *ngFor="let scenario of feature.Feature.FeatureElements">
+  <div class="panel-body">
+    <scenario [scenario]="scenario" [documentation]="documentation"></scenario>
+  </div>
+</div>
+
+<div>

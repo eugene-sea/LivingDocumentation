@@ -1,0 +1,24 @@
+﻿<i *ngIf="!folder.isRoot" [innerHTML]="folder.name | splitWords | highlight | safe"></i>
+
+<div [class.folder-indent]="!folder.isRoot">
+  <div *ngFor="let child of childrenFolders">
+    <folder [folder]="child" [documentationCode]="documentationCode"></folder>
+  </div>
+</div>
+
+<div class="folder-item-padding" [class.folder-indent]="!folder.isRoot" *ngFor="let feature of childrenFeatures">
+  <a
+    class="inactive-feature"
+    [routerLink]="getFeaturePath(feature)"
+    [class.active]="isFeatureActive(feature)"
+    [innerHTML]="feature.Feature.Name | highlight | safe">
+  </a>
+  <b>
+    <a
+      class="active-feature"
+      [routerLink]="getFeaturePath(feature)"
+      [class.active]="isFeatureActive(feature)"
+      [innerHTML]="feature.Feature.Name | highlight | safe">
+    </a>
+  </b>
+</div>

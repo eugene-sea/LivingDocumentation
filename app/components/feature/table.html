@@ -1,0 +1,32 @@
+﻿<div class="borders">
+  <div class="h-scrollable">
+    <table class="table table-condensed table-striped table-bordered no-borders">
+      <thead>
+        <tr>
+          <th
+            *ngFor="let col of table.HeaderRow; let i = index; let last = last"
+            [class.no-left-border]="!i"
+            [class.no-right-border]="last && !tests"
+            [innerHTML]="col | highlight | safe">
+          </th>
+          <th class="no-stretch no-right-border" *ngIf="tests">Test</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let row of table.DataRows; let rowIndex = index; let lastRow = last">
+          <td
+            *ngFor="let col of row; let i = index; let last = last"
+            [class.no-left-border]="!i"
+            [class.no-right-border]="last && !tests"
+            [class.no-bottom-border]="lastRow"
+            [innerHTML]="col | highlight | widen | scenarioOutlinePlaceholder | safe">
+          </td>
+          <td class="no-stretch no-right-border" [class.no-bottom-border]="lastRow" *ngIf="tests">
+            <a [href]="tests[rowIndex]" target="_blank">Run</a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,97 @@
+<div class="navbar navbar-default navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" [routerLink]="['/Dashboard', addQueryParameters()]">Living Documentation</a>
+    </div>
+
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+        <form class="navbar-form navbar-right" role="search">
+          <div class="form-group">
+            <div class="btn-group" dropdown>
+              <button
+                id="split-button"
+                type="button"
+                class="btn btn-default"
+                (click)="clearFilter()"
+                [class.active]="filter == null">
+                No Filter
+              </button>
+              <button type="button" class="btn btn-default dropdown-toggle" dropdownToggle>
+                <span class="caret"></span>
+                <span class="sr-only"></span>
+              </button>
+              <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
+                <li role="menuitem" [class.active]="filter === documentationFilter.InProgress">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.InProgress)">In Progress</a>
+                </li>
+                <li role="menuitem" [class.active]="filter === documentationFilter.Pending">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Pending)">Pending</a>
+                </li>
+                <li role="menuitem" [class.active]="filter === documentationFilter.Failing">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Failing)">Failing</a>
+                </li>
+                <li role="menuitem" [class.active]="filter === documentationFilter.Manual">
+                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Manual)">Manual</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="form-group">
+            <input
+              type="text"
+              class="form-control"
+              placeholder="Search text"
+              [ngFormControl]="searchControl"
+              [(ngModel)]="searchText"
+              (keyup.enter)="search()">
+          </div>
+          <button type="button" class="btn btn-warning" [disabled]="!isClearSearchEnabled" (click)="clearSearch()">
+            Clear
+          </button>
+        </form>
+      </div>
+  </div>
+</div>
+
+<div class="container" [hidden]="error">
+  <div class="row">
+    <div class="col-lg-4 vertical-pane">
+      <documentation-list></documentation-list>
+    </div>
+    <div class="col-lg-8 vertical-pane">
+      <router-outlet></router-outlet>
+    </div>
+  </div>
+</div>
+
+<div class="alert alert-danger" role="alert" [hidden]="!error">
+  <p>
+    <b>Error Occurred:</b>{{error}}
+  <p>
+</div>
+
+<div class="navbar navbar-default navbar-fixed-bottom">
+  <div class="container">
+    <p class="navbar-text">Living Documentation Application: v{{appVersion}}</p>
+    <div class="collapse navbar-collapse navbar-ex1-collapse">
+      <p class="navbar-text navbar-right" *ngIf="lastUpdatedOn | async">
+        Last Updated On: {{lastUpdatedOn | async | date: 'medium'}}
+      </p>
+    </div>
+  </div>
+</div>
+
+<!--<script type="text/ng-template" id="processing.html">
+  <div class="modal-body">
+    <h4 class="text-center">Loading data...</h4>
+    <div class="progress progress-striped active">
+      <div class="progress-bar" role="progressbar" style="width: 100%"></div>
+    </div>
+  </div>
+</script>-->

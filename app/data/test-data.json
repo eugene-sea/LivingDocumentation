@@ -1,0 +1,3322 @@
+{
+  "Features": [
+    {
+      "RelativeFolder": "WitnessManagement\\WitnessStartingPageNumber.feature",
+      "Feature": {
+        "Name": "Witness continutation",
+        "FeatureElements": [
+          {
+            "Name": "New witness on a case",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with a case"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I add a new witness to the job and this witness is not present on any job with this case"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "this job witness is not marked as continuation"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": false
+            }
+          },
+          {
+            "Name": "Existing witness on a case",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with a case"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I add a new witness to the job and this witness is present on any job with this case"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "this job witness is marked as continuation"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": true,
+          "WasSuccessful": false
+        },
+        "Tags": []
+      },
+      "Result": {
+        "WasExecuted": false,
+        "WasSuccessful": false
+      }
+    },
+    {
+      "RelativeFolder": "VendorManagement\\VendorRecommendation.feature",
+      "Feature": {
+        "Name": "Vendor recommendation",
+        "Description": "In order to streamline vendor management\r\nAs a user\r\nI want to be able to get vendor recommendation based on job location, job date, required services, etc. and\r\nbe able to choose vendor manually from the prioritized list of vendors eligible for the job",
+        "FeatureElements": [
+          {
+            "Name": "Recommendation based on vendor region radius",
+            "Description": "Note if job location is in US and has only state as specified then vendor region radius is ignored\r\nbecause we cannot measure distance to location precisely",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location zip code as 10007"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania with location zip code as 10536 and region radius as 30 miles"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard with location zip code as 07603 and region radius as 15 miles"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Distance to Location"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard",
+                      "11.2 miles"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Distance to Location"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania",
+                      "42.1 miles"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [
+              "@JMS-1908"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Location Field Type",
+                    "Location Field Value",
+                    "Region Field Type",
+                    "Region Field Type Value",
+                    "No Match Region Field Type",
+                    "No Match Region Field Type Value"
+                  ],
+                  "DataRows": [
+                    [
+                      "state",
+                      "NY",
+                      "state",
+                      "NY",
+                      "state",
+                      "MA"
+                    ],
+                    [
+                      "zip code",
+                      "03150",
+                      "custom",
+                      "International",
+                      "state",
+                      "HI"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Recommendation based on vendor additive region(s)",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location <Location Field Type> as <Location Field Value>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania with <Region Field Type Value> <Region Field Type> additive region"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard with <No Match Region Field Type Value> <No Match Region Field Type> additive region"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended videographers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "State",
+                    "Region Field Type",
+                    "Region Field Type Value",
+                    "No Match State",
+                    "No Match Region Field Type",
+                    "No Match Region Field Type Value"
+                  ],
+                  "DataRows": [
+                    [
+                      "NY",
+                      "county",
+                      "Bronx",
+                      "NY",
+                      "city",
+                      "Brooklyn"
+                    ],
+                    [
+                      "TX",
+                      "city",
+                      "Richmond",
+                      "VA",
+                      "city",
+                      "Richmond"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Recommendation based on vendor additive region(s) with counties/cities",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location state <State> and <Region Field Type> as <Region Field Type Value>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania with additive region with state <State> and <Region Field Type> as <Region Field Type Value>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard with additive region with state <No Match State> and <No Match Region Field Type> as <No Match Region Field Type Value>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on vendor restrictive region(s)",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location state as MA"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires interpreter"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is an interpreter Vicki Saber that is eligible for the job based on region radius"
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "this vendor has restrictive region with state as MA"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is an interpreter Susan Reichert-Culp that is eligible for the job based on region radius"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended interpreters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Vicki Saber"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Susan Reichert-Culp"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Location Eligibility Reason",
+                    "State",
+                    "Region Field Type",
+                    "Region Field Type Value"
+                  ],
+                  "DataRows": [
+                    [
+                      "region radius",
+                      "MA",
+                      "city",
+                      "Boston"
+                    ],
+                    [
+                      "additive regions",
+                      "NY",
+                      "county",
+                      "Richmond"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Recommendation based on vendor restrictive region(s) with counties/cities",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location state <State> and <Region Field Type> as <Region Field Type Value>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard that is eligible for the job based on <Location Eligibility Reason>"
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "this vendor has restrictive region with state <State> and <Region Field Type> as <Region Field Type Value>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania that is eligible for the job based on <Location Eligibility Reason>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on vendor global custom region(s)",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location state CA and city as San Francisco"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is West Coast global custom region which includes the following subregion(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "State"
+                  ],
+                  "DataRows": [
+                    [
+                      "WA"
+                    ],
+                    [
+                      "OR"
+                    ],
+                    [
+                      "CA"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania with West Coast custom additive region"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is North West Coast global custom region which includes the following subregion(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "State"
+                  ],
+                  "DataRows": [
+                    [
+                      "WA"
+                    ],
+                    [
+                      "OR"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard with North West Coast custom additive region"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended videographers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on vendor global custom region(s) with counties/cities",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location state NY and city as Brooklyn"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is Kings & Queens global custom region which includes the following subregion(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "State",
+                    "County"
+                  ],
+                  "DataRows": [
+                    [
+                      "NY",
+                      "Kings"
+                    ],
+                    [
+                      "NY",
+                      "Queens"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania with Kings & Queens custom additive region"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is Queens global custom region which includes the following subregion(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "State",
+                    "County"
+                  ],
+                  "DataRows": [
+                    [
+                      "NY",
+                      "Queens"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard with Queens custom additive region"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on vendor global custom region(s) with restrictive subregion(s)",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job with location state NY and city as Manhattan"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is NY w/o Manhattan global custom region which includes the following subregion(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Type",
+                    "State",
+                    "City"
+                  ],
+                  "DataRows": [
+                    [
+                      "Additive",
+                      "NY",
+                      ""
+                    ],
+                    [
+                      "Restrictive",
+                      "NY",
+                      "Manhattan"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania with NY w/o Manhattan custom additive region"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is NY global custom region which includes the following subregion(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Type",
+                    "State"
+                  ],
+                  "DataRows": [
+                    [
+                      "Additive",
+                      "NY"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard with NY custom additive region"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended videographers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on vendor schedule and availability",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job on Wednesday next week starting from 10:30 till 15:30"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there are the following reporters:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Name",
+                    "Recurring Global Schedule",
+                    "Recurring Schedule for Wednesday",
+                    "Availability for Wednesday Next Week"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard",
+                      "Unspecified",
+                      "Unspecified",
+                      "Unspecified"
+                    ],
+                    [
+                      "Michael Catania",
+                      "Partial from 10:00 till 16:00",
+                      "Unspecified",
+                      "Unspecified"
+                    ],
+                    [
+                      "Vicki Saber",
+                      "Available",
+                      "Not Available",
+                      "Unspecified"
+                    ],
+                    [
+                      "Debbie Zirbz",
+                      "Available",
+                      "Unspecified",
+                      "Partial from 11:00 till 19:00"
+                    ],
+                    [
+                      "Kathryn Baker",
+                      "Unspecified",
+                      "Available",
+                      "Not Available"
+                    ],
+                    [
+                      "Jacob Florez",
+                      "Unspecified",
+                      "Not Available",
+                      "Available"
+                    ],
+                    [
+                      "Lauren Sapienza",
+                      "Not Available",
+                      "Partial from 9:00 till 17:00",
+                      "Unspecified"
+                    ],
+                    [
+                      "Robert Masi",
+                      "Unspecified",
+                      "Unspecified",
+                      "Recommended for another job"
+                    ],
+                    [
+                      "Ana Oprita",
+                      "Unspecified",
+                      "Unspecified",
+                      "Approved on another job"
+                    ],
+                    [
+                      "Kyung Lee-Green",
+                      "Unspecified",
+                      "Unspecified",
+                      "Busted on another job"
+                    ],
+                    [
+                      "Jim Cheney",
+                      "Unspecified",
+                      "Unspecified",
+                      "On hold on another job"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Comment"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard",
+                      "There are no any constraints"
+                    ],
+                    [
+                      "Michael Catania",
+                      "Partial availability covers job time"
+                    ],
+                    [
+                      "Jacob Florez",
+                      "Non-recurring availability overrides recurring"
+                    ],
+                    [
+                      "Lauren Sapienza",
+                      "Partial availability covers job time"
+                    ],
+                    [
+                      "Robert Masi",
+                      "Vendors recommended for other jobs may still be recommended for new jobs"
+                    ],
+                    [
+                      "Kyung Lee-Green",
+                      "Busted vendors may be recommended for new jobs"
+                    ],
+                    [
+                      "Jim Cheney",
+                      "On hold vendors may be recommended for new jobs"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Comment"
+                  ],
+                  "DataRows": [
+                    [
+                      "Vicki Saber",
+                      "Day weekly schedule overrides global schedule"
+                    ],
+                    [
+                      "Debbie Zirbz",
+                      "Partial availability does not cover job time"
+                    ],
+                    [
+                      "Kathryn Baker",
+                      "Non-recurring availability overrides recurring"
+                    ],
+                    [
+                      "Ana Oprita",
+                      "Vendor approved on another job should not be recommended"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Job Delivery Type",
+                    "Reporter OK Delivery",
+                    "Reporter Insufficient Delivery"
+                  ],
+                  "DataRows": [
+                    [
+                      "Immediate",
+                      "Immediate",
+                      "Daily"
+                    ],
+                    [
+                      "2-Day",
+                      "Daily",
+                      "3-Day"
+                    ],
+                    [
+                      "Regular (7-Day)",
+                      "5-Day",
+                      "Regular (8-Day)"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Recommendation based on required reporting services delivery type",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services with <Job Delivery Type> delivery"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania that has fastest delivery as <Reporter OK Delivery>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard that has fastest delivery as <Reporter Insufficient Delivery>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on required services",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended videographers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Reporter Subservice"
+                  ],
+                  "DataRows": [
+                    [
+                      "realtime"
+                    ],
+                    [
+                      "rough draft"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Recommendation based on required reporting subservices",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services with <Reporter Subservice> subservice"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania that provides <Reporter Subservice> subservice"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard that does not provide <Reporter Subservice> subservice"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on required interpreter language",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires French language interpreter"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is an interpreter Vicki Saber that provides French language translation"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is an interpreter Susan Reichert-Culp that does not provide French language translation"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended interpreters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Vicki Saber"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Susan Reichert-Culp"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on standing orders vendor likes/dislikes",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job is linked to standing order with the following vendor likes/dislikes:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Is Liked"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard",
+                      "Yes"
+                    ],
+                    [
+                      "Michael Catania",
+                      "No"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended videographers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Job Property",
+                    "Job Property Value"
+                  ],
+                  "DataRows": [
+                    [
+                      "type",
+                      "Arbitration"
+                    ],
+                    [
+                      "category",
+                      "Medical"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Vendors should not be recommended for undesired job types/categories",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job is of <Job Property Value> <Job Property>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania"
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "jobs of <Job Property Value> <Job Property> are undesired for this vendor"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on vendor rank",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania with vendor rank 3"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard with vendor rank 1"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a top recommended videographer for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "David Howard is recommended"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on backup rank",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Lauren Sapienza"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Jim Cheney"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "Michael Catania is assigned as reporter to the job with the following backups:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Backup Rank"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard",
+                      "1"
+                    ],
+                    [
+                      "Lauren Sapienza",
+                      "2"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "Michael Catania rejects the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "David Howard is recommended"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system to recommend another reporter for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "Lauren Sapienza is recommended"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "Lauren Sapienza rejects the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "Jim Cheney is recommended"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on requested vendors",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "job client requested the following vendor(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a top recommended videographer for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "David Howard is recommended"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system to recommend another videographer for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "Michael Catania is recommended"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Recommendation based on currently assigned vendor",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "Michael Catania is assigned as reporter to the job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a top recommended reporter for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "Michael Catania is recommended"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system to recommend another reporter for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "David Howard is recommended"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Top recommended vendor should not be one of the already rejected vendors on job",
+            "Description": "Note in contrast to top recommended vendor, list of recommended vendors \r\nshould also include rejected vendors",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard with vendor rank 1"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Lauren Sapienza with vendor rank 2"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "Michael Catania is assigned as videographer to the job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "Michael Catania rejects the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "David Howard is recommended"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system to recommend another videographer for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "Lauren Sapienza is recommended"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended videographers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ],
+                    [
+                      "David Howard"
+                    ],
+                    [
+                      "Lauren Sapienza"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor Status"
+                  ],
+                  "DataRows": [
+                    [
+                      "inactive"
+                    ],
+                    [
+                      "deleted"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Inactive/deleted vendors should not be recommended",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter Michael Catania"
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "this reporter is <Vendor Status>"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Define priorities of recommendation criteria",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Michael Catania"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer David Howard"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "Michael Catania is assigned as videographer to the job with the following backups:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Backup Rank"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard",
+                      "1"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Jacob Florez"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job is linked to standing order with the following vendor likes/dislikes:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor",
+                    "Is Liked"
+                  ],
+                  "DataRows": [
+                    [
+                      "Jacob Florez",
+                      "Yes"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Lauren Sapienza"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "job client requested the following vendor(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Lauren Sapienza"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Robert Masi with vendor rank 1"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a videographer Vicki Saber"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this vendor is on hold on another job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended videographers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get recommendations in the following order:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Order",
+                    "Vendor",
+                    "System Recommended Reason"
+                  ],
+                  "DataRows": [
+                    [
+                      "1",
+                      "Michael Catania",
+                      ""
+                    ],
+                    [
+                      "2",
+                      "Vicki Saber",
+                      "hold status"
+                    ],
+                    [
+                      "3",
+                      "Jacob Florez",
+                      "standing order"
+                    ],
+                    [
+                      "4",
+                      "Lauren Sapienza",
+                      "request"
+                    ],
+                    [
+                      "5",
+                      "David Howard",
+                      "backup status"
+                    ],
+                    [
+                      "6",
+                      "Robert Masi",
+                      "vendor rank"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Vendor providing one service for a job should not be recommended for another service on that job",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter/videographer Michael Catania"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "Michael Catania is assigned as videographer to the job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Michael Catania"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Job location should be ignored for streaming services",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires streaming services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires reporting services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a streaming services provider Live Deposition with no location"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a reporter David Howard with no location"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended streaming services providers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Live Deposition"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended reporters for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I do not get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "David Howard"
+                    ],
+                    [
+                      "Live Deposition"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Availability and schedule should be ignored for streaming services providers",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job on Thursday next week"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires streaming services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a streaming services provider Live Deposition"
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "this vendor is approved on another job on Thursday next week"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I ask system for a list of recommended streaming services providers for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get the following recommendation(s):",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor"
+                  ],
+                  "DataRows": [
+                    [
+                      "Live Deposition"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": true,
+          "WasSuccessful": true
+        },
+        "Tags": [
+          "@JMS-1762"
+        ]
+      },
+      "Result": {
+        "WasExecuted": true,
+        "WasSuccessful": true
+      }
+    },
+    {
+      "RelativeFolder": "VendorManagement\\DoNotAllowToDeleteVendorsInUse.feature",
+      "Feature": {
+        "Name": "Don't allow the deletion of vendors that are in use",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Vendor Usage"
+                  ],
+                  "DataRows": [
+                    [
+                      "recommended as reporter for some job"
+                    ],
+                    [
+                      "on hold"
+                    ],
+                    [
+                      "a backup vendor on some job"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Don't allow the deletion of vendors that are in use",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "there is a reporter Cary Bigelow"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "Cary Bigelow is <Vendor Usage>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I try to delete vendor Cary Bigelow"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get an error that vendor is in use"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": true,
+          "WasSuccessful": true
+        },
+        "Tags": [
+          "@JMS-2069"
+        ]
+      },
+      "Result": {
+        "WasExecuted": true,
+        "WasSuccessful": true
+      }
+    },
+    {
+      "RelativeFolder": "VendorManagement\\AutomaticReplacingOfUnavailableVendor.feature",
+      "Feature": {
+        "Name": "Automatically replace vendor in jobs when marked as unavailable for some date",
+        "Description": "In order to streamline vendor management\r\nAs a user\r\nI want vendor recommended for some jobs but then marked as unavailable for some date \r\nto be automatically replaced in jobs on the that date",
+        "FeatureElements": [
+          {
+            "Name": "User marks vendor as unavailable on some day",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this job requires videographer services"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "videographer Cary Bigelow is recommended for the job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I mark this videographer as unavailable on the job date"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "Cary Bigelow is replaced on the job by another vendor"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": true,
+          "WasSuccessful": true
+        },
+        "Tags": [
+          "@JMS-1384",
+          "@transactional"
+        ]
+      },
+      "Result": {
+        "WasExecuted": true,
+        "WasSuccessful": true
+      }
+    },
+    {
+      "RelativeFolder": "Security\\PasswordComplexityRules.feature",
+      "Feature": {
+        "Name": "Password complexity rules",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "New Password",
+                    "Validation Result",
+                    "Comment"
+                  ],
+                  "DataRows": [
+                    [
+                      "psswrd1",
+                      "not accepted",
+                      "Password length less than 8 charactes"
+                    ],
+                    [
+                      "Password",
+                      "accepted",
+                      "Upper and lowercase alphabetic characters present"
+                    ],
+                    [
+                      "password1",
+                      "accepted",
+                      "Numerical character present"
+                    ],
+                    [
+                      "12345678",
+                      "accepted",
+                      "Numerical character present"
+                    ],
+                    [
+                      "password&",
+                      "accepted",
+                      "Special character present"
+                    ],
+                    [
+                      "password",
+                      "not accepted",
+                      "Only lowercase letters"
+                    ],
+                    [
+                      "PASSWORD",
+                      "not accepted",
+                      "Only uppercase letters"
+                    ],
+                    [
+                      "!@#$%^&*()_+=-",
+                      "accepted",
+                      "Special character present"
+                    ],
+                    [
+                      "dollartest$",
+                      "accepted",
+                      "Special character present"
+                    ],
+                    [
+                      "password 1",
+                      "not accepted",
+                      "Whitespace characters are not accepted"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Validate password complexity",
+            "Description": "This scenario is applicable to JMS and CP users",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I want to reset my password"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I enter my new password as <New Password>"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "this password is <Validation Result> as valid"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": false,
+              "WasSuccessful": false
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": false,
+          "WasSuccessful": false
+        },
+        "Tags": [
+          "@JMS-2082"
+        ]
+      },
+      "Result": {
+        "WasExecuted": false,
+        "WasSuccessful": false
+      }
+    },
+    {
+      "RelativeFolder": "JobManagement\\CommissionRules.feature",
+      "Feature": {
+        "Name": "Commission rules",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Job's Commission Change"
+                  ],
+                  "DataRows": [
+                    [
+                      "add a new salesperson"
+                    ],
+                    [
+                      "remove a salesperson"
+                    ],
+                    [
+                      "change the order of the sales people"
+                    ],
+                    [
+                      "change the commission value for salesperson"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Manual custom commission rules",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I <Job's Commission Change>"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission type is set to manual custom"
+              }
+            ],
+            "Tags": [
+              "@manual"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Job Change"
+                  ],
+                  "DataRows": [
+                    [
+                      "scheduling firm"
+                    ],
+                    [
+                      "primary contact of scheduling firm"
+                    ],
+                    [
+                      "case name"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Commission recalculation rules",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I change <Job Change> for the job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is recalculated"
+              }
+            ],
+            "Tags": [
+              "@manual"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "If commission is of manual custom type then use it on recalculation",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "job's commission is of manual custom type"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is unchanged"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Primary Contact Commission",
+                    "Resulting Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "some commission",
+                      "primary scheduling contact's commission"
+                    ],
+                    [
+                      "no commission",
+                      "House"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Commission recalculation when there are no other jobs with job's case",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job of some case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there are no other jobs for this case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "primary scheduling contact has <Primary Contact Commission>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to <Resulting Commission>"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Name": "Commission recalculation when there are other jobs with job's case and scheduling firm",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job of some case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there are other jobs for this case and same scheduling firm"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to commission from matching job with highest job number"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Primary Contact Commission",
+                    "Resulting Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "no commission",
+                      "commission from matching job with lowest job number"
+                    ],
+                    [
+                      "same commission as matching job with lowest job number",
+                      "commission from matching job with lowest job number"
+                    ],
+                    [
+                      "different commission than matching job with lowest job number",
+                      "new commission of system custom type"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Commission recalculation when there are other jobs with job's case but for other scheduling firms",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I have a job of some case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there are other jobs for this case but they are all for other scheduling firms"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "primary scheduling contact has <Primary Contact Commission>"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "job's commission is recalculated"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to <Resulting Commission>"
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "#1 Kevin's",
+                    "#2 Kevin's",
+                    "#3 Kevin's",
+                    "#1 Mike's",
+                    "#2 Mike's",
+                    "#3 Mike's"
+                  ],
+                  "DataRows": [
+                    [
+                      "100",
+                      "50",
+                      "100",
+                      "100",
+                      "no commission",
+                      "75"
+                    ],
+                    [
+                      "100",
+                      "60",
+                      "105",
+                      "80",
+                      "70",
+                      "95"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "System custom commission calculation rule",
+            "Description": "Rule: (75% of commission on lowest number job of the case) + (50% of commission of primary scheduling contact on job of the case for which commission is calculated)",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "there is a case"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "lowest number job of the case has the following commission:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Salesperson",
+                    "Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "Kevin",
+                      "<#1 Kevin's>"
+                    ],
+                    [
+                      "Mike",
+                      "<#1 Mike's>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "there is a contact with the following commission:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Salesperson",
+                    "Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "Kevin",
+                      "<#2 Kevin's>"
+                    ],
+                    [
+                      "Mike",
+                      "<#2 Mike's>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "this contact is set as primary for scheduling firm on some job"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "new commission of system custom type is created for this job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "job's commission is set to the following:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Salesperson",
+                    "Commission"
+                  ],
+                  "DataRows": [
+                    [
+                      "Kevin",
+                      "<#3 Kevin's>"
+                    ],
+                    [
+                      "Mike",
+                      "<#3 Mike's>"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Tags": [
+              "@transactional"
+            ],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": true,
+          "WasSuccessful": true
+        },
+        "Tags": [
+          "@JMS-2060",
+          "@iteration"
+        ]
+      },
+      "Result": {
+        "WasExecuted": true,
+        "WasSuccessful": true
+      }
+    },
+    {
+      "RelativeFolder": "ClientPortal\\QuickAddContact.feature",
+      "Feature": {
+        "Name": "Ability for user to quickly add new contacts",
+        "Description": "",
+        "FeatureElements": [
+          {
+            "Name": "Send notification email when user creates new contacts via Quick Add",
+            "Description": "New job # in email should be a hyperlink to the JMS job. \r\nAll contacts (including current user) in email should be hyperlinks to their CRM contacts.",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user Alfredo Chamorro from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following new contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Last Name",
+                    "Email",
+                    "Direct Phone"
+                  ],
+                  "DataRows": [
+                    [
+                      "Alexis",
+                      "Freeman",
+                      "afreeman@akingump.com",
+                      "(212) 702-9580"
+                    ],
+                    [
+                      "Alisa",
+                      "Strathearn",
+                      "astrathearn@akingump.com",
+                      "(212) 702-9581"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "the following email is sent to info@tsgreporting.com:",
+                "DocStringArgument": "Alfredo Chamorro from Akin Gump just added one or more new contacts to CRM while creating job [new job #]\r\n\r\nAlexis Freeman\r\n\tafreeman@akingump.com\r\n\t(212) 702-9580\r\n\r\nAlisa Strathearn\r\n\tastrathearn@akingump.com\r\n\t(212) 702-9581"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "Existing Contact Email",
+                    "Error"
+                  ],
+                  "DataRows": [
+                    [
+                      "astrathearn@akingump.com",
+                      "contact with email astrathearn@akingump.com already exists"
+                    ],
+                    [
+                      "",
+                      "contact with name Alisa Strathearn for Akin Gump already exists"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Contact Quick Add should report an error when adding duplicate contact",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Last Name",
+                    "Email"
+                  ],
+                  "DataRows": [
+                    [
+                      "Alexis",
+                      "Freeman",
+                      "afreeman@akingump.com"
+                    ],
+                    [
+                      "Alisa",
+                      "Strathearn",
+                      "<Existing Contact Email>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "But",
+                "NativeKeyword": "But ",
+                "Name": "Alisa Strathearn contact for Akin Gump already exists"
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get an error that <Error>"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "#1 First Name",
+                    "#1 Email",
+                    "#2 First Name",
+                    "#2 Email",
+                    "Error"
+                  ],
+                  "DataRows": [
+                    [
+                      "Mike",
+                      "freeman@akingump.com",
+                      "Alexis",
+                      "freeman@akingump.com",
+                      "contact with email freeman@akingump.com cannot be added multiple times"
+                    ],
+                    [
+                      "Alexis",
+                      "",
+                      "Alexis",
+                      "",
+                      "contact with name Alexis Freeman cannot be added multiple times"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Contact Quick Add should report an error when adding similar contact multiple times",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Last Name",
+                    "Email"
+                  ],
+                  "DataRows": [
+                    [
+                      "<#1 First Name>",
+                      "Freeman",
+                      "<#1 Email>"
+                    ],
+                    [
+                      "<#2 First Name>",
+                      "Freeman",
+                      "<#2 Email>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get an error that <Error>"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          },
+          {
+            "Examples": [
+              {
+                "Name": "",
+                "Description": "",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Email",
+                    "Error"
+                  ],
+                  "DataRows": [
+                    [
+                      "",
+                      "",
+                      "first name is a required field"
+                    ],
+                    [
+                      "Mike",
+                      "freeman@akingump",
+                      "email \"freeman@akingump\" is invalid"
+                    ]
+                  ]
+                }
+              }
+            ],
+            "Name": "Contact Quick Add other validation scenarios",
+            "Description": "",
+            "Steps": [
+              {
+                "Keyword": "Given",
+                "NativeKeyword": "Given ",
+                "Name": "I'm a user from Akin Gump"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I want to schedule a new job"
+              },
+              {
+                "Keyword": "And",
+                "NativeKeyword": "And ",
+                "Name": "I have entered the following contacts via Quick Add:",
+                "TableArgument": {
+                  "HeaderRow": [
+                    "First Name",
+                    "Email"
+                  ],
+                  "DataRows": [
+                    [
+                      "<First Name>",
+                      "<Email>"
+                    ]
+                  ]
+                }
+              },
+              {
+                "Keyword": "When",
+                "NativeKeyword": "When ",
+                "Name": "I submit new job"
+              },
+              {
+                "Keyword": "Then",
+                "NativeKeyword": "Then ",
+                "Name": "I get an error that <Error>"
+              }
+            ],
+            "Tags": [],
+            "Result": {
+              "WasExecuted": true,
+              "WasSuccessful": true
+            }
+          }
+        ],
+        "Result": {
+          "WasExecuted": true,
+          "WasSuccessful": true
+        },
+        "Tags": [
+          "@JMS-2036",
+          "@iteration"
+        ]
+      },
+      "Result": {
+        "WasExecuted": true,
+        "WasSuccessful": true
+      }
+    }
+  ],
+  "Configuration": {
+    "GeneratedOn": "11 August 2015 11:53:18"
+  }
+}
