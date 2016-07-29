@@ -1,6 +1,6 @@
 ﻿<table>
   <tr>
-    <td><h4 [innerHTML]="isBackground ? 'Background' : scenario.Name | highlight"></h4></td>
+    <td><h4 [innerHTML]="isBackground ? 'Background' : scenario.Name | highlight | safe"></h4></td>
     <td class="no-stretch" *ngIf="scenario.tests && scenario.tests.length === 1">
       <a class="text-right" [href]="scenario.tests[0]" target="_blank">Run test</a>
     </td>
@@ -27,10 +27,10 @@
     <tags [tags]="scenario.Tags" [documentation]="documentation"></tags>
   </p>
 
-  <p><i [innerHTML]="scenario.Description | highlight | newline"></i></p>
+  <p><i [innerHTML]="scenario.Description | highlight | newline | safe"></i></p>
 
   <div *ngFor="let step of scenario.Steps" style="margin-bottom: 10px">
-    <b>{{step.Keyword}}</b> <span [innerHTML]="step.Name | highlight | scenarioOutlinePlaceholder"></span>
+    <b>{{step.Keyword}}</b> <span [innerHTML]="step.Name | highlight | scenarioOutlinePlaceholder | safe"></span>
     <div *ngIf="step.TableArgument">
       <feature-table [table]="step.TableArgument"></feature-table>
     </div>
@@ -38,7 +38,7 @@
       <div class="well h-scrollable">
         <span
           class="no-wrap"
-          [innerHTML]="step.DocStringArgument | highlight | scenarioOutlinePlaceholder | newline">
+          [innerHTML]="step.DocStringArgument | highlight | scenarioOutlinePlaceholder | newline | safe">
         </span>
       </div>
     </div>
@@ -47,7 +47,7 @@
   <div *ngIf="scenario.Examples">
     <div style="margin-bottom: 10px">
       <b>Examples:</b>
-      <p><i [innerHTML]="scenario.Examples.Description | highlight | newline"></i></p>
+      <p><i [innerHTML]="scenario.Examples.Description | highlight | newline | safe"></i></p>
       <feature-table [table]="scenario.Examples.TableArgument" [tests]="scenario.tests"></feature-table>
     </div>
   </div>

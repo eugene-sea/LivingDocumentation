@@ -1,4 +1,4 @@
-﻿<i *ngIf="!folder.isRoot" [innerHTML]="folder.name | splitWords | highlight"></i>
+﻿<i *ngIf="!folder.isRoot" [innerHTML]="folder.name | splitWords | highlight | safe"></i>
 
 <div [class.folder-indent]="!folder.isRoot">
   <div *ngFor="let child of childrenFolders">
@@ -11,14 +11,14 @@
     class="inactive-feature"
     [routerLink]="getFeaturePath(feature)"
     [class.active]="isFeatureActive(feature)"
-    [innerHTML]="feature.Feature.Name | highlight">
+    [innerHTML]="feature.Feature.Name | highlight | safe">
   </a>
   <b>
     <a
       class="active-feature"
       [routerLink]="getFeaturePath(feature)"
       [class.active]="isFeatureActive(feature)"
-      [innerHTML]="feature.Feature.Name | highlight">
+      [innerHTML]="feature.Feature.Name | highlight | safe">
     </a>
   </b>
 </div>

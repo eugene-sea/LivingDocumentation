@@ -4,11 +4,11 @@ import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { IFolder, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
-import { HighlightPipe, SplitWordsFilter } from '../pipes';
+import { HighlightPipe, SplitWordsFilter, SafePipe } from '../pipes';
 
 @Component({
     directives: [ROUTER_DIRECTIVES, forwardRef(() => Folder)],
-    pipes: [HighlightPipe, SplitWordsFilter],
+    pipes: [HighlightPipe, SplitWordsFilter, SafePipe],
     selector: 'folder',
     templateUrl: 'components/documentation-list/folder.html'
 })

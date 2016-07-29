@@ -1,4 +1,5 @@
 import { Pipe, PipeTransform, Inject } from '@angular/core';
+import { DomSanitizationService, SafeHtml } from '@angular/platform-browser';
 
 import { ILivingDocumentationService } from './living-documentation-service';
 import { splitWords } from './search-service';
@@ -6,7 +7,7 @@ import { splitWords } from './search-service';
 @Pipe({ name: 'newline' })
 export class NewLinePipe implements PipeTransform {
     transform(str: string): string {
-        return !str ? str : str.replace(/\r\n/mg, '<br />');
+        return !str ? str : str.replace(/\r\n/mg, '<br>');
     }
 }
 
@@ -56,6 +57,15 @@ export class HighlightTagPipe implements PipeTransform {
 export class WidenPipe implements PipeTransform {
     transform(str: string): string {
         return widen(str);
+    }
+}
+
+@Pipe({ name: 'safe' })
+export class SafePipe implements PipeTransform {
+    constructor(private sanitizer: DomSanitizationService) { }
+
+    transform(str: string): SafeHtml {
+        return this.sanitizer.bypassSecurityTrustHtml(str);
     }
 }
 

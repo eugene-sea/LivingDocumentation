@@ -1,7 +1,7 @@
 {
   "name": "living-documentation",
   "version": false,
-  "ambientDependencies": {
+  "globalDependencies": {
     "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "mime": "github:DefinitelyTyped/DefinitelyTyped/mime/mime.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",

@@ -22,13 +22,14 @@ bury_copy ./node_modules/zone.js/dist/zone.js ./app/node_components/zone.js/
 bury_copy ./node_modules/reflect-metadata/Reflect.js ./app/node_components/reflect-metadata/
 bury_copy ./node_modules/reflect-metadata/Reflect.js.map ./app/node_components/reflect-metadata/
 
-bury_copy ./node_modules/@angular/common/common.umd.js ./app/node_components/@angular/common/
-bury_copy ./node_modules/@angular/compiler/compiler.umd.js ./app/node_components/@angular/compiler/
-bury_copy ./node_modules/@angular/core/core.umd.js ./app/node_components/@angular/core/
-bury_copy ./node_modules/@angular/http/http.umd.js ./app/node_components/@angular/http/
-bury_copy ./node_modules/@angular/platform-browser/platform-browser.umd.js ./app/node_components/@angular/platform-browser/
-bury_copy ./node_modules/@angular/platform-browser-dynamic/platform-browser-dynamic.umd.js ./app/node_components/@angular/platform-browser-dynamic/
-bury_copy ./node_modules/@angular/router-deprecated/router-deprecated.umd.js ./app/node_components/@angular/router-deprecated/
+bury_copy ./node_modules/@angular/common/bundles/common.umd.js ./app/node_components/@angular/common/
+bury_copy ./node_modules/@angular/compiler/bundles/compiler.umd.js ./app/node_components/@angular/compiler/
+bury_copy ./node_modules/@angular/core/bundles/core.umd.js ./app/node_components/@angular/core/
+bury_copy ./node_modules/@angular/http/bundles/http.umd.js ./app/node_components/@angular/http/
+bury_copy ./node_modules/@angular/platform-browser/bundles/platform-browser.umd.js ./app/node_components/@angular/platform-browser/
+bury_copy ./node_modules/@angular/platform-browser-dynamic/bundles/platform-browser-dynamic.umd.js ./app/node_components/@angular/platform-browser-dynamic/
+bury_copy ./node_modules/@angular/router-deprecated/bundles/router-deprecated.umd.js ./app/node_components/@angular/router-deprecated/
+bury_copy ./node_modules/@angular/forms/bundles/forms.umd.js ./app/node_components/@angular/forms/
 bury_copy ./node_modules/@angular/core/src/facade/lang.js ./app/node_components/@angular/core/src/facade/lang/
 bury_copy ./node_modules/@angular/core/src/facade/lang.js.map ./app/node_components/@angular/core/src/facade/lang/
 

@@ -2,7 +2,7 @@
 
 <table style="width: 100%">
   <tr>
-    <td><h3 [innerHTML]="feature.Feature.Name | highlight"></h3></td>
+    <td><h3 [innerHTML]="feature.Feature.Name | highlight | safe"></h3></td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
       <h3>
@@ -31,7 +31,7 @@
 
 <p><tags [tags]="feature.Feature.Tags" [documentation]="documentation"></tags></p>
 
-<p><i [innerHTML]="feature.Feature.Description | highlight | newline"></i></p>
+<p><i [innerHTML]="feature.Feature.Description | highlight | newline | safe"></i></p>
 
 <div *ngIf="feature.Feature.Background" class="panel panel-default">
   <div class="panel-body">
