@@ -1,6 +1,6 @@
 import { Injectable, Inject } from '@angular/core';
 import { Router } from '@angular/router-deprecated';
-import { URLSearchParams } from '@angular/http';
+import { URLSearchParams, QueryEncoder } from '@angular/http';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
 
 import { ILivingDocumentation } from '../domain-model';
@@ -38,6 +38,16 @@ export interface ILivingDocumentationService {
     showOnly(filter: DocumentationFilter): void;
 
     addQueryParameters(params?: any): any;
+}
+
+class StdQueryEncoder extends QueryEncoder {
+    encodeKey(k: string): string {
+        return encodeURIComponent(k);
+    }
+
+    encodeValue(v: string): string {
+        return encodeURIComponent(v);
+    }
 }
 
 @Injectable()
@@ -132,7 +142,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
 
     private getCurrentURLSearchParams(): URLSearchParams {
         const query = this.router.currentInstruction.toUrlQuery();
-        return new URLSearchParams(query && query.slice(1));
+        return new URLSearchParams(query && decodeURIComponent(query.slice(1)), new StdQueryEncoder());
     }
 
     private updateQueryParameterAndNavigate(param: string, paramValue: string) {

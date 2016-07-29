@@ -43,7 +43,11 @@ export class LivingDocumentationApp {
         @Inject('version') public appVersion: string,
         router: Router
     ) {
-        livingDocService.loading.subscribe(isLoading => { /* TODO: */ });
+        livingDocService.loading.subscribe(isLoading => {
+            if (!isLoading && this.searchText) {
+                this.search();
+            }
+        });
 
         this.searchControl.valueChanges
             .debounceTime(400)
