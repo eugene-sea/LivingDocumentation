@@ -76,7 +76,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         router.routerState.queryParams.subscribe(p => {
             this.searchText = getSearchText(p);
             this.filterRaw = p['showOnly'];
-            const renavigate = p['renavigate'];
+            const renavigate = !!this.searchText || !!this.filter;
             if (!this.loading.value) {
                 this.searchCore(renavigate);
             } else {
@@ -135,10 +135,6 @@ export default class LivingDocumentationService implements ILivingDocumentationS
             params[param] = encodeURIComponent(paramValue);
         }
 
-        if (_.any(params, _.identity)) {
-            params['renavigate'] = 'true';
-        }
-
         const url = this.router.serializeUrl(urlTree);
         console.log('Update query parameter:', url);
         this.router.navigateByUrl(url);
@@ -185,7 +181,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         }
 
         const state = this.router.routerState;
-        const params = state.firstChild(state.root).snapshot.params;
+        const params = (state.root.firstChild && state.root.firstChild.snapshot.params) || {};
         let [documentationCode, featureCode] = [params['documentationCode'], params['featureCode']];
 
         if (documentationCode && featureCode) {
