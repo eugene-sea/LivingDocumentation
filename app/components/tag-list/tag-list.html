@@ -5,7 +5,8 @@
             type="button"
             class="btn btn-xs btn-default"
             style="margin-right: 7px; margin-bottom: 7px;"
-            [routerLink]="makeLink(tag)"
+            routerLink="/dashboard"
+            [queryParams]="{ renavigate: true, search: tag }"
             *ngFor="let tag of tags">
             {{tag}}
         </button>

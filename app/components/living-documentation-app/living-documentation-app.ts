@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { RouteConfig, RouteParams, Router, ROUTER_DIRECTIVES } from '@angular/router-deprecated';
+import { ActivatedRoute, RouterConfig, ROUTER_DIRECTIVES } from '@angular/router';
 import { FORM_DIRECTIVES, Control } from '@angular/common';
 import { Observable } from 'rxjs/Rx';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
@@ -12,20 +12,23 @@ import { Feature } from '../feature/feature';
 @Component({
     directives: [Feature],
     selector: 'feature-container',
-    template: `
-        <feature [documentationCode]="params.get('documentationCode')" [featureCode]="params.get('featureCode')">
-        </feature>
-    `
+    template: '<feature [documentationCode]="documentationCode" [featureCode]="featureCode"></feature>'
 })
 class FeatureContainer {
-    constructor(public params: RouteParams) { }
+    documentationCode: Observable<string>;
+    featureCode: Observable<string>;
+    constructor(activatedRoute: ActivatedRoute) {
+        this.documentationCode = activatedRoute.params.map(r => r['documentationCode']);
+        this.featureCode = activatedRoute.params.map(r => r['featureCode']);
+    }
 }
 
-@RouteConfig([
-    { component: Dashboard, name: 'Dashboard', path: '/dashboard' },
-    { component: FeatureContainer, name: 'Feature', path: '/feature/:documentationCode/:featureCode' },
-    { path: '/**', redirectTo: ['Dashboard'] }
-])
+export const routes: RouterConfig = [
+    { component: Dashboard, path: 'dashboard' },
+    { component: FeatureContainer, path: 'feature/:documentationCode/:featureCode' },
+    { component: Dashboard, path: '**' }
+];
+
 @Component({
     directives: [ROUTER_DIRECTIVES, DROPDOWN_DIRECTIVES, FORM_DIRECTIVES, DocumentationList],
     selector: 'living-documentation-app',
@@ -40,14 +43,9 @@ export class LivingDocumentationApp {
 
     constructor(
         @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
-        @Inject('version') public appVersion: string,
-        router: Router
+        @Inject('version') public appVersion: string
     ) {
-        livingDocService.loading.subscribe(isLoading => {
-            if (!isLoading && this.searchText) {
-                this.search();
-            }
-        });
+        livingDocService.loading.subscribe(isLoading => { /* TODO: */ });
 
         this.searchControl.valueChanges
             .debounceTime(400)
@@ -59,7 +57,7 @@ export class LivingDocumentationApp {
             .filter(d => d != null)
             .map(d => d.lastUpdatedOn);
 
-        router.subscribe(() => this.searchText = livingDocService.searchText || '');
+        livingDocService.searchTextObservable.subscribe(s => this.searchText = s || '');
         livingDocService.startInitialization();
     }
 
@@ -85,10 +83,6 @@ export class LivingDocumentationApp {
 
     showOnly(filter: DocumentationFilter): void {
         this.livingDocService.showOnly(filter);
-    }
-
-    addQueryParameters(params: any): any {
-        return this.livingDocService.addQueryParameters(params);
     }
 
     private searchCore(text: string): void {

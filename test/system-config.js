@@ -20,7 +20,7 @@ System.config({
         '@angular/http': { main: 'http.umd.js' },
         '@angular/platform-browser': { main: 'platform-browser.umd.js' },
         '@angular/platform-browser-dynamic': { main: 'platform-browser-dynamic.umd.js' },
-        '@angular/router-deprecated': { main: 'router-deprecated.umd.js' },
+        '@angular/router': { main: 'router.umd.js' },
         '@angular/core/src/facade/lang': { main: 'lang.js' },
         'app': { defaultExtension: 'ts' },
         'app/node_components': { },

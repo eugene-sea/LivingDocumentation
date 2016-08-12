@@ -1,5 +1,5 @@
 import { Component, Input, Inject, OnInit, forwardRef } from '@angular/core';
-import { ROUTER_DIRECTIVES, Router } from '@angular/router-deprecated';
+import { ROUTER_DIRECTIVES } from '@angular/router';
 import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { IFolder, IFeature } from '../../domain-model';
@@ -19,25 +19,13 @@ class Folder implements OnInit {
     childrenFeatures: IFeature[];
 
     constructor(
-        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
-        private router: Router
+        @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
     ) { }
 
     ngOnInit(): void {
         this.childrenFolders = this.folder.children.sort((a, b) => a.name < b.name ? -1 : a.name > b.name ? 1 : 0);
         this.childrenFeatures = this.folder.features.sort(
             (a, b) => a.Feature.Name < b.Feature.Name ? -1 : a.Feature.Name > b.Feature.Name ? 1 : 0);
-    }
-
-    getFeaturePath(feature: IFeature): any[] {
-        return ['/Feature', this.livingDocService.addQueryParameters({
-            documentationCode: this.documentationCode,
-            featureCode: feature.code
-        })];
-    }
-
-    isFeatureActive(feature: IFeature): boolean {
-        return this.router.isRouteActive(this.router.generate(this.getFeaturePath(feature)));
     }
 }
 

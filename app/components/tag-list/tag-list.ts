@@ -1,5 +1,5 @@
 import { Component, Input, Inject } from '@angular/core';
-import { ROUTER_DIRECTIVES } from '@angular/router-deprecated';
+import { ROUTER_DIRECTIVES } from '@angular/router';
 
 import { ILivingDocumentationService } from '../living-documentation-service';
 import { ILivingDocumentation } from '../../domain-model';
@@ -15,10 +15,6 @@ export class TagList {
     constructor(
         @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
     ) { }
-
-    makeLink(tag: string): any[] {
-        return ['/Dashboard', { renavigate: true, search: encodeURIComponent(tag) }];
-    }
 
     get tags(): string[] {
         return _.sortBy(

@@ -1,6 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Router } from '@angular/router-deprecated';
-import { URLSearchParams, QueryEncoder } from '@angular/http';
+import { Router } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
 
 import { ILivingDocumentation } from '../domain-model';
@@ -27,6 +26,8 @@ export interface ILivingDocumentationService {
 
     searchText: string;
 
+    searchTextObservable: Observable<string>;
+
     filter: DocumentationFilter;
 
     startInitialization(): void;
@@ -36,18 +37,6 @@ export interface ILivingDocumentationService {
     clearSearch(): void;
 
     showOnly(filter: DocumentationFilter): void;
-
-    addQueryParameters(params?: any): any;
-}
-
-class StdQueryEncoder extends QueryEncoder {
-    encodeKey(k: string): string {
-        return encodeURIComponent(k);
-    }
-
-    encodeValue(v: string): string {
-        return encodeURIComponent(v);
-    }
 }
 
 @Injectable()
@@ -69,26 +58,34 @@ export default class LivingDocumentationService implements ILivingDocumentationS
 
     searchContext: ISearchContext = null;
 
+    searchText: string;
+
+    searchTextObservable: Observable<string>;
+
     private currentSearchText = '';
+
+    private filterRaw: string;
 
     constructor(
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
         @Inject('search') private searchService: ISearchService,
         private router: Router
     ) {
-        router.subscribe(() => this.searchCore());
-    }
-
-    get searchText(): string {
-        return this.router.currentInstruction &&
-            decodeURIComponent(this.router.currentInstruction.component.params['search'] || '');
+        const getSearchText = (p: { [key: string]: any }) => p['search'] && decodeURIComponent(p['search']);
+        this.searchTextObservable = router.routerState.queryParams.map(getSearchText);
+        router.routerState.queryParams.subscribe(p => {
+            this.searchText = getSearchText(p);
+            this.filterRaw = p['showOnly'];
+            const renavigate = p['renavigate'];
+            if (!this.loading.value) {
+                this.searchCore(renavigate);
+            } else {
+                this.loading.skip(1).first().subscribe(() => this.searchCore(renavigate));
+            }
+        });
     }
 
     get filter(): DocumentationFilter { return this.filterRaw && (<any>DocumentationFilter)[this.filterRaw]; }
-
-    private get filterRaw(): string {
-        return this.router.currentInstruction && this.router.currentInstruction.component.params['showOnly'];
-    }
 
     startInitialization(): void {
         this.livingDocumentationServer.getResourceDefinitions()
@@ -108,25 +105,14 @@ export default class LivingDocumentationService implements ILivingDocumentationS
 
     clearSearch(): void {
         this.clearSearchCore();
-        console.log('Clear search:', this.router.currentInstruction.urlPath);
-        this.router.navigateByUrl(this.router.currentInstruction.urlPath);
+        console.log('Clear search:', this.router.url);
+        const urlTree = this.router.parseUrl(this.router.url);
+        urlTree.queryParams = {};
+        this.router.navigateByUrl(urlTree);
     }
 
     showOnly(filter: DocumentationFilter, initialize?: boolean): void {
         this.updateQueryParameterAndNavigate('showOnly', DocumentationFilter[filter]);
-    }
-
-    addQueryParameters(params?: any): any {
-        params = params || {};
-        if (this.searchText) {
-            params.search = encodeURIComponent(this.searchText);
-        }
-
-        if (this.filterRaw) {
-            params.showOnly = this.filterRaw;
-        }
-
-        return params;
     }
 
     private onError(err: any) {
@@ -140,25 +126,20 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         this.loading.next(false);
     }
 
-    private getCurrentURLSearchParams(): URLSearchParams {
-        const query = this.router.currentInstruction.toUrlQuery();
-        return new URLSearchParams(query && decodeURIComponent(query.slice(1)), new StdQueryEncoder());
-    }
-
     private updateQueryParameterAndNavigate(param: string, paramValue: string) {
-        const params = this.getCurrentURLSearchParams();
+        const urlTree = this.router.parseUrl(this.router.url);
+        const params = urlTree.queryParams;
         if (!paramValue) {
-            params.delete(param);
+            delete params[param];
         } else {
-            params.set(param, paramValue);
+            params[param] = encodeURIComponent(paramValue);
         }
 
-        if (params.toString()) {
-            params.set('renavigate', 'true');
+        if (_.any(params, _.identity)) {
+            params['renavigate'] = 'true';
         }
 
-        const paramsStr = params.toString();
-        const url = `/${this.router.currentInstruction.urlPath}${!paramsStr ? '' : '?' + paramsStr}`;
+        const url = this.router.serializeUrl(urlTree);
         console.log('Update query parameter:', url);
         this.router.navigateByUrl(url);
     }
@@ -168,7 +149,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
             [this.documentationListObservable.value, null, null];
     }
 
-    private searchCore() {
+    private searchCore(renavigate: boolean) {
         let searchText: string;
 
         switch (this.filter) {
@@ -198,23 +179,23 @@ export default class LivingDocumentationService implements ILivingDocumentationS
                 [res.documentationList, res.searchContext, searchText];
         }
 
-        const params = this.getCurrentURLSearchParams();
-        if (!params.get('renavigate')) {
+        if (!renavigate) {
+            console.log('No renavigate:', this.router.url);
             return;
         }
 
-        let [documentationCode, featureCode] = [
-            this.router.currentInstruction.component.params['documentationCode'],
-            this.router.currentInstruction.component.params['featureCode']
-        ];
+        const state = this.router.routerState;
+        const params = state.firstChild(state.root).snapshot.params;
+        let [documentationCode, featureCode] = [params['documentationCode'], params['featureCode']];
 
         if (documentationCode && featureCode) {
-            let documentation = _.find(
-                this.filteredDocumentationList, doc => doc.definition.code === documentationCode);
+            const documentation = _.find(
+                this.filteredDocumentationList, doc => doc.definition.code === documentationCode
+            );
             if (!documentation) {
                 documentationCode = null;
             } else {
-                let feature = documentation.features[featureCode];
+                const feature = documentation.features[featureCode];
                 if (!feature) {
                     featureCode = null;
                 }
@@ -222,21 +203,27 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         }
 
         if (searchText && (!documentationCode || !featureCode)) {
-            let documentation = _.find(this.filteredDocumentationList, d => _.any(d.features));
+            const documentation = _.find(this.filteredDocumentationList, d => _.any(d.features));
             if (documentation) {
                 [documentationCode, featureCode] =
                     [documentation.definition.code, _.find(documentation.features, _ => true).code];
             }
         }
 
-        let linkParams = !documentationCode || !featureCode
-            ? ['/Dashboard', this.addQueryParameters()]
-            : ['/Feature', this.addQueryParameters({
-                documentationCode: documentationCode,
-                featureCode: featureCode
-            })];
+        const linkParams = !documentationCode || !featureCode
+            ? ['/dashboard']
+            : ['/feature', documentationCode, featureCode];
 
-        console.log(linkParams);
-        this.router.navigate(linkParams);
+        const queryParams: any = {};
+        if (this.searchText) {
+            queryParams.search = encodeURIComponent(this.searchText);
+        }
+
+        if (this.filterRaw) {
+            queryParams.showOnly = this.filterRaw;
+        }
+
+        console.log('After search navigate:', linkParams, queryParams);
+        this.router.navigate(linkParams, { queryParams: queryParams });
     }
 }

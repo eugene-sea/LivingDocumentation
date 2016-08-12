@@ -69,8 +69,8 @@ class Scenario {
     templateUrl: 'components/feature/feature.html'
 })
 export class Feature implements OnInit {
-    @Input() documentationCode: string;
-    @Input() featureCode: string;
+    @Input() documentationCode: Observable<string>;
+    @Input() featureCode: Observable<string>;
     feature: Observable<IFeature[]>;
     documentation: ILivingDocumentation;
     featureEditUrl: string;
@@ -82,13 +82,29 @@ export class Feature implements OnInit {
     ) { }
 
     ngOnInit(): void {
-        this.feature = this.livingDocumentationService.filteredDocumentationListObservable
-            .map(l => _.find(l, doc => doc.definition.code === this.documentationCode))
+        let documentationCode: string;
+        let featureCode: string;
+        this.feature = Observable.combineLatest(
+            this.livingDocumentationService.filteredDocumentationListObservable,
+            this.documentationCode,
+            this.featureCode
+        )
+            .map(a => {
+                let list: ILivingDocumentation[];
+                [list, documentationCode, featureCode] = a;
+                return list;
+            })
+            .map(l => _.find(l, doc => doc.definition.code === documentationCode))
             .filter(d => d != null)
             .map(d => {
                 this.documentation = d;
-                this.featureInner = this.documentation.features[this.featureCode];
-                if (this.featureInner && this.documentation.definition.featureEditUrl) {
+                this.featureInner = this.documentation.features[featureCode];
+
+                if (!this.featureInner) {
+                    return [];
+                }
+
+                if (this.documentation.definition.featureEditUrl) {
                     this.featureEditUrl = format(
                         this.documentation.definition.featureEditUrl,
                         this.featureInner.RelativeFolder.replace(/\\/g, '/')
