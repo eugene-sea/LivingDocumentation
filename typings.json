@@ -2,9 +2,12 @@
   "name": "living-documentation",
   "version": false,
   "globalDependencies": {
-    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "express": "github:DefinitelyTyped/DefinitelyTyped/express/express.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "mime": "github:DefinitelyTyped/DefinitelyTyped/mime/mime.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
+    "node": "github:DefinitelyTyped/DefinitelyTyped/node/node.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675",
     "serve-static": "github:DefinitelyTyped/DefinitelyTyped/serve-static/serve-static.d.ts#efd40e67ff323f7147651bdbef03c03ead7b1675"
+  },
+  "globalDevDependencies": {
+    "shelljs": "registry:dt/shelljs#0.0.0+20160526131156"
   }
 }
