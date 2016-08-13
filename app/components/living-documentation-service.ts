@@ -181,7 +181,7 @@ export default class LivingDocumentationService implements ILivingDocumentationS
         }
 
         const state = this.router.routerState;
-        const params = (state.root.firstChild && state.root.firstChild.snapshot.params) || {};
+        const params = (state.root.firstChild.snapshot && state.root.firstChild.snapshot.params) || {};
         let [documentationCode, featureCode] = [params['documentationCode'], params['featureCode']];
 
         if (documentationCode && featureCode) {

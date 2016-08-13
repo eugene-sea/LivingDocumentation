@@ -1,33 +1,11 @@
 import { Component, Inject } from '@angular/core';
-import { ActivatedRoute, RouterConfig, ROUTER_DIRECTIVES } from '@angular/router';
+import { ROUTER_DIRECTIVES } from '@angular/router';
 import { FORM_DIRECTIVES, Control } from '@angular/common';
 import { Observable } from 'rxjs/Rx';
 import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { ILivingDocumentationService, DocumentationFilter } from '../living-documentation-service';
 import { DocumentationList } from '../documentation-list/documentation-list';
-import { Dashboard } from '../dashboard/dashboard';
-import { Feature } from '../feature/feature';
-
-@Component({
-    directives: [Feature],
-    selector: 'feature-container',
-    template: '<feature [documentationCode]="documentationCode" [featureCode]="featureCode"></feature>'
-})
-class FeatureContainer {
-    documentationCode: Observable<string>;
-    featureCode: Observable<string>;
-    constructor(activatedRoute: ActivatedRoute) {
-        this.documentationCode = activatedRoute.params.map(r => r['documentationCode']);
-        this.featureCode = activatedRoute.params.map(r => r['featureCode']);
-    }
-}
-
-export const routes: RouterConfig = [
-    { component: Dashboard, path: 'dashboard' },
-    { component: FeatureContainer, path: 'feature/:documentationCode/:featureCode' },
-    { component: Dashboard, path: '**' }
-];
 
 @Component({
     directives: [ROUTER_DIRECTIVES, DROPDOWN_DIRECTIVES, FORM_DIRECTIVES, DocumentationList],
