@@ -4,12 +4,8 @@ import { Observable } from 'rxjs/Rx';
 import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
 import { format } from '../utils';
-import {
-    HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe, SafePipe
-} from '../pipes';
 
 @Component({
-    pipes: [HighlightPipe, WidenPipe, ScenarioOutlinePlaceholderPipe, SafePipe],
     selector: 'feature-table',
     templateUrl: 'components/feature/table.html'
 })
@@ -19,7 +15,6 @@ class Table {
 }
 
 @Component({
-    pipes: [HighlightTagPipe],
     selector: 'tags',
     templateUrl: 'components/feature/tags.html'
 })
@@ -52,7 +47,6 @@ class Status {
 
 @Component({
     directives: [Status, Tags, Table],
-    pipes: [HighlightPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, SafePipe],
     selector: 'scenario',
     templateUrl: 'components/feature/scenario.html'
 })
@@ -64,7 +58,6 @@ class Scenario {
 
 @Component({
     directives: [Status, Tags, Scenario],
-    pipes: [HighlightPipe, NewLinePipe, SafePipe],
     selector: 'feature',
     templateUrl: 'components/feature/feature.html'
 })

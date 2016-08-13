@@ -1,11 +1,9 @@
 import { Component, Input, Inject } from '@angular/core';
-import { ROUTER_DIRECTIVES } from '@angular/router';
 
 import { ILivingDocumentationService } from '../living-documentation-service';
 import { ILivingDocumentation } from '../../domain-model';
 
 @Component({
-    directives: [ROUTER_DIRECTIVES],
     selector: 'tag-list',
     templateUrl: 'components/tag-list/tag-list.html'
 })

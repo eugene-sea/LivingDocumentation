@@ -15,6 +15,9 @@ import { LivingDocumentationApp } from './components/living-documentation-app/li
 
 import { Dashboard } from './components/dashboard/dashboard';
 import { Feature } from './components/feature/feature';
+import {
+    HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe, SplitWordsPipe, SafePipe
+} from './components/pipes';
 
 @Component({
     directives: [Feature],
@@ -38,7 +41,18 @@ const routes: RouterConfig = [
 
 @NgModule({
     bootstrap: [LivingDocumentationApp],
-    declarations: [LivingDocumentationApp, Dashboard, FeatureContainer],
+    declarations: [
+        LivingDocumentationApp,
+        Dashboard,
+        FeatureContainer,
+        HighlightPipe,
+        HighlightTagPipe,
+        NewLinePipe,
+        ScenarioOutlinePlaceholderPipe,
+        WidenPipe,
+        SplitWordsPipe,
+        SafePipe
+    ],
     imports: [BrowserModule, RouterModule.forRoot(routes)],
     providers: [
         HTTP_PROVIDERS,

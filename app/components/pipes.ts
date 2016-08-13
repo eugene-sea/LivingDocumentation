@@ -12,7 +12,7 @@ export class NewLinePipe implements PipeTransform {
 }
 
 @Pipe({ name: 'splitWords' })
-export class SplitWordsFilter implements PipeTransform {
+export class SplitWordsPipe implements PipeTransform {
     transform(str: string): string {
         return splitWords(str);
     }
