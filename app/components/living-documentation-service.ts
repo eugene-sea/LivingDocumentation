@@ -1,5 +1,5 @@
 import { Injectable, Inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
 
 import { ILivingDocumentation } from '../domain-model';
@@ -69,11 +69,12 @@ export default class LivingDocumentationService implements ILivingDocumentationS
     constructor(
         @Inject('livingDocumentationServer') private livingDocumentationServer: ILivingDocumentationServer,
         @Inject('search') private searchService: ISearchService,
-        private router: Router
+        private router: Router,
+        private activatedRoute: ActivatedRoute
     ) {
         const getSearchText = (p: { [key: string]: any }) => p['search'] && decodeURIComponent(p['search']);
-        this.searchTextObservable = router.routerState.queryParams.map(getSearchText);
-        router.routerState.queryParams.subscribe(p => {
+        this.searchTextObservable = activatedRoute.queryParams.map(getSearchText);
+        activatedRoute.queryParams.subscribe(p => {
             this.searchText = getSearchText(p);
             this.filterRaw = p['showOnly'];
             const renavigate = !!this.searchText || !!this.filter;

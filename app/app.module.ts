@@ -1,26 +1,28 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
-import { ActivatedRoute, RouterConfig, RouterModule } from '@angular/router';
-import { provide, Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { ActivatedRoute, Route, RouterModule } from '@angular/router';
+import { Component } from '@angular/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
-import { HTTP_PROVIDERS } from '@angular/http';
+import { HttpModule } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
 
 import 'rxjs/Rx';
+
+import { DropdownModule } from 'ng2-bootstrap/ng2-bootstrap';
 
 import SearchService from './components/search-service';
 import LivingDocumentationServer from './components/living-documentation-server';
 import LivingDocumentationService from './components/living-documentation-service';
 import { LivingDocumentationApp } from './components/living-documentation-app/living-documentation-app';
 
-import { Dashboard } from './components/dashboard/dashboard';
-import { Feature } from './components/feature/feature';
-import {
-    HighlightPipe, HighlightTagPipe, NewLinePipe, ScenarioOutlinePlaceholderPipe, WidenPipe, SplitWordsPipe, SafePipe
-} from './components/pipes';
+import { DocumentationListModule } from './components/documentation-list/documentation-list';
+import { TagList } from './components/tag-list/tag-list';
+import { Statistics, DocumentationDashboard, Dashboard } from './components/dashboard/dashboard';
+import { FeatureModule } from './components/feature/feature';
 
 @Component({
-    directives: [Feature],
     selector: 'feature-container',
     template: '<feature [documentationCode]="documentationCode" [featureCode]="featureCode"></feature>'
 })
@@ -33,7 +35,7 @@ class FeatureContainer {
     }
 }
 
-const routes: RouterConfig = [
+const routes: Route[] = [
     { component: Dashboard, path: 'dashboard' },
     { component: FeatureContainer, path: 'feature/:documentationCode/:featureCode' },
     { component: Dashboard, path: '**' }
@@ -43,24 +45,29 @@ const routes: RouterConfig = [
     bootstrap: [LivingDocumentationApp],
     declarations: [
         LivingDocumentationApp,
+        TagList,
+        Statistics,
+        DocumentationDashboard,
         Dashboard,
-        FeatureContainer,
-        HighlightPipe,
-        HighlightTagPipe,
-        NewLinePipe,
-        ScenarioOutlinePlaceholderPipe,
-        WidenPipe,
-        SplitWordsPipe,
-        SafePipe
+        FeatureContainer
     ],
-    imports: [BrowserModule, RouterModule.forRoot(routes)],
+    imports: [
+        CommonModule,
+        BrowserModule,
+        RouterModule.forRoot(routes),
+        HttpModule,
+        DropdownModule,
+        FormsModule,
+        ReactiveFormsModule,
+        FeatureModule,
+        DocumentationListModule
+    ],
     providers: [
-        HTTP_PROVIDERS,
-        provide(LocationStrategy, { useClass: HashLocationStrategy }),
-        provide('version', { useValue: '0.9' }),
-        provide('search', { useClass: SearchService }),
-        provide('livingDocumentationServer', { useClass: LivingDocumentationServer }),
-        provide('livingDocumentationService', { useClass: LivingDocumentationService })
+        { provide: LocationStrategy, useClass: HashLocationStrategy },
+        { provide: 'version', useValue: '0.9' },
+        { provide: 'search', useClass: SearchService },
+        { provide: 'livingDocumentationServer', useClass: LivingDocumentationServer },
+        { provide: 'livingDocumentationService', useClass: LivingDocumentationService }
     ]
 })
 export class AppModule { }

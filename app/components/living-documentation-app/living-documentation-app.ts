@@ -1,19 +1,16 @@
 import { Component, Inject } from '@angular/core';
-import { FORM_DIRECTIVES, Control } from '@angular/common';
+import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs/Rx';
-import { DROPDOWN_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { ILivingDocumentationService, DocumentationFilter } from '../living-documentation-service';
-import { DocumentationList } from '../documentation-list/documentation-list';
 
 @Component({
-    directives: [DROPDOWN_DIRECTIVES, FORM_DIRECTIVES, DocumentationList],
     selector: 'living-documentation-app',
     templateUrl: 'components/living-documentation-app/living-documentation-app.html'
 })
 export class LivingDocumentationApp {
     searchText: string = '';
-    searchControl = new Control();
+    searchControl = new FormControl();
     lastUpdatedOn: Observable<Date>;
 
     documentationFilter = DocumentationFilter;

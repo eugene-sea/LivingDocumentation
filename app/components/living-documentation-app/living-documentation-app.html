@@ -47,9 +47,9 @@
               type="text"
               class="form-control"
               placeholder="Search text"
-              [ngFormControl]="searchControl"
+              [formControl]="searchControl"
               [(ngModel)]="searchText"
-              (keyup.enter)="search()">
+              (keyup.enter)="search()"> <!-- TODO: Remove [(ngModel)]="searchText" -->
           </div>
           <button type="button" class="btn btn-warning" [disabled]="!isClearSearchEnabled" (click)="clearSearch()">
             Clear

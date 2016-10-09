@@ -4,8 +4,6 @@ import { Observable } from 'rxjs/Rx';
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
 
-import { TagList } from '../tag-list/tag-list';
-
 interface IStatistics {
     passed: number;
     pending: number;
@@ -18,17 +16,16 @@ interface IStatistics {
     selector: 'statistics',
     templateUrl: 'components/dashboard/statistics.html'
 })
-class Statistics {
+export class Statistics {
     @Input() name: string;
     @Input() statistics: IStatistics;
 }
 
 @Component({
-    directives: [Statistics],
     selector: 'documentation-dashboard',
     templateUrl: 'components/dashboard/documentation-dashboard.html'
 })
-class DocumentationDashboard implements OnInit {
+export class DocumentationDashboard implements OnInit {
     @Input() documentation: ILivingDocumentation;
     iterationFeatures = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     iterationScenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
@@ -90,7 +87,6 @@ class DocumentationDashboard implements OnInit {
 }
 
 @Component({
-    directives: [DocumentationDashboard, TagList],
     selector: 'dashboard',
     templateUrl: 'components/dashboard/dashboard.html'
 })

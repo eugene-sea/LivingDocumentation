@@ -9,6 +9,32 @@ exec('tsc -p .');
 exec('tsc -p ./app');
 exec('tsc -p ./test');
 
+const Builder = require("systemjs-builder");
+
+var options = {
+    normalize: true,
+    runtime: false,
+    sourceMaps: true,
+    sourceMapContents: true,
+    minify: false,
+    mangle: false
+};
+var builder = new Builder('./');
+builder.config({
+    paths: {
+        "n:*": "node_modules/*",
+        "rxjs/*": "node_modules/rxjs/*.js",
+    },
+    map: {
+        "rxjs": "n:rxjs",
+    },
+    packages: {
+        "rxjs": { main: "Rx.js", defaultExtension: "js" },
+    }
+});
+
+builder.bundle('rxjs', './app/node_components/rxjs/Rx.js', options);
+
 buryCopy('./node_modules/systemjs/dist/system.src.js', './app/node_components/systemjs/');
 
 buryCopy('./node_modules/typescript/lib/typescript.js', './app/node_components/typescript/');
@@ -36,8 +62,6 @@ buryCopy('./node_modules/@angular/router/bundles/router.umd.js', './app/node_com
 buryCopy('./node_modules/@angular/forms/bundles/forms.umd.js', './app/node_components/@angular/forms/');
 buryCopy('./node_modules/@angular/core/src/facade/lang.js', './app/node_components/@angular/core/src/facade/lang/');
 buryCopy('./node_modules/@angular/core/src/facade/lang.js.map', './app/node_components/@angular/core/src/facade/lang/');
-
-buryCopy('./node_modules/rxjs/bundles/Rx.js', './app/node_components/rxjs/');
 
 buryCopy('./node_modules/bootstrap/dist/css/bootstrap.css', './app/node_components/bootstrap/css/');
 buryCopy('./node_modules/bootstrap/dist/css/bootstrap.css.map', './app/node_components/bootstrap/css/');

@@ -1,9 +1,11 @@
-import { Component, Input, Inject, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { NgModule, Component, Input, Inject, OnInit } from '@angular/core';
 import { Observable } from 'rxjs/Rx';
 
 import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
 import { format } from '../utils';
+import { PipesModule } from '../pipes';
 
 @Component({
     selector: 'feature-table',
@@ -46,7 +48,6 @@ class Status {
 }
 
 @Component({
-    directives: [Status, Tags, Table],
     selector: 'scenario',
     templateUrl: 'components/feature/scenario.html'
 })
@@ -57,11 +58,10 @@ class Scenario {
 }
 
 @Component({
-    directives: [Status, Tags, Scenario],
     selector: 'feature',
     templateUrl: 'components/feature/feature.html'
 })
-export class Feature implements OnInit {
+class Feature implements OnInit {
     @Input() documentationCode: Observable<string>;
     @Input() featureCode: Observable<string>;
     feature: Observable<IFeature[]>;
@@ -117,3 +117,16 @@ export class Feature implements OnInit {
         }
     }
 }
+
+@NgModule({
+    declarations: [
+        Status,
+        Tags,
+        Table,
+        Scenario,
+        Feature
+    ],
+    exports: [Feature],
+    imports: [CommonModule, PipesModule]
+})
+export class FeatureModule { }

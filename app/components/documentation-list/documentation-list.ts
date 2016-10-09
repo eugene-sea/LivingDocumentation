@@ -1,11 +1,15 @@
-import { Component, Input, Inject, OnInit, forwardRef } from '@angular/core';
-import { ACCORDION_DIRECTIVES } from 'ng2-bootstrap/ng2-bootstrap';
+import { CommonModule } from '@angular/common';
+import { NgModule, Component, Input, Inject, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
+
+import { AccordionModule } from 'ng2-bootstrap/ng2-bootstrap';
 
 import { IFolder, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
 
+import { PipesModule } from '../pipes';
+
 @Component({
-    directives: [forwardRef(() => Folder)],
     selector: 'folder',
     templateUrl: 'components/documentation-list/folder.html'
 })
@@ -27,11 +31,10 @@ class Folder implements OnInit {
 }
 
 @Component({
-    directives: [ACCORDION_DIRECTIVES, Folder],
     selector: 'documentation-list',
     templateUrl: 'components/documentation-list/documentation-list.html'
 })
-export class DocumentationList {
+class DocumentationList {
     constructor(
         @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService
     ) { }
@@ -42,3 +45,10 @@ export class DocumentationList {
         );
     }
 }
+
+@NgModule({
+    declarations: [Folder, DocumentationList],
+    exports: [DocumentationList],
+    imports: [CommonModule, RouterModule, AccordionModule, PipesModule]
+})
+export class DocumentationListModule { }

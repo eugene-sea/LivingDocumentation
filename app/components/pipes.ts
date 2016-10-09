@@ -1,5 +1,5 @@
-import { Pipe, PipeTransform, Inject } from '@angular/core';
-import { DomSanitizationService, SafeHtml } from '@angular/platform-browser';
+import { NgModule, Pipe, PipeTransform, Inject } from '@angular/core';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 import { ILivingDocumentationService } from './living-documentation-service';
 import { splitWords } from './search-service';
@@ -62,12 +62,34 @@ export class WidenPipe implements PipeTransform {
 
 @Pipe({ name: 'safe' })
 export class SafePipe implements PipeTransform {
-    constructor(private sanitizer: DomSanitizationService) { }
+    constructor(private sanitizer: DomSanitizer) { }
 
     transform(str: string): SafeHtml {
         return this.sanitizer.bypassSecurityTrustHtml(str);
     }
 }
+
+@NgModule({
+    declarations: [
+        HighlightPipe,
+        HighlightTagPipe,
+        NewLinePipe,
+        ScenarioOutlinePlaceholderPipe,
+        WidenPipe,
+        SplitWordsPipe,
+        SafePipe
+    ],
+    exports: [
+        HighlightPipe,
+        HighlightTagPipe,
+        NewLinePipe,
+        ScenarioOutlinePlaceholderPipe,
+        WidenPipe,
+        SplitWordsPipe,
+        SafePipe
+    ]
+})
+export class PipesModule { }
 
 function highlightAndEscape(regEx: RegExp, str: string): string {
     if (!str || !regEx) {
