@@ -1,8 +1,13 @@
-import { Component, Input, OnInit, Inject } from '@angular/core';
+import { NgModule, Component, Input, OnInit, Inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+
 import { Observable } from 'rxjs/Rx';
 
 import { ILivingDocumentation, IFeatures, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
+
+import { TagList } from '../tag-list/tag-list';
 
 interface IStatistics {
     passed: number;
@@ -16,7 +21,7 @@ interface IStatistics {
     selector: 'statistics',
     templateUrl: 'components/dashboard/statistics.html'
 })
-export class Statistics {
+class Statistics {
     @Input() name: string;
     @Input() statistics: IStatistics;
 }
@@ -25,7 +30,7 @@ export class Statistics {
     selector: 'documentation-dashboard',
     templateUrl: 'components/dashboard/documentation-dashboard.html'
 })
-export class DocumentationDashboard implements OnInit {
+class DocumentationDashboard implements OnInit {
     @Input() documentation: ILivingDocumentation;
     iterationFeatures = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
     iterationScenarios = { failed: 0, manual: 0, passed: 0, pending: 0, total: 0 };
@@ -99,3 +104,15 @@ export class Dashboard {
         this.documentationList = livingDocumentationService.documentationListObservable;
     }
 }
+
+@NgModule({
+    declarations: [
+        Statistics,
+        DocumentationDashboard,
+        TagList,
+        Dashboard
+    ],
+    exports: [Dashboard],
+    imports: [CommonModule, RouterModule]
+})
+export class DashboardModule { }

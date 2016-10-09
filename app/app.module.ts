@@ -18,8 +18,7 @@ import LivingDocumentationService from './components/living-documentation-servic
 import { LivingDocumentationApp } from './components/living-documentation-app/living-documentation-app';
 
 import { DocumentationListModule } from './components/documentation-list/documentation-list';
-import { TagList } from './components/tag-list/tag-list';
-import { Statistics, DocumentationDashboard, Dashboard } from './components/dashboard/dashboard';
+import { DashboardModule, Dashboard } from './components/dashboard/dashboard';
 import { FeatureModule } from './components/feature/feature';
 
 @Component({
@@ -45,10 +44,6 @@ const routes: Route[] = [
     bootstrap: [LivingDocumentationApp],
     declarations: [
         LivingDocumentationApp,
-        TagList,
-        Statistics,
-        DocumentationDashboard,
-        Dashboard,
         FeatureContainer
     ],
     imports: [
@@ -59,6 +54,7 @@ const routes: Route[] = [
         DropdownModule,
         FormsModule,
         ReactiveFormsModule,
+        DashboardModule,
         FeatureModule,
         DocumentationListModule
     ],
