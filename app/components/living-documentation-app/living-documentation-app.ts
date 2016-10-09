@@ -9,7 +9,6 @@ import { ILivingDocumentationService, DocumentationFilter } from '../living-docu
     templateUrl: 'components/living-documentation-app/living-documentation-app.html'
 })
 export class LivingDocumentationApp {
-    searchText: string = '';
     searchControl = new FormControl();
     lastUpdatedOn: Observable<Date>;
 
@@ -31,7 +30,9 @@ export class LivingDocumentationApp {
             .filter(d => d != null)
             .map(d => d.lastUpdatedOn);
 
-        livingDocService.searchTextObservable.subscribe(s => this.searchText = s || '');
+        livingDocService.searchTextObservable.subscribe(
+            s => this.searchControl.setValue(s || '', { emitEvent: false })
+        );
         livingDocService.startInitialization();
     }
 
@@ -44,7 +45,7 @@ export class LivingDocumentationApp {
     get filter() { return this.livingDocService.filter; }
 
     search() {
-        this.searchCore(this.searchText);
+        this.searchCore(this.searchControl.value);
     }
 
     clearSearch(): void {
