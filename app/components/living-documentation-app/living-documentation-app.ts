@@ -1,5 +1,5 @@
 import { Component, Inject } from '@angular/core';
-import { FormControl } from '@angular/forms';
+import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
 import { Observable } from 'rxjs/Rx';
 
 import { ILivingDocumentationService, DocumentationFilter } from '../living-documentation-service';
@@ -9,6 +9,7 @@ import { ILivingDocumentationService, DocumentationFilter } from '../living-docu
     templateUrl: 'components/living-documentation-app/living-documentation-app.html'
 })
 export class LivingDocumentationApp {
+    form: FormGroup;
     searchControl = new FormControl();
     lastUpdatedOn: Observable<Date>;
 
@@ -16,9 +17,12 @@ export class LivingDocumentationApp {
 
     constructor(
         @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
-        @Inject('version') public appVersion: string
+        @Inject('version') public appVersion: string,
+        fb: FormBuilder
     ) {
         livingDocService.loading.subscribe(isLoading => { /* TODO: */ });
+
+        this.form = fb.group({ 'searchControl': this.searchControl });
 
         this.searchControl.valueChanges
             .debounceTime(400)

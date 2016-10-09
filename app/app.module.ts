@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Route, RouterModule } from '@angular/router';
 import { Component } from '@angular/core';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
 import { LocationStrategy, HashLocationStrategy } from '@angular/common';
 import { HttpModule } from '@angular/http';
 import { Observable } from 'rxjs/Rx';
@@ -52,7 +52,6 @@ const routes: Route[] = [
         RouterModule.forRoot(routes),
         HttpModule,
         DropdownModule,
-        FormsModule,
         ReactiveFormsModule,
         DashboardModule,
         FeatureModule,

@@ -11,7 +11,7 @@
     </div>
 
     <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <form class="navbar-form navbar-right" role="search">
+        <form [formGroup]="form" class="navbar-form navbar-right" role="search">
           <div class="form-group">
             <div class="btn-group" dropdown>
               <button
@@ -47,7 +47,7 @@
               type="text"
               class="form-control"
               placeholder="Search text"
-              [formControl]="searchControl"
+              formControlName="searchControl"
               (keyup.enter)="search()">
           </div>
           <button type="button" class="btn btn-warning" [disabled]="!isClearSearchEnabled" (click)="clearSearch()">
