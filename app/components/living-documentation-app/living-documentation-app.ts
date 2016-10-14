@@ -1,6 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+
 import { Observable } from 'rxjs/Rx';
+import _ from 'underscore';
 
 import { ILivingDocumentationService, DocumentationFilter } from '../living-documentation-service';
 

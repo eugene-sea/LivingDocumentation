@@ -1,6 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule, Component, Input, Inject, OnInit } from '@angular/core';
+
 import { Observable } from 'rxjs/Rx';
+import _ from 'underscore';
 
 import { ILivingDocumentation, IFeature, IScenario, ITable, IResult } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';

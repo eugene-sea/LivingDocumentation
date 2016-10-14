@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
 
+import _ from 'underscore';
+
 import { ILivingDocumentation, IFolder, IFeatures, IFeature, IScenario, IStep, ITable } from '../domain-model';
 
 export interface ISearchContext {

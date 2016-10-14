@@ -1,6 +1,8 @@
 import { Injectable, Inject } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+
 import { Observable, BehaviorSubject } from 'rxjs/Rx';
+import _ from 'underscore';
 
 import { ILivingDocumentation } from '../domain-model';
 import { ILivingDocumentationServer } from './living-documentation-server';

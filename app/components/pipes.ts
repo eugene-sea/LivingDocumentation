@@ -1,6 +1,8 @@
 import { NgModule, Pipe, PipeTransform, Inject } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
+import _ from 'underscore';
+
 import { ILivingDocumentationService } from './living-documentation-service';
 import { splitWords } from './search-service';
 

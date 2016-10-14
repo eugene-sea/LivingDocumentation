@@ -1,5 +1,7 @@
 import { Component, Input, Inject } from '@angular/core';
 
+import _ from 'underscore';
+
 import { ILivingDocumentationService } from '../living-documentation-service';
 import { ILivingDocumentation } from '../../domain-model';
 

@@ -3,7 +3,8 @@ System.config({
     baseURL: '../',
     paths: {
         '@angular': pkgPath + '@angular',
-        'moment': pkgPath + 'moment/moment.js'
+        'moment': pkgPath + 'moment/moment.js',
+        'underscore': pkgPath + 'underscore/underscore.js'
     },
     map: {
         typescript: pkgPath + 'typescript/typescript.js',
@@ -23,8 +24,8 @@ System.config({
         '@angular/router': { main: 'router.umd.js' },
         '@angular/core/src/facade/lang': { main: 'lang.js' },
         'app': { defaultExtension: 'ts' },
-        'app/node_components': { },
+        'app/node_components': {},
         'test': { defaultExtension: 'ts' },
-        'moment': { }
+        'moment': {}
     }
 });

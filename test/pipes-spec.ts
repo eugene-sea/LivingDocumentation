@@ -1,5 +1,3 @@
-/// <reference path="../app/typings/index.d.ts" />
-
 import { widen, HighlightPipe } from '../app/components/pipes';
 
 describe('pipes', () => {

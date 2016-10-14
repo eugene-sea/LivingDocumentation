@@ -67,7 +67,7 @@ buryCopy('./node_modules/bootstrap/dist/css/bootstrap.css', './app/node_componen
 buryCopy('./node_modules/bootstrap/dist/css/bootstrap.css.map', './app/node_components/bootstrap/css/');
 buryCopy('./node_modules/bootstrap/dist/fonts/*', './app/node_components/bootstrap/fonts/');
 
-buryCopy('./node_modules/ng2-bootstrap/bundles/ng2-bootstrap.js', './app/node_components/ng2-bootstrap/');
+buryCopy('./node_modules/ng2-bootstrap/bundles/ng2-bootstrap.umd.js', './app/node_components/ng2-bootstrap/');
 
 buryCopy('./node_modules/moment/moment.js', './app/node_components/moment/');
 
