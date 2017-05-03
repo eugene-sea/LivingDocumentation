@@ -1,22 +1,22 @@
 ﻿<table>
   <tr>
-    <td><h4 [innerHTML]="isBackground ? 'Background' : scenario.Name | highlight | safe"></h4></td>
+    <td>
+      <h4 [innerHTML]="isBackground ? 'Background' : scenario.Name | highlight | safe"></h4>
+    </td>
     <td class="no-stretch" *ngIf="scenario.tests && scenario.tests.length === 1">
       <a class="text-right" [href]="scenario.tests[0]" target="_blank">Run test</a>
     </td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
-      <h4 [hidden]="isBackground">
+      <div [hidden]="isBackground">
         <status [status]="scenario.Result" [isManual]="scenario.isManual"></status>
-      </h4>
+      </div>
     </td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
       <a (click)="scenario.isExpanded = !scenario.isExpanded">
-        <h4>
-          <span *ngIf="scenario.isExpanded" class="glyphicon glyphicon-collapse-up"></span>
-          <span *ngIf="!scenario.isExpanded" class="glyphicon glyphicon-collapse-down"></span>
-        </h4>
+        <span *ngIf="scenario.isExpanded" class="mega-octicon octicon-diff-removed"></span>
+        <span *ngIf="!scenario.isExpanded" class="mega-octicon octicon-diff-added"></span>
       </a>
     </td>
   </tr>
@@ -35,11 +35,11 @@
       <feature-table [table]="step.TableArgument"></feature-table>
     </div>
     <div *ngIf="step.DocStringArgument">
-      <div class="well h-scrollable">
-        <span
-          class="no-wrap"
-          [innerHTML]="step.DocStringArgument | highlight | scenarioOutlinePlaceholder | newline | safe">
-        </span>
+      <div class="card h-scrollable">
+        <div class="card-block">
+          <span class="no-wrap" [innerHTML]="step.DocStringArgument | highlight | scenarioOutlinePlaceholder | newline | safe">
+          </span>
+        </div>
       </div>
     </div>
   </div>

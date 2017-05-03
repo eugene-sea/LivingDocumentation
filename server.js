@@ -1,9 +1,10 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 require('source-map-support').install();
-var express = require('express');
-var http = require('http');
-var path = require('path');
-var config = require('./config');
+var express = require("express");
+var http = require("http");
+var path = require("path");
+var config = require("./config");
 var app = express();
 app.set('port', config.port.toString());
 var logger = require('morgan');

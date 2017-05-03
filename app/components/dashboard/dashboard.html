@@ -1,7 +1,7 @@
 <h3>Dashboard</h3>
 
-<div class="panel panel-default" *ngFor="let documentation of documentationList | async">
-  <div class="panel-body">
+<div class="card" *ngFor="let documentation of documentationList | async">
+  <div class="card-block">
     <documentation-dashboard [documentation]="documentation"></documentation-dashboard>
     <tag-list [documentation]="documentation"></tag-list>
   </div>

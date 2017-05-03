@@ -1,4 +1,4 @@
-Tags:
+<span class="octicon octicon-tag"></span>
 <span *ngFor="let item of tagsWithIssueUrl">
   <i [innerHTML]="item.tag | highlightTag" *ngIf="!item.issueUrl"></i>
   <a [href]="item.issueUrl" target="_blank" *ngIf="item.issueUrl"><i [innerHTML]="item.tag | highlightTag"></i></a>

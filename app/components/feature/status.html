@@ -1,23 +1,18 @@
-<abbr title="Item requires manual testing">
-  <span *ngIf="isManual" class="glyphicon glyphicon-user text-info"></span>
-</abbr>
-
-<abbr title="Item is passing">
+<abbr title="Item requires manual testing" *ngIf="isManual">
   <span
-    *ngIf="!isManual && status.WasExecuted && status.WasSuccessful"
-    class="glyphicon glyphicon-ok-sign text-success">
+    class="mega-octicon octicon-person text-info"
+    style="margin-left: 4px !important; margin-right: -4px !important;">
   </span>
 </abbr>
 
-<abbr title="Item is pending">
-  <span
-    *ngIf="!isManual && !status.WasExecuted" class="glyphicon glyphicon-question-sign text-warning">
-  </span>
+<abbr title="Item is passing" *ngIf="!isManual && status.WasExecuted && status.WasSuccessful">
+  <span class="mega-octicon octicon-verified text-success"></span>
 </abbr>
 
-<abbr title="Item is failing">
-  <span
-    *ngIf="!isManual && status.WasExecuted && !status.WasSuccessful"
-    class="glyphicon glyphicon-exclamation-sign text-danger">
-  </span>
+<abbr title="Item is pending" *ngIf="!isManual && !status.WasExecuted">
+  <span class="mega-octicon octicon-unverified text-warning"></span>
+</abbr>
+
+<abbr title="Item is failing" *ngIf="!isManual && status.WasExecuted && !status.WasSuccessful">
+  <span class="mega-octicon octicon-alert text-danger"></span>
 </abbr>

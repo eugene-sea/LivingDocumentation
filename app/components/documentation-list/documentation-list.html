@@ -1,8 +1,7 @@
-﻿<accordion [closeOthers]="true">
-  <accordion-group
-    heading="{{doc.root.name}}"
-    [isOpen]="i === 0"
-    *ngFor="let doc of documentationList | async; let i = index">
-    <folder [folder]="doc.root" [documentationCode]="doc.definition.code"></folder>
-  </accordion-group>
-</accordion>
+﻿<ngb-accordion [closeOthers]="true" activeIds="doc-0">
+  <ngb-panel id="doc-{{i}}" title="{{doc.root.name}}" *ngFor="let doc of documentationList | async; let i = index">
+    <ng-template ngbPanelContent>
+      <folder [folder]="doc.root" [documentationCode]="doc.definition.code"></folder>
+    </ng-template>
+  </ngb-panel>
+</ngb-accordion>

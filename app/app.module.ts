@@ -10,7 +10,7 @@ import { Observable } from 'rxjs/Rx';
 
 import 'rxjs/Rx';
 
-import { DropdownModule } from 'ng2-bootstrap/ng2-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import SearchService from './components/search-service';
 import LivingDocumentationServer from './components/living-documentation-server';
@@ -51,7 +51,7 @@ const routes: Route[] = [
         BrowserModule,
         RouterModule.forRoot(routes),
         HttpModule,
-        DropdownModule,
+        NgbModule.forRoot(),
         ReactiveFormsModule,
         DashboardModule,
         FeatureModule,

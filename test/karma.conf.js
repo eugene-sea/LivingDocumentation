@@ -19,12 +19,11 @@ module.exports = function (config) {
       'test/system-config.js',
       'app/node_components/underscore/underscore.js',
       'app/node_components/rxjs/Rx.js',
-      'app/node_components/ng2-bootstrap/ng2-bootstrap.js',
-      'https://cdn.polyfill.io/v2/polyfill.min.js?features=Intl.~locale.en',
       'test/test.js',
       { pattern: 'app/**/*.ts', included: false },
       { pattern: 'app/node_components/typescript/typescript.js', included: false },
       { pattern: 'app/node_components/@angular/**/*.js', included: false },
+      { pattern: 'app/node_components/@ng-bootstrap/ng-bootstrap/ng-bootstrap.js', included: false },
       { pattern: 'test/*.ts', included: false }
     ],
 

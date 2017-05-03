@@ -60,15 +60,15 @@ buryCopy(
 );
 buryCopy('./node_modules/@angular/router/bundles/router.umd.js', './app/node_components/@angular/router/');
 buryCopy('./node_modules/@angular/forms/bundles/forms.umd.js', './app/node_components/@angular/forms/');
-buryCopy('./node_modules/@angular/core/src/facade/lang.js', './app/node_components/@angular/core/src/facade/lang/');
-buryCopy('./node_modules/@angular/core/src/facade/lang.js.map', './app/node_components/@angular/core/src/facade/lang/');
 
 buryCopy('./node_modules/bootstrap/dist/css/bootstrap.css', './app/node_components/bootstrap/css/');
 buryCopy('./node_modules/bootstrap/dist/css/bootstrap.css.map', './app/node_components/bootstrap/css/');
-buryCopy('./node_modules/bootstrap/dist/fonts/*', './app/node_components/bootstrap/fonts/');
 
-buryCopy('./node_modules/ng2-bootstrap/bundles/ng2-bootstrap.umd.js', './app/node_components/ng2-bootstrap/');
+buryCopy(
+    './node_modules/@ng-bootstrap/ng-bootstrap/bundles/ng-bootstrap.js',
+    './app/node_components/@ng-bootstrap/ng-bootstrap/'
+);
 
-buryCopy('./node_modules/moment/moment.js', './app/node_components/moment/');
+buryCopy('./node_modules/octicons/build/font/*', './app/node_components/octicons/');
 
 buryCopy('./node_modules/underscore/underscore.js', './app/node_components/underscore/');

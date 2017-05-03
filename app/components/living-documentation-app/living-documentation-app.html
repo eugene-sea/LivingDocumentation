@@ -1,62 +1,47 @@
-<div class="navbar navbar-default navbar-fixed-top">
+<nav class="navbar navbar-toggleable-md navbar-light fixed-top bg-faded">
   <div class="container">
-    <div class="navbar-header">
-      <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>
-      <a class="navbar-brand" routerLink="/dashboard" preserveQueryParams>Living Documentation</a>
-    </div>
+    <button class="navbar-toggler navbar-toggler-right" type="button" data-toggle="collapse" data-target="#navbarToggler" aria-controls="navbarToggler"
+      aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a class="navbar-brand" routerLink="/dashboard" preserveQueryParams>
+      <span class="mega-octicon octicon-mortar-board d-inline-block align-top"></span> Living Documentation
+    </a>
 
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-        <form [formGroup]="form" class="navbar-form navbar-right" role="search">
-          <div class="form-group">
-            <div class="btn-group" dropdown>
-              <button
-                id="split-button"
-                type="button"
-                class="btn btn-default"
-                (click)="clearFilter()"
-                [class.active]="filter == null">
-                No Filter
-              </button>
-              <button type="button" class="btn btn-default dropdown-toggle" dropdownToggle>
-                <span class="caret"></span>
-                <span class="sr-only"></span>
-              </button>
-              <ul class="dropdown-menu" role="menu" aria-labelledby="split-button">
-                <li role="menuitem" [class.active]="filter === documentationFilter.InProgress">
-                  <a class="dropdown-item" (click)="showOnly(documentationFilter.InProgress)">In Progress</a>
-                </li>
-                <li role="menuitem" [class.active]="filter === documentationFilter.Pending">
-                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Pending)">Pending</a>
-                </li>
-                <li role="menuitem" [class.active]="filter === documentationFilter.Failing">
-                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Failing)">Failing</a>
-                </li>
-                <li role="menuitem" [class.active]="filter === documentationFilter.Manual">
-                  <a class="dropdown-item" (click)="showOnly(documentationFilter.Manual)">Manual</a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div class="form-group">
-            <input
-              type="text"
-              class="form-control"
-              placeholder="Search text"
-              formControlName="searchControl"
-              (keyup.enter)="search()">
-          </div>
-          <button type="button" class="btn btn-warning" [disabled]="!isClearSearchEnabled" (click)="clearSearch()">
-            Clear
+    <div class="collapse navbar-collapse" id="navbarToggler">
+      <ul class="navbar-nav mr-auto mt-2 mt-md-0">
+      </ul>
+      <form [formGroup]="form" class="form-inline my-2 my-lg-0" role="search">
+        <div ngbDropdown class="custom-control mb-2 mr-sm-2 mb-sm-0 btn-group">
+          <button type="button" class="btn btn-secondary" (click)="clearFilter()" [class.active]="filter == null">
+            No Filter
           </button>
-        </form>
-      </div>
+          <button class="btn btn-secondary dropdown-toggle-split" id="filterOptions" ngbDropdownToggle>
+            <span class="sr-only">Toggle Dropdown</span>
+          </button>
+          <div class="dropdown-menu" aria-labelledby="filterOptions">
+            <button class="dropdown-item" [class.active]="filter === documentationFilter.InProgress" (click)="showOnly(documentationFilter.InProgress)">
+              In Progress
+            </button>
+            <button class="dropdown-item" [class.active]="filter === documentationFilter.Pending" (click)="showOnly(documentationFilter.Pending)">
+              Pending
+            </button>
+            <button class="dropdown-item" [class.active]="filter === documentationFilter.Failing" (click)="showOnly(documentationFilter.Failing)">
+              Failing
+            </button>
+            <button class="dropdown-item" [class.active]="filter === documentationFilter.Manual" (click)="showOnly(documentationFilter.Manual)">
+              Manual
+            </button>
+          </div>
+        </div>
+        <input type="text" class="form-control mr-sm-2" placeholder="Search text" formControlName="searchControl" (keyup.enter)="search()">
+        <button type="button" class="btn btn-warning my-2 my-sm-0" [disabled]="!isClearSearchEnabled" (click)="clearSearch()">
+          Clear
+        </button>
+      </form>
+    </div>
   </div>
-</div>
+</nav>
 
 <div class="container" [hidden]="error">
   <div class="row">
@@ -72,19 +57,18 @@
 <div class="alert alert-danger" role="alert" [hidden]="!error">
   <p>
     <b>Error Occurred:</b>{{error}}
-  <p>
+  </p>
 </div>
 
-<div class="navbar navbar-default navbar-fixed-bottom">
+<nav class="navbar navbar-toggleable-md navbar-light fixed-bottom bg-faded">
   <div class="container">
-    <p class="navbar-text">Living Documentation Application: v{{appVersion}}</p>
-    <div class="collapse navbar-collapse navbar-ex1-collapse">
-      <p class="navbar-text navbar-right" *ngIf="lastUpdatedOn | async">
-        Last Updated On: {{lastUpdatedOn | async | date: 'medium'}}
-      </p>
-    </div>
+    <span class="navbar-text mr-auto">Living Documentation Application: v{{appVersion}}</span>
+
+    <span class="navbar-text" *ngIf="lastUpdatedOn | async">
+      Last Updated On: {{lastUpdatedOn | async | date: 'medium'}}
+    </span>
   </div>
-</div>
+</nav>
 
 <!--<script type="text/ng-template" id="processing.html">
   <div class="modal-body">

@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule, Component, Input, Inject, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
-import { AccordionModule } from 'ng2-bootstrap/ng2-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import { IFolder, IFeature } from '../../domain-model';
 import { ILivingDocumentationService } from '../living-documentation-service';
@@ -49,6 +49,6 @@ class DocumentationList {
 @NgModule({
     declarations: [Folder, DocumentationList],
     exports: [DocumentationList],
-    imports: [CommonModule, RouterModule, AccordionModule, PipesModule]
+    imports: [CommonModule, RouterModule, NgbModule, PipesModule]
 })
 export class DocumentationListModule { }

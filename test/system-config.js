@@ -3,7 +3,7 @@ System.config({
     baseURL: '../',
     paths: {
         '@angular': pkgPath + '@angular',
-        'moment': pkgPath + 'moment/moment.js',
+        '@ng-bootstrap/ng-bootstrap': pkgPath + '@ng-bootstrap/ng-bootstrap',
         'underscore': pkgPath + 'underscore/underscore.js'
     },
     map: {
@@ -22,10 +22,10 @@ System.config({
         '@angular/platform-browser': { main: 'platform-browser.umd.js' },
         '@angular/platform-browser-dynamic': { main: 'platform-browser-dynamic.umd.js' },
         '@angular/router': { main: 'router.umd.js' },
-        '@angular/core/src/facade/lang': { main: 'lang.js' },
+        '@angular/forms': { main: 'forms.umd.js' },
+        '@ng-bootstrap/ng-bootstrap': { main: 'ng-bootstrap.js' },
         'app': { defaultExtension: 'ts' },
         'app/node_components': {},
-        'test': { defaultExtension: 'ts' },
-        'moment': {}
+        'test': { defaultExtension: 'ts' }
     }
 });

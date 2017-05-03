@@ -1,13 +1,8 @@
 <h5>Tags</h5>
 <div class="row">
     <div class="col-lg-12" style="margin-bottom: -7px;">
-        <button
-            type="button"
-            class="btn btn-xs btn-default"
-            style="margin-right: 7px; margin-bottom: 7px;"
-            routerLink="/dashboard"
-            [queryParams]="{ search: tag }"
-            *ngFor="let tag of tags">
+        <button type="button" class="btn btn-sm btn-secondary" style="margin-right: 7px; margin-bottom: 7px;" routerLink="/dashboard"
+            [queryParams]="{ search: tag }" *ngFor="let tag of tags">
             {{tag}}
         </button>
     </div>
