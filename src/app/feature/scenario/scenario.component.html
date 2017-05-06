@@ -1,0 +1,54 @@
+<table>
+  <tr>
+    <td>
+      <h4 [innerHTML]="isBackground ? 'Background' : scenario.Name | highlight | safe"></h4>
+    </td>
+    <td class="no-stretch" *ngIf="scenario.tests && scenario.tests.length === 1">
+      <a class="text-right" [href]="scenario.tests[0]" target="_blank">Run test</a>
+    </td>
+    <td class="no-stretch">&nbsp;</td>
+    <td class="no-stretch">
+      <div [hidden]="isBackground">
+        <ld-status [status]="scenario.Result" [isManual]="scenario.isManual"></ld-status>
+      </div>
+    </td>
+    <td class="no-stretch">&nbsp;</td>
+    <td class="no-stretch">
+      <a (click)="scenario.isExpanded = !scenario.isExpanded">
+        <span *ngIf="scenario.isExpanded" class="mega-octicon octicon-diff-removed"></span>
+        <span *ngIf="!scenario.isExpanded" class="mega-octicon octicon-diff-added"></span>
+      </a>
+    </td>
+  </tr>
+</table>
+
+<div *ngIf="scenario.isExpanded">
+  <p *ngIf="scenario.Tags.length > 0">
+    <ld-tags [tags]="scenario.Tags" [documentation]="documentation"></ld-tags>
+  </p>
+
+  <p><i [innerHTML]="scenario.Description | highlight | newline | safe"></i></p>
+
+  <div *ngFor="let step of scenario.Steps" style="margin-bottom: 10px">
+    <b>{{step.Keyword}}</b> <span [innerHTML]="step.Name | highlight | scenarioOutlinePlaceholder | safe"></span>
+    <div *ngIf="step.TableArgument">
+      <ld-table [table]="step.TableArgument"></ld-table>
+    </div>
+    <div *ngIf="step.DocStringArgument">
+      <div class="card h-scrollable">
+        <div class="card-block">
+          <span class="no-wrap" [innerHTML]="step.DocStringArgument | highlight | scenarioOutlinePlaceholder | newline | safe">
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="scenario.Examples">
+    <div style="margin-bottom: 10px">
+      <b>Examples:</b>
+      <p><i [innerHTML]="scenario.Examples.Description | highlight | newline | safe"></i></p>
+      <ld-table [table]="scenario.Examples.TableArgument" [tests]="scenario.tests"></ld-table>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+<h3>Dashboard</h3>
+
+<div class="card" *ngFor="let documentation of documentationList | async">
+  <div class="card-block">
+    <ld-documentation-dashboard [documentation]="documentation"></ld-documentation-dashboard>
+    <ld-tag-list [documentation]="documentation"></ld-tag-list>
+  </div>
+</div>
