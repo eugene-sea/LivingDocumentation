@@ -8,15 +8,17 @@
     </td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
-      <div [hidden]="isBackground">
+      <h4 [hidden]="isBackground">
         <ld-status [status]="scenario.Result" [isManual]="scenario.isManual"></ld-status>
-      </div>
+      </h4>
     </td>
     <td class="no-stretch">&nbsp;</td>
     <td class="no-stretch">
       <a (click)="scenario.isExpanded = !scenario.isExpanded">
-        <span *ngIf="scenario.isExpanded" class="mega-octicon octicon-diff-removed"></span>
-        <span *ngIf="!scenario.isExpanded" class="mega-octicon octicon-diff-added"></span>
+        <h4>
+          <span *ngIf="scenario.isExpanded" class="fa fa-caret-square-o-up"></span>
+          <span *ngIf="!scenario.isExpanded" class="fa fa-caret-square-o-down"></span>
+        </h4>
       </a>
     </td>
   </tr>

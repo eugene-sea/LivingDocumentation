@@ -8,18 +8,24 @@
       <td class="no-stretch" *ngIf="featureEditUrl">&nbsp;</td>
       <td class="no-stretch">
         <a [href]="featureEditUrl" target="_blank" *ngIf="featureEditUrl">
-          <span class="mega-octicon octicon-pencil"></span>
+          <h3>
+            <span class="fa fa-pencil-square-o"></span>
+          </h3>
         </a>
       </td>
       <td class="no-stretch">&nbsp;</td>
       <td class="no-stretch">
-        <ld-status [status]="feature.Feature.Result" [isManual]="feature.isManual"></ld-status>
+        <h3>
+          <ld-status [status]="feature.Feature.Result" [isManual]="feature.isManual"></ld-status>
+        </h3>
       </td>
       <td class="no-stretch">&nbsp;</td>
       <td class="no-stretch">
         <a (click)="isExpanded = !isExpanded">
-          <span *ngIf="isExpanded" class="mega-octicon octicon-diff-removed"></span>
-          <span *ngIf="!isExpanded" class="mega-octicon octicon-diff-added"></span>
+          <h3>
+            <span *ngIf="isExpanded" class="fa fa-caret-square-o-up"></span>
+            <span *ngIf="!isExpanded" class="fa fa-caret-square-o-down"></span>
+          </h3>
         </a>
       </td>
     </tr>

@@ -40,7 +40,7 @@
     "@ng-bootstrap/ng-bootstrap": "^1.0.0-alpha.25",
     "bootstrap": "^4.0.0-alpha.6",
     "core-js": "^2.4.1",
-    "octicons": "^4.4.0",
+    "font-awesome": "^4.7.0",
     "rxjs": "^5.1.0",
     "underscore": "^1.8.3",
     "zone.js": "^0.8.4"
