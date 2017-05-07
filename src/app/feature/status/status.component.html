@@ -1,7 +1,5 @@
 <abbr title="Item requires manual testing" *ngIf="isManual">
-  <span
-    class="fa fa-user text-info">
-  </span>
+  <span class="fa fa-user text-info"></span>
 </abbr>
 
 <abbr title="Item is passing" *ngIf="!isManual && status.WasExecuted && status.WasSuccessful">
