@@ -7,14 +7,14 @@
 </div>
 
 <div class="folder-item-padding" [class.folder-indent]="!folder.isRoot" *ngFor="let feature of childrenFeatures">
-  <a class="inactive-feature" [routerLink]="['/feature', documentationCode, feature.code]" preserveQueryParams routerLinkActive="active"
+  <a class="inactive-feature" [routerLink]="['/feature', documentationCode, feature.code]" queryParamsHandling="preserve" routerLinkActive="active"
     [innerHTML]="feature.Feature.Name | highlight | safe">
   </a>
   <b>
     <a
       class="active-feature"
       [routerLink]="['/feature', documentationCode, feature.code]"
-      preserveQueryParams
+      queryParamsHandling="preserve"
       routerLinkActive="active"
       [innerHTML]="feature.Feature.Name | highlight | safe">
     </a>
