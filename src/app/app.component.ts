@@ -1,5 +1,7 @@
-import { Component, Inject } from '@angular/core';
+import { Component, Inject, AfterViewInit, ViewChild, TemplateRef } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl } from '@angular/forms';
+
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { Observable } from 'rxjs/Rx';
 import _ from 'underscore';
@@ -11,20 +13,23 @@ import { ILivingDocumentationService, DocumentationFilter } from './living-docum
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements AfterViewInit {
+  @ViewChild('loadingDataContent') loadingModalTemplate: TemplateRef<any>;
+
   form: FormGroup;
   searchControl = new FormControl();
   lastUpdatedOn: Observable<Date>;
 
   documentationFilter = DocumentationFilter;
 
+  private loadingModal: NgbModalRef;
+
   constructor(
     @Inject('livingDocumentationService') private livingDocService: ILivingDocumentationService,
     @Inject('version') public appVersion: string,
-    fb: FormBuilder
+    fb: FormBuilder,
+    private modalService: NgbModal
   ) {
-    livingDocService.loading.subscribe(isLoading => { /* TODO: */ });
-
     this.form = fb.group({ 'searchControl': this.searchControl });
 
     this.searchControl.valueChanges
@@ -40,7 +45,18 @@ export class AppComponent {
     livingDocService.searchTextObservable.subscribe(
       s => this.searchControl.setValue(s || '', { emitEvent: false })
     );
-    livingDocService.startInitialization();
+  }
+
+  ngAfterViewInit() {
+    this.livingDocService.loading.delay(1).subscribe(isLoading => {
+      if (isLoading) {
+        this.loadingModal = this.modalService.open(this.loadingModalTemplate, { backdrop: 'static', keyboard: false });
+      } else {
+        setTimeout(() => this.loadingModal.close(), 100);
+      }
+    });
+
+    this.livingDocService.startInitialization();
   }
 
   get error() { return this.livingDocService.error; }

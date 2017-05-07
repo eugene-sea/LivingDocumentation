@@ -93,13 +93,10 @@ export class LivingDocumentationService implements ILivingDocumentationService {
   startInitialization(): void {
     this.backend.getResourceDefinitions()
       .concatMap(resources => Observable.zip(..._.map(resources, r => this.backend.get(r))))
-      .subscribe(
-      (docs: ILivingDocumentation[]) => {
+      .subscribe((docs: ILivingDocumentation[]) => {
         this.documentationListObservable.next(docs);
         this.initialize();
-      },
-      err => this.onError(err)
-      );
+      }, err => this.onError(err));
   }
 
   search(searchText: string): void {
