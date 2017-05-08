@@ -37,7 +37,7 @@
       <ld-table [table]="step.TableArgument"></ld-table>
     </div>
     <div *ngIf="step.DocStringArgument">
-      <div class="card h-scrollable">
+      <div class="card h-scrollable" style="background-color: #f7f7f9">
         <div class="card-block">
           <span class="no-wrap" [innerHTML]="step.DocStringArgument | highlight | scenarioOutlinePlaceholder | newline | safe">
           </span>

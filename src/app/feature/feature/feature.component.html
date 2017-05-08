@@ -31,7 +31,7 @@
     </tr>
   </table>
 
-  <p>
+  <p *ngIf="feature.Feature.Tags.length > 0">
     <ld-tags [tags]="feature.Feature.Tags" [documentation]="documentation"></ld-tags>
   </p>
 
